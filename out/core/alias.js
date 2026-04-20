@@ -37,11 +37,7 @@ exports.AliasManager = void 0;
 const vscode = __importStar(require("vscode"));
 const yaml = __importStar(require("js-yaml"));
 class AliasManager {
-    /**
-     * Loads user aliases from 'byml-aliases.yml' or 'byml-aliases.yaml' in the workspace root.
-     */
     static async getMergedMap() {
-        // Look for .yml first, then .yaml
         const files = await vscode.workspace.findFiles('byml-aliases.{yml,yaml}');
         if (files.length > 0) {
             try {
@@ -50,30 +46,34 @@ class AliasManager {
                 const userMap = yaml.load(text);
                 return userMap || {};
             }
-            catch (e) {
-                // Silent fail for bad YAML
-            }
+            catch (e) { }
         }
         return {};
     }
     static async applyDisplayAliases(yamlStr) {
         let result = yamlStr;
         const map = await this.getMergedMap();
-        for (const [code, name] of Object.entries(map)) {
-            // Match the codename when it's a value (surrounded by spaces or quotes)
-            const regex = new RegExp(`(['"]?)${code}(['"]?)`, 'g');
-            result = result.replace(regex, `$1${code} [${name}]$2`);
+        // Sort keys by length descending to ensure longest match wins
+        const sortedCodes = Object.keys(map).sort((a, b) => b.length - a.length);
+        for (const code of sortedCodes) {
+            const name = map[code];
+            // Match the code followed by any word characters (suffixes like 00, _A)
+            // Usage: "(['"]?)(Code(\w*))(['"]?)"
+            const regex = new RegExp(`(['"]?)(${code}(\\w*))(['"]?)`, 'g');
+            result = result.replace(regex, `$1$2 [${name}]$4`);
         }
         return result;
     }
     static async revertToInternal(yamlStr) {
         let result = yamlStr;
         const map = await this.getMergedMap();
-        for (const [code, name] of Object.entries(map)) {
-            // Find "Codename [Alias]" and strip the alias part
+        const sortedCodes = Object.keys(map).sort((a, b) => b.length - a.length);
+        for (const code of sortedCodes) {
+            const name = map[code];
             const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`${code}\\s*\\[${escapedName}\\]`, 'g');
-            result = result.replace(regex, code);
+            // Match "FullCodename [Alias]" and revert to "FullCodename"
+            const regex = new RegExp(`(${code}\\w*)\\s*\\[${escapedName}\\]`, 'g');
+            result = result.replace(regex, '$1');
         }
         return result;
     }
