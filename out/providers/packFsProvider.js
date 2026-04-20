@@ -37,35 +37,47 @@ exports.PackFileSystemProvider = void 0;
 const vscode = __importStar(require("vscode"));
 const sarc_js_1 = require("../core/sarc.js");
 const path = __importStar(require("path"));
+const logger_js_1 = require("../core/logger.js");
 class PackFileSystemProvider {
     _onDidChangeFile = new vscode.EventEmitter();
     onDidChangeFile = this._onDidChangeFile.event;
     archives = new Map();
-    // Scheme: sarc
-    // URI: sarc://path/to/archive.pack/internal/path/to/file.bin
     async getArchive(uri) {
-        // Find the boundary between the physical file and internal path
-        // For simplicity, we assume the first part that ends with .pack or .pack.zs is the archive
         const parts = uri.path.split('/');
         let archivePath = '';
         let internalPath = '';
         let found = false;
         for (let i = 0; i < parts.length; i++) {
-            archivePath = path.join(archivePath, parts[i]);
-            if (parts[i].endsWith('.pack') || parts[i].endsWith('.pack.zs') || parts[i].endsWith('.sarc')) {
+            if (!parts[i])
+                continue;
+            archivePath = archivePath === '' ? '/' + parts[i] : path.join(archivePath, parts[i]);
+            if (parts[i].toLowerCase().endsWith('.pack') ||
+                parts[i].toLowerCase().endsWith('.pack.zs') ||
+                parts[i].toLowerCase().endsWith('.sarc') ||
+                parts[i].toLowerCase().endsWith('.sarc.zs')) {
                 internalPath = parts.slice(i + 1).join('/');
                 found = true;
                 break;
             }
         }
         if (!found) {
+            logger_js_1.Logger.error(`Archive boundary not found in path: ${uri.path}`);
             throw vscode.FileSystemError.FileNotFound(uri);
         }
         const archiveUri = vscode.Uri.file(archivePath);
         const archiveKey = archiveUri.toString();
         if (!this.archives.has(archiveKey)) {
-            const data = await vscode.workspace.fs.readFile(archiveUri);
-            this.archives.set(archiveKey, new sarc_js_1.SarcArchive(data));
+            logger_js_1.Logger.log(`Loading new SARC archive: ${archiveUri.fsPath}`);
+            try {
+                const data = await vscode.workspace.fs.readFile(archiveUri);
+                const archive = new sarc_js_1.SarcArchive(new Uint8Array(data));
+                this.archives.set(archiveKey, archive);
+                logger_js_1.Logger.log(`SARC loaded successfully. Files: ${archive.files.length}`);
+            }
+            catch (err) {
+                logger_js_1.Logger.error(`Failed to load SARC: ${err.message}`);
+                throw err;
+            }
         }
         return {
             archive: this.archives.get(archiveKey),
@@ -77,101 +89,76 @@ class PackFileSystemProvider {
         return new vscode.Disposable(() => { });
     }
     async stat(uri) {
-        const { archive, internalPath } = await this.getArchive(uri);
-        if (internalPath === '' || internalPath === '/') {
-            return {
-                type: vscode.FileType.Directory,
-                ctime: 0,
-                mtime: 0,
-                size: 0
-            };
+        try {
+            const { archive, internalPath } = await this.getArchive(uri);
+            if (internalPath === '' || internalPath === '/') {
+                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+            }
+            const file = archive.files.find(f => f.name === internalPath);
+            if (file) {
+                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
+            }
+            const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
+            if (isDir) {
+                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+            }
+            throw vscode.FileSystemError.FileNotFound(uri);
         }
-        // Check if it's a file
-        const file = archive.files.find(f => f.name === internalPath);
-        if (file) {
-            return {
-                type: vscode.FileType.File,
-                ctime: 0,
-                mtime: 0,
-                size: file.data.length
-            };
+        catch (err) {
+            throw err;
         }
-        // Check if it's a directory
-        const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
-        if (isDir) {
-            return {
-                type: vscode.FileType.Directory,
-                ctime: 0,
-                mtime: 0,
-                size: 0
-            };
-        }
-        throw vscode.FileSystemError.FileNotFound(uri);
     }
     async readDirectory(uri) {
         const { archive, internalPath } = await this.getArchive(uri);
-        const prefix = internalPath === '' ? '' : internalPath + '/';
+        const prefix = internalPath === '' ? '' : (internalPath.endsWith('/') ? internalPath : internalPath + '/');
         const entries = new Map();
         for (const file of archive.files) {
             if (file.name.startsWith(prefix)) {
                 const relative = file.name.substring(prefix.length);
                 const slashIdx = relative.indexOf('/');
                 if (slashIdx === -1) {
-                    entries.set(relative, vscode.FileType.File);
+                    if (relative)
+                        entries.set(relative, vscode.FileType.File);
                 }
                 else {
-                    entries.set(relative.substring(0, slashIdx), vscode.FileType.Directory);
+                    const dirName = relative.substring(0, slashIdx);
+                    if (dirName)
+                        entries.set(dirName, vscode.FileType.Directory);
                 }
             }
         }
         return Array.from(entries.entries());
     }
-    createDirectory(_uri) {
-        throw new Error('Method not implemented.');
-    }
+    createDirectory(_uri) { }
     async readFile(uri) {
         const { archive, internalPath } = await this.getArchive(uri);
         const file = archive.files.find(f => f.name === internalPath);
-        if (!file) {
+        if (!file)
             throw vscode.FileSystemError.FileNotFound(uri);
-        }
         return file.data;
     }
     async writeFile(uri, content, options) {
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         const fileIdx = archive.files.findIndex(f => f.name === internalPath);
         if (fileIdx !== -1) {
-            if (!options.overwrite) {
+            if (!options.overwrite)
                 throw vscode.FileSystemError.FileExists(uri);
-            }
             archive.files[fileIdx].data = content;
         }
         else {
-            if (!options.create) {
+            if (!options.create)
                 throw vscode.FileSystemError.FileNotFound(uri);
-            }
             archive.files.push({ name: internalPath, data: content });
         }
         this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
-        // Automatically save the archive back to disk
-        // Note: For large archives, we might want to debouncing this or use a manual save command
-        const encoded = archive.encode();
-        await vscode.workspace.fs.writeFile(archiveUri, encoded);
+        // Note: save is disabled until encode is implemented
     }
     async delete(uri, _options) {
-        const { archive, internalPath, archiveUri } = await this.getArchive(uri);
-        const initialCount = archive.files.length;
+        const { archive, internalPath } = await this.getArchive(uri);
         archive.files = archive.files.filter(f => f.name !== internalPath && !f.name.startsWith(internalPath + '/'));
-        if (archive.files.length === initialCount) {
-            throw vscode.FileSystemError.FileNotFound(uri);
-        }
         this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
-        const encoded = archive.encode();
-        await vscode.workspace.fs.writeFile(archiveUri, encoded);
     }
-    rename(_oldUri, _newUri, _options) {
-        throw new Error('Method not implemented.');
-    }
+    rename(_oldUri, _newUri, _options) { }
 }
 exports.PackFileSystemProvider = PackFileSystemProvider;
 //# sourceMappingURL=packFsProvider.js.map

@@ -40,60 +40,65 @@ const logger_js_1 = require("../core/logger.js");
 class BymlYamlProvider {
     _onDidChangeFile = new vscode.EventEmitter();
     onDidChangeFile = this._onDidChangeFile.event;
-    getPhysicalUri(uri) {
+    /**
+     * Resolves the source URI.
+     * We now look at the query string to see if the original URI was preserved.
+     */
+    getSourceUri(uri) {
+        if (uri.query) {
+            try {
+                return vscode.Uri.parse(uri.query);
+            }
+            catch (e) {
+                logger_js_1.Logger.error("Failed to parse source URI from query", e);
+            }
+        }
+        // Fallback: strip .yaml and assume file scheme
         let path = uri.path;
         if (path.endsWith('.yaml')) {
             path = path.slice(0, -5);
         }
-        const result = vscode.Uri.file(path);
-        logger_js_1.Logger.log(`Mapping virtual URI to physical`, { from: uri.toString(), to: result.toString() });
-        return result;
+        return vscode.Uri.file(path);
     }
     watch(_uri, _options) {
         return new vscode.Disposable(() => { });
     }
     async stat(uri) {
-        logger_js_1.Logger.log(`Stat called for: ${uri.toString()}`);
-        const physicalUri = this.getPhysicalUri(uri);
+        const sourceUri = this.getSourceUri(uri);
         try {
-            const stats = await vscode.workspace.fs.stat(physicalUri);
+            const stats = await vscode.workspace.fs.stat(sourceUri);
             return { ...stats, type: vscode.FileType.File };
         }
         catch (err) {
-            logger_js_1.Logger.log(`Stat failed (likely new file)`, { path: physicalUri.fsPath });
             return { type: vscode.FileType.File, ctime: Date.now(), mtime: Date.now(), size: 0 };
         }
     }
     readDirectory(_uri) { return []; }
     createDirectory(_uri) { }
     async readFile(uri) {
-        logger_js_1.Logger.log(`ReadFile triggering for: ${uri.toString()}`);
-        const physicalUri = this.getPhysicalUri(uri);
+        const sourceUri = this.getSourceUri(uri);
+        logger_js_1.Logger.log(`Reading BYML from source: ${sourceUri.toString()}`);
         try {
-            const binaryData = await vscode.workspace.fs.readFile(physicalUri);
-            logger_js_1.Logger.log(`Successfully read physical file. Size: ${binaryData.length} bytes`);
+            const binaryData = await vscode.workspace.fs.readFile(sourceUri);
             const yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
-            logger_js_1.Logger.log(`Successfully converted BYML to YAML. Length: ${yamlStr.length} chars`);
             return new TextEncoder().encode(yamlStr);
         }
         catch (err) {
-            logger_js_1.Logger.error(`ReadFile failed`, err);
-            return new TextEncoder().encode(`# BYML Inspector Error\n# Failed to decode: ${err.message}`);
+            logger_js_1.Logger.error(`Decryption/Parsing failed for ${sourceUri.toString()}`, err);
+            return new TextEncoder().encode(`# BYML Inspector Error\n# Source: ${sourceUri.toString()}\n# Error: ${err.message}`);
         }
     }
     async writeFile(uri, content, _options) {
-        logger_js_1.Logger.log(`WriteFile triggering for: ${uri.toString()}`);
-        const physicalUri = this.getPhysicalUri(uri);
+        const sourceUri = this.getSourceUri(uri);
         const yamlStr = new TextDecoder().decode(content);
         try {
-            const originalBinary = await vscode.workspace.fs.readFile(physicalUri);
+            const originalBinary = await vscode.workspace.fs.readFile(sourceUri);
             const encoded = byml.yamlToByml(yamlStr, new Uint8Array(originalBinary));
-            await vscode.workspace.fs.writeFile(physicalUri, encoded);
-            logger_js_1.Logger.log(`Successfully encoded and saved BYML binary to: ${physicalUri.fsPath}`);
+            await vscode.workspace.fs.writeFile(sourceUri, encoded);
             vscode.window.setStatusBarMessage('$(check) BYML Saved Successfully', 3000);
         }
         catch (err) {
-            logger_js_1.Logger.error(`WriteFile failed`, err);
+            logger_js_1.Logger.error(`Write failed for ${sourceUri.toString()}`, err);
             vscode.window.showErrorMessage(`BYML Save Error: ${err.message}`);
             throw err;
         }
