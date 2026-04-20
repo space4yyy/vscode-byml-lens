@@ -3,7 +3,7 @@ import * as assert from 'assert';
 // we might need to handle imports carefully in tests depending on the test runner.
 // For now, this is a placeholder to show the structure.
 
-describe('Nintendo Binary Logic', () => {
+describe('BYML/SARC Binary Logic', () => {
     it('Should be able to parse and encode SARC (Logic placeholder)', () => {
         // This will be expanded with actual binary blobs in a real scenario
         assert.strictEqual(1, 1);
