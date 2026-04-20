@@ -39,10 +39,12 @@ const vscode = __importStar(require("vscode"));
 const packFsProvider_js_1 = require("./providers/packFsProvider.js");
 const bymlFsProvider_js_1 = require("./providers/bymlFsProvider.js");
 const logger_js_1 = require("./core/logger.js");
+/**
+ * Redirector for BYML files (Binary -> Virtual YAML)
+ */
 class BymlRedirectProvider {
     async openCustomDocument(uri) { return { uri, dispose: () => { } }; }
     async resolveCustomEditor(document, webviewPanel) {
-        // We pass the full original URI in the query string to preserve scheme (file vs sarc)
         const virtualUri = vscode.Uri.from({
             scheme: 'byml-edit',
             path: document.uri.path + '.yaml',
@@ -58,22 +60,64 @@ class BymlRedirectProvider {
     saveCustomDocumentAs() { return Promise.resolve(); }
     revertCustomDocument() { return Promise.resolve(); }
 }
+/**
+ * Double-Click Toggle Redirector for SARC files
+ */
 class SarcRedirectProvider {
     async openCustomDocument(uri) { return { uri, dispose: () => { } }; }
     async resolveCustomEditor(document, webviewPanel) {
-        webviewPanel.webview.html = "<html><body></body></html>";
-        const sarcUri = vscode.Uri.parse(`sarc://${document.uri.fsPath}`);
+        const checkAndToggle = () => {
+            // Look for the tab corresponding to this document
+            const tab = this.findTab(document.uri);
+            if (tab && !tab.isPreview) {
+                // It's a double-click (permanent tab) -> Trigger Toggle
+                this.toggleSarc(document.uri);
+                setTimeout(() => webviewPanel.dispose(), 50);
+                return true;
+            }
+            return false;
+        };
+        // 1. Check immediately
+        if (!checkAndToggle()) {
+            // 2. If it's just a preview, show instructions and wait for it to become permanent
+            webviewPanel.webview.html = `
+                <html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;">
+                    <div>Double-click to Mount/Unmount Archive</div>
+                </body></html>`;
+            const disposable = vscode.window.tabGroups.onDidChangeTabs(e => {
+                if (checkAndToggle()) {
+                    disposable.dispose();
+                }
+            });
+            webviewPanel.onDidDispose(() => disposable.dispose());
+        }
+    }
+    findTab(uri) {
+        for (const group of vscode.window.tabGroups.all) {
+            for (const tab of group.tabs) {
+                if (tab.input?.uri?.toString() === uri.toString()) {
+                    return tab;
+                }
+            }
+        }
+        return undefined;
+    }
+    toggleSarc(uri) {
+        const sarcUri = vscode.Uri.parse(`sarc://${uri.fsPath}`);
         const existingFolder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === sarcUri.toString());
         if (existingFolder) {
             vscode.workspace.updateWorkspaceFolders(existingFolder.index, 1);
+            vscode.window.setStatusBarMessage('$(trash) Archive Unmounted', 2000);
+            logger_js_1.Logger.log(`Unmounted SARC: ${uri.fsPath}`);
         }
         else {
             vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, 0, {
                 uri: sarcUri,
-                name: `Archive: ${vscode.workspace.asRelativePath(document.uri)}`
+                name: `Archive: ${vscode.workspace.asRelativePath(uri)}`
             });
+            vscode.window.setStatusBarMessage('$(folder-opened) Archive Mounted', 2000);
+            logger_js_1.Logger.log(`Mounted SARC: ${uri.fsPath}`);
         }
-        setTimeout(() => webviewPanel.dispose(), 100);
     }
     _onDidChangeCustomDocument = new vscode.EventEmitter();
     onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
@@ -93,11 +137,7 @@ function activate(context) {
             const targetUri = uri || vscode.window.activeTextEditor?.document.uri;
             if (!targetUri)
                 return;
-            const virtualUri = vscode.Uri.from({
-                scheme: 'byml-edit',
-                path: targetUri.path + '.yaml',
-                query: targetUri.toString()
-            });
+            const virtualUri = vscode.Uri.from({ scheme: 'byml-edit', path: targetUri.path + '.yaml', query: targetUri.toString() });
             await vscode.window.showTextDocument(virtualUri, { preview: false });
         }));
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri) => {
@@ -105,7 +145,7 @@ function activate(context) {
             if (folder)
                 vscode.workspace.updateWorkspaceFolders(folder.index, 1);
         }));
-        logger_js_1.Logger.log("BYML Inspector (v5 - SARC Aware) Activated.");
+        logger_js_1.Logger.log("BYML Inspector (v5 - Double-Click Mode) Activated.");
     }
     catch (err) {
         logger_js_1.Logger.error("Activation Failed", err);
