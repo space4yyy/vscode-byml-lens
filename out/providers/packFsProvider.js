@@ -61,23 +61,13 @@ class PackFileSystemProvider {
             }
         }
         if (!found) {
-            logger_js_1.Logger.error(`Archive boundary not found in path: ${uri.path}`);
             throw vscode.FileSystemError.FileNotFound(uri);
         }
         const archiveUri = vscode.Uri.file(archivePath);
         const archiveKey = archiveUri.toString();
         if (!this.archives.has(archiveKey)) {
-            logger_js_1.Logger.log(`Loading new SARC archive: ${archiveUri.fsPath}`);
-            try {
-                const data = await vscode.workspace.fs.readFile(archiveUri);
-                const archive = new sarc_js_1.SarcArchive(new Uint8Array(data));
-                this.archives.set(archiveKey, archive);
-                logger_js_1.Logger.log(`SARC loaded successfully. Files: ${archive.files.length}`);
-            }
-            catch (err) {
-                logger_js_1.Logger.error(`Failed to load SARC: ${err.message}`);
-                throw err;
-            }
+            const data = await vscode.workspace.fs.readFile(archiveUri);
+            this.archives.set(archiveKey, new sarc_js_1.SarcArchive(new Uint8Array(data)));
         }
         return {
             archive: this.archives.get(archiveKey),
@@ -89,24 +79,19 @@ class PackFileSystemProvider {
         return new vscode.Disposable(() => { });
     }
     async stat(uri) {
-        try {
-            const { archive, internalPath } = await this.getArchive(uri);
-            if (internalPath === '' || internalPath === '/') {
-                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            }
-            const file = archive.files.find(f => f.name === internalPath);
-            if (file) {
-                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
-            }
-            const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
-            if (isDir) {
-                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            }
-            throw vscode.FileSystemError.FileNotFound(uri);
+        const { archive, internalPath } = await this.getArchive(uri);
+        if (internalPath === '' || internalPath === '/') {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
         }
-        catch (err) {
-            throw err;
+        const file = archive.files.find(f => f.name === internalPath);
+        if (file) {
+            return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
         }
+        const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
+        if (isDir) {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+        }
+        throw vscode.FileSystemError.FileNotFound(uri);
     }
     async readDirectory(uri) {
         const { archive, internalPath } = await this.getArchive(uri);
@@ -138,6 +123,7 @@ class PackFileSystemProvider {
         return file.data;
     }
     async writeFile(uri, content, options) {
+        logger_js_1.Logger.log(`SARC WriteFile: ${uri.toString()}`);
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         const fileIdx = archive.files.findIndex(f => f.name === internalPath);
         if (fileIdx !== -1) {
@@ -150,13 +136,28 @@ class PackFileSystemProvider {
                 throw vscode.FileSystemError.FileNotFound(uri);
             archive.files.push({ name: internalPath, data: content });
         }
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
-        // Note: save is disabled until encode is implemented
+        try {
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            logger_js_1.Logger.log(`Successfully updated SARC on disk: ${archiveUri.fsPath}`);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
+        }
+        catch (err) {
+            logger_js_1.Logger.error(`SARC Save Failed`, err);
+            vscode.window.showErrorMessage(`SARC Save Failed: ${err.message}`);
+        }
     }
     async delete(uri, _options) {
-        const { archive, internalPath } = await this.getArchive(uri);
+        const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         archive.files = archive.files.filter(f => f.name !== internalPath && !f.name.startsWith(internalPath + '/'));
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        try {
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        }
+        catch (err) {
+            logger_js_1.Logger.error(`SARC Delete Failed`, err);
+        }
     }
     rename(_oldUri, _newUri, _options) { }
 }

@@ -30,7 +30,6 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
         }
 
         if (!found) {
-            Logger.error(`Archive boundary not found in path: ${uri.path}`);
             throw vscode.FileSystemError.FileNotFound(uri);
         }
 
@@ -38,16 +37,8 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
         const archiveKey = archiveUri.toString();
 
         if (!this.archives.has(archiveKey)) {
-            Logger.log(`Loading new SARC archive: ${archiveUri.fsPath}`);
-            try {
-                const data = await vscode.workspace.fs.readFile(archiveUri);
-                const archive = new SarcArchive(new Uint8Array(data));
-                this.archives.set(archiveKey, archive);
-                Logger.log(`SARC loaded successfully. Files: ${archive.files.length}`);
-            } catch (err: any) {
-                Logger.error(`Failed to load SARC: ${err.message}`);
-                throw err;
-            }
+            const data = await vscode.workspace.fs.readFile(archiveUri);
+            this.archives.set(archiveKey, new SarcArchive(new Uint8Array(data)));
         }
 
         return {
@@ -62,35 +53,25 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
     }
 
     async stat(uri: vscode.Uri): Promise<vscode.FileStat> {
-        try {
-            const { archive, internalPath } = await this.getArchive(uri);
-            
-            if (internalPath === '' || internalPath === '/') {
-                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            }
-
-            const file = archive.files.find(f => f.name === internalPath);
-            if (file) {
-                return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
-            }
-
-            const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
-            if (isDir) {
-                return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
-            }
-
-            throw vscode.FileSystemError.FileNotFound(uri);
-        } catch (err) {
-            throw err;
+        const { archive, internalPath } = await this.getArchive(uri);
+        if (internalPath === '' || internalPath === '/') {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
         }
+        const file = archive.files.find(f => f.name === internalPath);
+        if (file) {
+            return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
+        }
+        const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
+        if (isDir) {
+            return { type: vscode.FileType.Directory, ctime: 0, mtime: 0, size: 0 };
+        }
+        throw vscode.FileSystemError.FileNotFound(uri);
     }
 
     async readDirectory(uri: vscode.Uri): Promise<[string, vscode.FileType][]> {
         const { archive, internalPath } = await this.getArchive(uri);
         const prefix = internalPath === '' ? '' : (internalPath.endsWith('/') ? internalPath : internalPath + '/');
-        
         const entries = new Map<string, vscode.FileType>();
-        
         for (const file of archive.files) {
             if (file.name.startsWith(prefix)) {
                 const relative = file.name.substring(prefix.length);
@@ -103,7 +84,6 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
                 }
             }
         }
-
         return Array.from(entries.entries());
     }
 
@@ -117,7 +97,9 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
     }
 
     async writeFile(uri: vscode.Uri, content: Uint8Array, options: { readonly create: boolean; readonly overwrite: boolean; }): Promise<void> {
+        Logger.log(`SARC WriteFile: ${uri.toString()}`);
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
+        
         const fileIdx = archive.files.findIndex(f => f.name === internalPath);
         if (fileIdx !== -1) {
             if (!options.overwrite) throw vscode.FileSystemError.FileExists(uri);
@@ -126,14 +108,29 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
             if (!options.create) throw vscode.FileSystemError.FileNotFound(uri);
             archive.files.push({ name: internalPath, data: content });
         }
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
-        // Note: save is disabled until encode is implemented
+
+        try {
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            Logger.log(`Successfully updated SARC on disk: ${archiveUri.fsPath}`);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
+        } catch (err: any) {
+            Logger.error(`SARC Save Failed`, err);
+            vscode.window.showErrorMessage(`SARC Save Failed: ${err.message}`);
+        }
     }
 
     async delete(uri: vscode.Uri, _options: { readonly recursive: boolean; }): Promise<void> {
-        const { archive, internalPath } = await this.getArchive(uri);
+        const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         archive.files = archive.files.filter(f => f.name !== internalPath && !f.name.startsWith(internalPath + '/'));
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        
+        try {
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        } catch (err: any) {
+            Logger.error(`SARC Delete Failed`, err);
+        }
     }
 
     rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { readonly overwrite: boolean; }): void { }

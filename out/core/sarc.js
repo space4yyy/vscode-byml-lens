@@ -40,6 +40,7 @@ class SarcArchive {
     files = [];
     isCompressed = false;
     le = true;
+    bom = 0xFEFF;
     constructor(data) {
         if (!data)
             return;
@@ -47,60 +48,114 @@ class SarcArchive {
             this.isCompressed = zstd.isCompressed(data);
             const d = this.isCompressed ? zstd.decompressData(data) : data;
             const view = new DataView(d.buffer, d.byteOffset, d.byteLength);
-            // 1. SARC Header
             const magic = String.fromCharCode(d[0], d[1], d[2], d[3]);
             if (magic !== 'SARC')
                 throw new Error(`Invalid magic: ${magic}`);
             const headerSize = view.getUint16(4, true);
-            const bom = view.getUint16(6, true);
-            // BOM: 0xFFFE in LE read means FE FF on disk (Big Endian)
-            // BOM: 0xFEFF in LE read means FF FE on disk (Little Endian)
-            this.le = (bom === 0xFEFF);
-            logger_js_1.Logger.log(`SARC BOM: ${bom.toString(16)}, LE: ${this.le}`);
+            this.bom = view.getUint16(6, true);
+            this.le = (this.bom === 0xFEFF);
             const dataStart = view.getUint32(0x0C, this.le);
-            logger_js_1.Logger.log(`SARC Data Start: 0x${dataStart.toString(16)}`);
-            // 2. SFAT Header
             let pos = headerSize;
-            const sfatMagic = String.fromCharCode(d[pos], d[pos + 1], d[pos + 2], d[pos + 3]);
-            if (sfatMagic !== 'SFAT')
-                throw new Error('Missing SFAT header');
-            const nodeCount = view.getUint16(pos + 6, this.le);
-            logger_js_1.Logger.log(`SARC File Count: ${nodeCount}`);
+            const sfatCount = view.getUint16(pos + 6, this.le);
             const sfatNodesPos = pos + 0x0C;
-            // 3. SFNT Header (after SFAT nodes)
-            const sfntPos = sfatNodesPos + nodeCount * 16;
-            const sfntMagic = String.fromCharCode(d[sfntPos], d[sfntPos + 1], d[sfntPos + 2], d[sfntPos + 3]);
-            if (sfntMagic !== 'SFNT')
-                throw new Error('Missing SFNT header');
+            const sfntPos = sfatNodesPos + sfatCount * 16;
             const stringTablePos = sfntPos + 8;
-            // 4. Parse Nodes
-            for (let i = 0; i < nodeCount; i++) {
+            for (let i = 0; i < sfatCount; i++) {
                 const nodeOff = sfatNodesPos + i * 16;
                 const nameAttr = view.getUint32(nodeOff + 4, this.le);
-                // Bit 24-31 are often flags/type, 0-23 is offset/4
                 const nameOffset = (nameAttr & 0x00FFFFFF) * 4;
                 const fileStart = view.getUint32(nodeOff + 8, this.le);
                 const fileEnd = view.getUint32(nodeOff + 12, this.le);
-                // Get Name
                 let name = '';
                 let nPos = stringTablePos + nameOffset;
                 while (nPos < d.length && d[nPos] !== 0) {
                     name += String.fromCharCode(d[nPos]);
                     nPos++;
                 }
-                // Get Data
                 const fileData = d.slice(dataStart + fileStart, dataStart + fileEnd);
                 this.files.push({ name, data: fileData });
             }
-            logger_js_1.Logger.log(`Successfully parsed ${this.files.length} files from SARC.`);
         }
         catch (err) {
             logger_js_1.Logger.error(`SARC Parsing Error`, err);
             throw err;
         }
     }
+    static hash(name) {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) {
+            h = (h * 0x65 + name.charCodeAt(i)) >>> 0;
+        }
+        return h;
+    }
     encode() {
-        throw new Error('SARC Encoding is not yet implemented.');
+        logger_js_1.Logger.log(`Encoding SARC with ${this.files.length} files...`);
+        // 1. Prepare String Table
+        const sortedFiles = [...this.files].sort((a, b) => SarcArchive.hash(a.name) - SarcArchive.hash(b.name));
+        let stringTableSize = 0;
+        const nameOffsets = sortedFiles.map(f => {
+            const off = stringTableSize;
+            stringTableSize += f.name.length + 1;
+            while (stringTableSize % 4 !== 0)
+                stringTableSize++; // Align strings
+            return off;
+        });
+        // 2. Calculate offsets
+        const sfatSize = 0x0C + sortedFiles.length * 16;
+        const sfntSize = 0x08 + stringTableSize;
+        const headerSize = 0x14;
+        const dataStart = headerSize + sfatSize + sfntSize;
+        let totalSize = dataStart;
+        const fileOffsets = sortedFiles.map(f => {
+            while (totalSize % 4 !== 0)
+                totalSize++; // Align file data
+            const start = totalSize - dataStart;
+            totalSize += f.data.length;
+            return { start, end: totalSize - dataStart };
+        });
+        const out = new Uint8Array(totalSize);
+        const view = new DataView(out.buffer);
+        // 3. Write SARC Header
+        out.set([0x53, 0x41, 0x52, 0x43], 0); // 'SARC'
+        view.setUint16(4, headerSize, true);
+        view.setUint16(6, this.bom, true);
+        view.setUint32(8, totalSize, this.le);
+        view.setUint32(0x0C, dataStart, this.le);
+        view.setUint32(0x10, 0x00000100, this.le); // Version/Reserved
+        // 4. Write SFAT Header
+        let pos = headerSize;
+        out.set([0x53, 0x46, 0x41, 0x54], pos); // 'SFAT'
+        view.setUint16(pos + 4, 0x0C, this.le);
+        view.setUint16(pos + 6, sortedFiles.length, this.le);
+        view.setUint32(pos + 8, 0x00000065, this.le); // Hash Multiplier
+        // 5. Write SFAT Nodes
+        pos += 0x0C;
+        for (let i = 0; i < sortedFiles.length; i++) {
+            const f = sortedFiles[i];
+            view.setUint32(pos, SarcArchive.hash(f.name), this.le);
+            view.setUint32(pos + 4, (0x01000000 | (nameOffsets[i] / 4)), this.le); // Flag 0x01 + Name Offset/4
+            view.setUint32(pos + 8, fileOffsets[i].start, this.le);
+            view.setUint32(pos + 12, fileOffsets[i].end, this.le);
+            pos += 16;
+        }
+        // 6. Write SFNT Header
+        out.set([0x53, 0x46, 0x4e, 0x54], pos); // 'SFNT'
+        view.setUint16(pos + 4, 0x08, this.le);
+        pos += 8;
+        // 7. Write String Table
+        for (let i = 0; i < sortedFiles.length; i++) {
+            const nameBytes = new TextEncoder().encode(sortedFiles[i].name);
+            out.set(nameBytes, pos + nameOffsets[i]);
+        }
+        // 8. Write File Data
+        for (let i = 0; i < sortedFiles.length; i++) {
+            out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
+        }
+        logger_js_1.Logger.log(`SARC encoded successfully. Total size: ${out.length}`);
+        if (this.isCompressed) {
+            return zstd.compressData(out);
+        }
+        return out;
     }
 }
 exports.SarcArchive = SarcArchive;
