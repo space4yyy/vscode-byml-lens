@@ -73,8 +73,8 @@ class BymlYamlProvider {
         try {
             const binaryData = await vscode.workspace.fs.readFile(sourceUri);
             let yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
-            // Apply Visual Aliases
-            yamlStr = alias_js_1.AliasManager.applyDisplayAliases(yamlStr);
+            // Apply Visual Aliases (Async version)
+            yamlStr = await alias_js_1.AliasManager.applyDisplayAliases(yamlStr);
             return new TextEncoder().encode(yamlStr);
         }
         catch (err) {
@@ -85,8 +85,8 @@ class BymlYamlProvider {
     async writeFile(uri, content, _options) {
         const sourceUri = this.getSourceUri(uri);
         let yamlStr = new TextDecoder().decode(content);
-        // Revert Aliases back to Codename
-        yamlStr = alias_js_1.AliasManager.revertToInternal(yamlStr);
+        // Revert Aliases back to Codename (Async version)
+        yamlStr = await alias_js_1.AliasManager.revertToInternal(yamlStr);
         try {
             const originalBinary = await vscode.workspace.fs.readFile(sourceUri);
             const encoded = byml.yamlToByml(yamlStr, new Uint8Array(originalBinary));

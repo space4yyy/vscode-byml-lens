@@ -39,8 +39,8 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
             const binaryData = await vscode.workspace.fs.readFile(sourceUri);
             let yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
             
-            // Apply Visual Aliases
-            yamlStr = AliasManager.applyDisplayAliases(yamlStr);
+            // Apply Visual Aliases (Async version)
+            yamlStr = await AliasManager.applyDisplayAliases(yamlStr);
             
             return new TextEncoder().encode(yamlStr);
         } catch (err: any) {
@@ -53,8 +53,8 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
         const sourceUri = this.getSourceUri(uri);
         let yamlStr = new TextDecoder().decode(content);
         
-        // Revert Aliases back to Codename
-        yamlStr = AliasManager.revertToInternal(yamlStr);
+        // Revert Aliases back to Codename (Async version)
+        yamlStr = await AliasManager.revertToInternal(yamlStr);
         
         try {
             const originalBinary = await vscode.workspace.fs.readFile(sourceUri);

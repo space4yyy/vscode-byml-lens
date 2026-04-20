@@ -1,10 +1,7 @@
-export interface AliasMap {
-    [codename: string]: string;
-}
+import * as vscode from 'vscode';
 
 export class AliasManager {
-    // Built-in common mappings for Splatoon 3 (based on your files)
-    private static readonly BUILTIN_MAP: AliasMap = {
+    private static readonly BUILTIN_MAP: Record<string, string> = {
         "Vss_AutoWalk00": "Mincemeat Metalworks",
         "Vss_BigSlope00": "Undertow Spillway",
         "Vss_Carousel": "Wahoo World",
@@ -38,29 +35,40 @@ export class AliasManager {
     };
 
     /**
-     * Converts Codenames in YAML to Display Names.
-     * Example: "Vss_AutoWalk00" -> "Vss_AutoWalk00 (Mincemeat Metalworks)"
+     * Loads user aliases from 'byml-aliases.json' in the workspace root.
      */
-    public static applyDisplayAliases(yaml: string): string {
+    private static async getMergedMap(): Promise<Record<string, string>> {
+        const map = { ...this.BUILTIN_MAP };
+        
+        const files = await vscode.workspace.findFiles('byml-aliases.json');
+        if (files.length > 0) {
+            try {
+                const content = await vscode.workspace.fs.readFile(files[0]);
+                const userMap = JSON.parse(new TextDecoder().decode(content));
+                Object.assign(map, userMap);
+            } catch (e) {
+                // Silent fail for bad JSON
+            }
+        }
+        return map;
+    }
+
+    public static async applyDisplayAliases(yaml: string): Promise<string> {
         let result = yaml;
-        for (const [code, name] of Object.entries(this.BUILTIN_MAP)) {
-            // Match the codename when it's a value (surrounded by spaces or quotes)
+        const map = await this.getMergedMap();
+        for (const [code, name] of Object.entries(map)) {
             const regex = new RegExp(`(['"]?)${code}(['"]?)`, 'g');
             result = result.replace(regex, `$1${code} [${name}]$2`);
         }
         return result;
     }
 
-    /**
-     * Reverts Display Names back to pure Codenames for binary saving.
-     * Example: "Vss_AutoWalk00 [Mincemeat Metalworks]" -> "Vss_AutoWalk00"
-     */
-    public static revertToInternal(yaml: string): string {
+    public static async revertToInternal(yaml: string): Promise<string> {
         let result = yaml;
-        for (const [code, name] of Object.entries(this.BUILTIN_MAP)) {
-            // Find "Codename [Alias]" and strip the alias part
-            // We use a robust regex that handles potential quotes
-            const regex = new RegExp(`${code}\\s*\\[${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`, 'g');
+        const map = await this.getMergedMap();
+        for (const [code, name] of Object.entries(map)) {
+            const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`${code}\\s*\\[${escapedName}\\]`, 'g');
             result = result.replace(regex, code);
         }
         return result;
