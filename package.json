@@ -1,0 +1,86 @@
+{
+  "name": "vscode-byml-inspector",
+  "displayName": "BYML Inspector",
+  "description": "Read, edit, and save Nintendo .byml, .bgyml, .pack, and .zs files directly in VS Code.",
+  "version": "0.1.0",
+  "publisher": "space4",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onFileSystem:sarc",
+    "onFileSystem:byml-edit",
+    "onCustomEditor:byml-inspector.redirector"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "byml-inspector.mountPack",
+        "title": "Mount .pack Archive",
+        "category": "Nintendo"
+      },
+      {
+        "command": "byml-inspector.openByml",
+        "title": "Inspect BYML as YAML",
+        "category": "Nintendo"
+      }
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "byml-inspector.mountPack",
+          "when": "resourceFilename =~ /\\.(pack|sarc)(\\.zs)?$/",
+          "group": "navigation"
+        },
+        {
+          "command": "byml-inspector.openByml",
+          "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
+          "group": "navigation"
+        }
+      ]
+    },
+    "customEditors": [
+      {
+        "viewType": "byml-inspector.redirector",
+        "displayName": "Nintendo BYML YAML Viewer",
+        "selector": [
+          {
+            "filenamePattern": "*.{byml,bgyml,byaml,byml.zs,bgyml.zs,byaml.zs}"
+          }
+        ],
+        "priority": "default"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "@pretendonetwork/nintendo-files": "^1.1.0",
+    "@themezernx/sarclib": "^1.0.2",
+    "zstdify": "^1.4.0",
+    "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "18.x",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "eslint": "^8.54.0",
+    "glob": "^10.3.10",
+    "mocha": "^10.2.0",
+    "typescript": "^5.3.2",
+    "@vscode/test-electron": "^2.3.8"
+  }
+}
