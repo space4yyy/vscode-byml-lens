@@ -37,27 +37,20 @@ exports.BymlYamlProvider = void 0;
 const vscode = __importStar(require("vscode"));
 const byml = __importStar(require("../core/byml.js"));
 const logger_js_1 = require("../core/logger.js");
+const alias_js_1 = require("../core/alias.js");
 class BymlYamlProvider {
     _onDidChangeFile = new vscode.EventEmitter();
     onDidChangeFile = this._onDidChangeFile.event;
-    /**
-     * Resolves the source URI.
-     * We now look at the query string to see if the original URI was preserved.
-     */
     getSourceUri(uri) {
         if (uri.query) {
             try {
                 return vscode.Uri.parse(uri.query);
             }
-            catch (e) {
-                logger_js_1.Logger.error("Failed to parse source URI from query", e);
-            }
+            catch (e) { }
         }
-        // Fallback: strip .yaml and assume file scheme
         let path = uri.path;
-        if (path.endsWith('.yaml')) {
+        if (path.endsWith('.yaml'))
             path = path.slice(0, -5);
-        }
         return vscode.Uri.file(path);
     }
     watch(_uri, _options) {
@@ -77,28 +70,31 @@ class BymlYamlProvider {
     createDirectory(_uri) { }
     async readFile(uri) {
         const sourceUri = this.getSourceUri(uri);
-        logger_js_1.Logger.log(`Reading BYML from source: ${sourceUri.toString()}`);
         try {
             const binaryData = await vscode.workspace.fs.readFile(sourceUri);
-            const yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
+            let yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
+            // Apply Visual Aliases
+            yamlStr = alias_js_1.AliasManager.applyDisplayAliases(yamlStr);
             return new TextEncoder().encode(yamlStr);
         }
         catch (err) {
-            logger_js_1.Logger.error(`Decryption/Parsing failed for ${sourceUri.toString()}`, err);
+            logger_js_1.Logger.error(`Read failed`, err);
             return new TextEncoder().encode(`# BYML Inspector Error\n# Source: ${sourceUri.toString()}\n# Error: ${err.message}`);
         }
     }
     async writeFile(uri, content, _options) {
         const sourceUri = this.getSourceUri(uri);
-        const yamlStr = new TextDecoder().decode(content);
+        let yamlStr = new TextDecoder().decode(content);
+        // Revert Aliases back to Codename
+        yamlStr = alias_js_1.AliasManager.revertToInternal(yamlStr);
         try {
             const originalBinary = await vscode.workspace.fs.readFile(sourceUri);
             const encoded = byml.yamlToByml(yamlStr, new Uint8Array(originalBinary));
             await vscode.workspace.fs.writeFile(sourceUri, encoded);
-            vscode.window.setStatusBarMessage('$(check) BYML Saved Successfully', 3000);
+            vscode.window.setStatusBarMessage('$(check) BYML Saved & Compressed', 3000);
         }
         catch (err) {
-            logger_js_1.Logger.error(`Write failed for ${sourceUri.toString()}`, err);
+            logger_js_1.Logger.error(`Write failed`, err);
             vscode.window.showErrorMessage(`BYML Save Error: ${err.message}`);
             throw err;
         }
