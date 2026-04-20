@@ -67,4 +67,4 @@ BYML Inspector is an Antigravity/VS Code extension specifically designed for hig
 2. Restart Antigravity.
 
 ---
-Produced by **space4** with 🤍
+Produced by **space4** with 🩵
