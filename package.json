@@ -27,13 +27,23 @@
         "command": "byml-inspector.openByml",
         "title": "Inspect BYML as YAML",
         "category": "Nintendo"
+      },
+      {
+        "command": "byml-inspector.unmountPack",
+        "title": "Unmount .pack Archive",
+        "category": "Nintendo"
       }
     ],
     "menus": {
       "explorer/context": [
         {
           "command": "byml-inspector.mountPack",
-          "when": "resourceFilename =~ /\\.(pack|sarc)(\\.zs)?$/",
+          "when": "resourceFilename =~ /\\.(pack|sarc)(\\.zs)?$/ && resourceScheme != sarc",
+          "group": "navigation"
+        },
+        {
+          "command": "byml-inspector.unmountPack",
+          "when": "resourceScheme == sarc",
           "group": "navigation"
         },
         {

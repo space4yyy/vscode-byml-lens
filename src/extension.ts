@@ -61,6 +61,14 @@ export function activate(context: vscode.ExtensionContext) {
             });
         }));
 
+        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {
+            Logger.log(`Command 'byml-inspector.unmountPack' triggered`, { uri: uri?.toString() });
+            const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
+            if (folder) {
+                vscode.workspace.updateWorkspaceFolders(folder.index, 1);
+            }
+        }));
+
         Logger.log("BYML Inspector (v2 - Redirect Mode) Activated.");
 
     } catch (err: any) {
