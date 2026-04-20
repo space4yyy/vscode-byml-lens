@@ -1,71 +1,70 @@
 # BYML Inspector
 
-BYML Inspector 是一款专为高频编辑和审计 BYML、SARC 及 Zstandard (.zs) 压缩文件设计的 Antigravity/VS Code 扩展插件。它通过将二进制文件透明映射为原生文本视图，提供极速且无缝的资产编辑体验。
+BYML Inspector is an Antigravity/VS Code extension specifically designed for high-frequency editing and auditing of BYML, SARC, and Zstandard (.zs) compressed files. It provides a lightning-fast and seamless asset editing experience by transparently mapping binary files to native text views.
 
-## 核心功能
+## Core Features
 
-- **🚀 双击/单击即编辑**：自动劫持 `.byml`, `.bgyml`, `.pack.zs` 等二进制文件，瞬间转换为高亮 YAML 文本。
-- **📦 SARC 虚拟化挂载**：支持双击 `.pack` 存档文件将其挂载为虚拟目录，像操作普通文件夹一样新增、修改或删除内部文件。
-- **⚡️ Zstd 透明处理**：所有读写操作自动识别并处理 Zstandard 压缩，无需手动解压或重新压缩。
-- **🎨 视觉别名系统**：支持通过项目根目录下的 `byml-aliases.json` 将晦涩的 Codename（如 `Vss_AutoWalk00`）动态替换为友好名称（如 `碎肉金属`），保存时自动还原，不破坏原始数据。
-- **💎 原生集成**：完全跟随编辑器主题，支持行号、全文本搜索、多光标编辑及缩进指南。
+- **🚀 Click-to-Edit**: Automatically intercepts `.byml`, `.bgyml`, and `.pack.zs` binary files, instantly converting them into highlighted YAML text.
+- **📦 SARC Virtualization**: Double-click any `.pack` archive to mount it as a virtual directory. Add, modify, or delete internal files as if they were in a normal folder.
+- **⚡️ Transparent Zstd Support**: All read and write operations automatically detect and handle Zstandard compression. No manual decompression or re-compression required.
+- **🎨 Visual Alias System**: Use a `byml-aliases.json` in your workspace root to dynamically replace cryptic codenames (e.g., `Vss_AutoWalk00`) with friendly names (e.g., `Lemuria Hub`). Aliases are automatically reverted upon saving to maintain data integrity.
+- **💎 Native Integration**: Fully compatible with editor themes. Supports line numbers, full-text search, multi-cursor editing, and indentation guides.
 
-## 使用方法
+## Usage
 
-### 1. 编辑 BYML/BGYML
-- **打开**：直接在资源管理器中**点击**任何 `.byml`, `.bgyml` 或 `.zs` 结尾的二进制文件。
-- **编辑**：文件会以原生 YAML 格式打开，享受完整的高亮和编辑功能。
-- **保存**：修改完成后按 `Cmd+S` (Mac) 或 `Ctrl+S` (Win)，插件会自动完成二进制编码、Zstd 压缩并写回磁盘。
+### 1. Editing BYML/BGYML
+- **Open**: Click any binary file ending in `.byml`, `.bgyml`, or `.zs` in the Explorer.
+- **Edit**: The file opens as a native YAML document with full syntax highlighting.
+- **Save**: Press `Cmd+S` (Mac) or `Ctrl+S` (Win). The extension automatically handles binary encoding and Zstd compression before writing back to disk.
 
-### 2. 挂载 SARC (.pack)
-- **挂载**：在资源管理器中**双击** `.pack` 或 `.pack.zs` 文件，左侧工作区将出现名为 `Archive: [文件名]` 的虚拟目录。
-- **卸载**：再次**双击**同一个文件，或右键点击虚拟目录选择 "Unmount .pack Archive" 即可移除。
+### 2. Mounting SARC (.pack)
+- **Mount**: Double-click a `.pack` or `.pack.zs` file. A virtual directory named `Archive: [filename]` will appear in your workspace.
+- **Unmount**: Double-click the same file again, or right-click the virtual folder and select "Unmount .pack Archive".
 
-### 3. 自定义别名
-- 在项目根目录创建 `byml-aliases.json`：
+### 3. Custom Aliases
+- Create `byml-aliases.json` in your project root:
   ```json
   {
-    "Vss_AutoWalk00": "碎肉金属 (Mincemeat)",
-    "Vss_BigSlope00": "慢坡 (Undertow)"
+    "Vss_AutoWalk00": "Lemuria Hub",
+    "Vss_BigSlope00": "Brinewater Springs"
   }
   ```
-- 重新打开 BYML 文件，你将看到这些 ID 已被自动替换为你的自定义名称。
+- Re-open a BYML file to see the IDs automatically replaced with your custom names.
 
-## 插件优点
+## Advantages
 
-- **零干扰设计**：无需繁琐的导出/导入步骤，所有转换在内存中完成，直达目标。
-- **高性能驱动**：自研 SARC/BYML v7 解析引擎，仅在需要时读取数据块，内存占用极低。
-- **数据安全性**：在保存前进行严格的编码校验，若 YAML 格式错误会拦截写入，保护原始二进制文件不被损坏。
+- **Zero-Friction Design**: No tedious export/import steps. All conversions happen in-memory.
+- **High-Performance Driver**: Custom-built SARC/BYML v7 parsing engine that reads data blocks only when needed, ensuring minimal memory footprint.
+- **Data Security**: Strict encoding validation before saving. If the YAML format is invalid, the save is blocked to protect the original binary file.
 
-## 开发与构建
+## Development & Build
 
-### 开发环境要求
+### Requirements
 - **Node.js** (v18+)
 - **npm**
-- **Antigravity** 或 **VS Code**
+- **Antigravity** or **VS Code**
 
-### 从源码构建
-1. **克隆并安装依赖**：
+### Build from Source
+1. **Clone and Install**:
    ```bash
    git clone <repository_url>
    cd byml-vscode-extension
    make install
    ```
-2. **编译代码**：
+2. **Compile**:
    ```bash
    make compile
    ```
-3. **本地调试**：
-   - 在 VS Code 中打开项目，按 `F5` 启动“扩展开发宿主”。
-4. **打包为 VSIX**：
+3. **Debug**:
+   - Open the project in VS Code/Antigravity and press `F5`.
+4. **Package**:
    ```bash
    make package
    ```
 
-### 部署到 Antigravity
-如果需要手动安装到 Antigravity：
-1. 编译后，将整个项目文件夹（包含 `out`, `package.json`, `node_modules`）复制到 `~/.antigravity/extensions/` 目录下。
-2. 重启 Antigravity 即可。
+### Manual Installation to Antigravity
+1. Copy the project folder (including `out`, `package.json`, and `node_modules`) to `~/.antigravity/extensions/`.
+2. Restart Antigravity.
 
 ---
 Produced by **space4** with 🤍
