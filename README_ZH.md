@@ -7,7 +7,7 @@ BYML Inspector 是一款专为高频编辑和审计 BYML、SARC 及 Zstandard (.
 - **🚀 点击即编辑**：自动劫持 `.byml`, `.bgyml`, `.pack.zs` 等二进制文件，瞬间转换为高亮 YAML 文本。
 - **📦 SARC 虚拟化挂载**：支持双击 `.pack` 存档文件将其挂载为虚拟目录，像操作普通文件夹一样新增、修改或删除内部文件。
 - **⚡️ Zstd 透明处理**：所有读写操作自动识别并处理 Zstandard 压缩，无需手动解压或重新压缩。
-- **🎨 视觉别名系统**：支持通过项目根目录下的 `byml-aliases.json` 将晦涩的 Codename（如 `Vss_AutoWalk00`）动态替换为友好名称（如 `龙宫转运站`），保存时自动还原，不破坏原始数据。
+- **🎨 视觉别名系统**：支持通过项目根目录下的 `byml-aliases.yml` 将晦涩的 Codename（如 `Vss_AutoWalk00`）动态替换为友好名称（如 `龙宫转运站`），保存时自动还原，不破坏原始数据。
 - **💎 原生集成**：完全跟随编辑器主题，支持行号、全文本搜索、多光标编辑及缩进指南。
 
 ## 使用方法
@@ -22,12 +22,10 @@ BYML Inspector 是一款专为高频编辑和审计 BYML、SARC 及 Zstandard (.
 - **卸载**：再次**双击**同一个文件，或右键点击虚拟目录选择 "Unmount .pack Archive" 即可移除。
 
 ### 3. 自定义别名
-- 在项目根目录创建 `byml-aliases.json`：
-  ```json
-  {
-    "Vss_AutoWalk00": "龙宫转运站",
-    "Vss_BigSlope00": "臭鱼干温泉"
-  }
+- 在项目根目录创建 `byml-aliases.yml`：
+  ```yaml
+  Vss_AutoWalk00: 龙宫转运站
+  Vss_BigSlope00: 臭鱼干温泉
   ```
 - 重新打开 BYML 文件，你将看到这些 ID 已被自动替换为你的自定义名称。
 

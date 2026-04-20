@@ -7,7 +7,7 @@ BYML Inspector is an Antigravity/VS Code extension specifically designed for hig
 - **🚀 Click-to-Edit**: Automatically intercepts `.byml`, `.bgyml`, and `.pack.zs` binary files, instantly converting them into highlighted YAML text.
 - **📦 SARC Virtualization**: Double-click any `.pack` archive to mount it as a virtual directory. Add, modify, or delete internal files as if they were in a normal folder.
 - **⚡️ Transparent Zstd Support**: All read and write operations automatically detect and handle Zstandard compression. No manual decompression or re-compression required.
-- **🎨 Visual Alias System**: Use a `byml-aliases.json` in your workspace root to dynamically replace cryptic codenames (e.g., `Vss_AutoWalk00`) with friendly names (e.g., `Lemuria Hub`). Aliases are automatically reverted upon saving to maintain data integrity.
+- **🎨 Visual Alias System**: Use a `byml-aliases.yml` in your workspace root to dynamically replace cryptic codenames (e.g., `Vss_AutoWalk00`) with friendly names (e.g., `Lemuria Hub`). Aliases are automatically reverted upon saving to maintain data integrity.
 - **💎 Native Integration**: Fully compatible with editor themes. Supports line numbers, full-text search, multi-cursor editing, and indentation guides.
 
 ## Usage
@@ -22,12 +22,10 @@ BYML Inspector is an Antigravity/VS Code extension specifically designed for hig
 - **Unmount**: Double-click the same file again, or right-click the virtual folder and select "Unmount .pack Archive".
 
 ### 3. Custom Aliases
-- Create `byml-aliases.json` in your project root:
-  ```json
-  {
-    "Vss_AutoWalk00": "Lemuria Hub",
-    "Vss_BigSlope00": "Brinewater Springs"
-  }
+- Create `byml-aliases.yml` in your project root:
+  ```yaml
+  Vss_AutoWalk00: Lemuria Hub
+  Vss_BigSlope00: Brinewater Springs
   ```
 - Re-open a BYML file to see the IDs automatically replaced with your custom names.
 

@@ -35,27 +35,29 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AliasManager = void 0;
 const vscode = __importStar(require("vscode"));
+const yaml = __importStar(require("js-yaml"));
 class AliasManager {
     /**
-     * Loads user aliases from 'byml-aliases.json' in the workspace root.
-     * All built-in mappings have been removed per user request.
+     * Loads user aliases from 'byml-aliases.yml' or 'byml-aliases.yaml' in the workspace root.
      */
     static async getMergedMap() {
-        const files = await vscode.workspace.findFiles('byml-aliases.json');
+        // Look for .yml first, then .yaml
+        const files = await vscode.workspace.findFiles('byml-aliases.{yml,yaml}');
         if (files.length > 0) {
             try {
                 const content = await vscode.workspace.fs.readFile(files[0]);
-                const userMap = JSON.parse(new TextDecoder().decode(content));
-                return userMap;
+                const text = new TextDecoder().decode(content);
+                const userMap = yaml.load(text);
+                return userMap || {};
             }
             catch (e) {
-                // Silent fail for bad JSON
+                // Silent fail for bad YAML
             }
         }
         return {};
     }
-    static async applyDisplayAliases(yaml) {
-        let result = yaml;
+    static async applyDisplayAliases(yamlStr) {
+        let result = yamlStr;
         const map = await this.getMergedMap();
         for (const [code, name] of Object.entries(map)) {
             // Match the codename when it's a value (surrounded by spaces or quotes)
@@ -64,8 +66,8 @@ class AliasManager {
         }
         return result;
     }
-    static async revertToInternal(yaml) {
-        let result = yaml;
+    static async revertToInternal(yamlStr) {
+        let result = yamlStr;
         const map = await this.getMergedMap();
         for (const [code, name] of Object.entries(map)) {
             // Find "Codename [Alias]" and strip the alias part
