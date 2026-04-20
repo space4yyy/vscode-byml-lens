@@ -13,34 +13,25 @@
   "activationEvents": [
     "onFileSystem:sarc",
     "onFileSystem:byml-edit",
-    "onCustomEditor:byml-inspector.redirector"
+    "onCustomEditor:byml-inspector.redirector",
+    "onCustomEditor:byml-inspector.sarc-redirector"
   ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "byml-inspector.mountPack",
-        "title": "Mount .pack Archive",
+        "command": "byml-inspector.unmountPack",
+        "title": "Unmount .pack Archive",
         "category": "Nintendo"
       },
       {
         "command": "byml-inspector.openByml",
         "title": "Inspect BYML as YAML",
         "category": "Nintendo"
-      },
-      {
-        "command": "byml-inspector.unmountPack",
-        "title": "Unmount .pack Archive",
-        "category": "Nintendo"
       }
     ],
     "menus": {
       "explorer/context": [
-        {
-          "command": "byml-inspector.mountPack",
-          "when": "resourceFilename =~ /\\.(pack|sarc)(\\.zs)?$/ && resourceScheme != sarc",
-          "group": "navigation"
-        },
         {
           "command": "byml-inspector.unmountPack",
           "when": "resourceScheme == sarc",
@@ -60,6 +51,16 @@
         "selector": [
           {
             "filenamePattern": "*.{byml,bgyml,byaml,byml.zs,bgyml.zs,byaml.zs}"
+          }
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "byml-inspector.sarc-redirector",
+        "displayName": "Nintendo SARC Auto-Mounter",
+        "selector": [
+          {
+            "filenamePattern": "*.{pack,sarc,pack.zs,sarc.zs}"
           }
         ],
         "priority": "default"
