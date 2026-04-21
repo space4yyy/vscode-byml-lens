@@ -4648,7 +4648,8 @@ var SarcArchive = class _SarcArchive {
     const view = new DataView(out.buffer);
     out.set([83, 65, 82, 67], 0);
     view.setUint16(4, headerSize, true);
-    view.setUint16(6, this.bom, true);
+    const finalBom = this.le ? 65279 : 65534;
+    view.setUint16(6, finalBom, true);
     view.setUint32(8, totalSize, this.le);
     view.setUint32(12, dataStart, this.le);
     view.setUint32(16, 256, this.le);

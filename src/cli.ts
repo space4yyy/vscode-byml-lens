@@ -87,7 +87,7 @@ program.command('pack')
     .argument('<inDir>', 'Input directory')
     .argument('<output>', 'Output SARC file')
     .option('-z, --zstd', 'Compress the output with Zstandard', false)
-    .option('-be, --big-endian', 'Use Big Endian byte order', false)
+    .option('-B, --big-endian', 'Use Big Endian byte order', false)
     .action(async (inDir, output, options) => {
         try {
             if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
