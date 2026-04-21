@@ -20,7 +20,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
@@ -29,7 +29,7 @@ jobs:
         run: npm run compile
 
       - name: Package Extension
-        run: npx vsce package -o byml-lens.vsix
+        run: npx @vscode/vsce package -o byml-lens.vsix
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

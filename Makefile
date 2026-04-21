@@ -18,7 +18,7 @@ test:
 	npm run test
 
 package:
-	npx vsce package
+	npx @vscode/vsce package
 
 clean:
 	rm -rf out dist *.vsix
