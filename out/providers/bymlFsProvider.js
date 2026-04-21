@@ -38,26 +38,57 @@ const vscode = __importStar(require("vscode"));
 const byml = __importStar(require("../core/byml.js"));
 const logger_js_1 = require("../core/logger.js");
 const alias_js_1 = require("../core/alias.js");
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const os = __importStar(require("os"));
 class BymlYamlProvider {
     _onDidChangeFile = new vscode.EventEmitter();
     onDidChangeFile = this._onDidChangeFile.event;
+    // Cache to store the location of the initial "Original" binary files on disk
+    shadowCache = new Map();
+    tempDir;
+    constructor() {
+        this.tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'byml-shadow-'));
+        logger_js_1.Logger.log(`Shadow backup directory initialized at: ${this.tempDir}`);
+    }
     getSourceUri(uri) {
-        if (uri.query) {
-            try {
-                return vscode.Uri.parse(uri.query);
-            }
-            catch (e) { }
+        let isOriginal = false;
+        let pathStr = uri.path;
+        if (pathStr.endsWith('.original.yaml')) {
+            isOriginal = true;
+            pathStr = pathStr.slice(0, -14);
         }
-        let path = uri.path;
-        if (path.endsWith('.yaml'))
-            path = path.slice(0, -5);
-        return vscode.Uri.file(path);
+        else if (pathStr.endsWith('.yaml')) {
+            pathStr = pathStr.slice(0, -5);
+        }
+        if (uri.query) {
+            return { uri: vscode.Uri.parse(uri.query), isOriginal };
+        }
+        return { uri: vscode.Uri.file(pathStr), isOriginal };
+    }
+    /**
+     * Creates a one-time shadow backup of the file if it doesn't exist.
+     */
+    async ensureShadowBackup(sourceUri) {
+        const key = sourceUri.toString();
+        if (!this.shadowCache.has(key)) {
+            try {
+                const data = await vscode.workspace.fs.readFile(sourceUri);
+                const shadowPath = path.join(this.tempDir, Buffer.from(key).toString('hex').slice(-16) + '.bin');
+                fs.writeFileSync(shadowPath, data);
+                this.shadowCache.set(key, shadowPath);
+                logger_js_1.Logger.log(`Created shadow backup for: ${sourceUri.fsPath}`);
+            }
+            catch (e) {
+                logger_js_1.Logger.error(`Failed to create shadow backup`, e);
+            }
+        }
     }
     watch(_uri, _options) {
         return new vscode.Disposable(() => { });
     }
     async stat(uri) {
-        const sourceUri = this.getSourceUri(uri);
+        const { uri: sourceUri } = this.getSourceUri(uri);
         try {
             const stats = await vscode.workspace.fs.stat(sourceUri);
             return { ...stats, type: vscode.FileType.File };
@@ -69,38 +100,57 @@ class BymlYamlProvider {
     readDirectory(_uri) { return []; }
     createDirectory(_uri) { }
     async readFile(uri) {
-        const sourceUri = this.getSourceUri(uri);
+        const { uri: sourceUri, isOriginal } = this.getSourceUri(uri);
         try {
-            const binaryData = await vscode.workspace.fs.readFile(sourceUri);
+            let binaryData;
+            if (isOriginal) {
+                // Read from Shadow Backup on disk (low memory usage)
+                const shadowPath = this.shadowCache.get(sourceUri.toString());
+                if (shadowPath && fs.existsSync(shadowPath)) {
+                    binaryData = fs.readFileSync(shadowPath);
+                    logger_js_1.Logger.log(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
+                }
+                else {
+                    // Fallback if no backup yet
+                    binaryData = await vscode.workspace.fs.readFile(sourceUri);
+                }
+            }
+            else {
+                // Read from live disk
+                binaryData = await vscode.workspace.fs.readFile(sourceUri);
+                // Trigger shadow backup for first-time live read
+                await this.ensureShadowBackup(sourceUri);
+            }
             let yamlStr = byml.bymlToYaml(new Uint8Array(binaryData));
-            // Apply Visual Aliases (Async version)
             yamlStr = await alias_js_1.AliasManager.applyDisplayAliases(yamlStr);
             return new TextEncoder().encode(yamlStr);
         }
         catch (err) {
-            logger_js_1.Logger.error(`Read failed`, err);
-            return new TextEncoder().encode(`# BYML Inspector Error\n# Source: ${sourceUri.toString()}\n# Error: ${err.message}`);
+            return new TextEncoder().encode(`# Error: ${err.message}`);
         }
     }
     async writeFile(uri, content, _options) {
-        const sourceUri = this.getSourceUri(uri);
+        const { uri: sourceUri } = this.getSourceUri(uri);
         let yamlStr = new TextDecoder().decode(content);
-        // Revert Aliases back to Codename (Async version)
         yamlStr = await alias_js_1.AliasManager.revertToInternal(yamlStr);
         try {
             const originalBinary = await vscode.workspace.fs.readFile(sourceUri);
             const encoded = byml.yamlToByml(yamlStr, new Uint8Array(originalBinary));
             await vscode.workspace.fs.writeFile(sourceUri, encoded);
-            vscode.window.setStatusBarMessage('$(check) BYML Saved & Compressed', 3000);
+            vscode.window.setStatusBarMessage('$(check) BYML Saved', 2000);
         }
         catch (err) {
-            logger_js_1.Logger.error(`Write failed`, err);
             vscode.window.showErrorMessage(`BYML Save Error: ${err.message}`);
             throw err;
         }
     }
-    delete(_uri, _options) { }
-    rename(_oldUri, _newUri, _options) { }
+    delete(_uri) { }
+    rename(_oldUri, _newUri) { }
+    dispose() {
+        if (fs.existsSync(this.tempDir)) {
+            fs.rmSync(this.tempDir, { recursive: true, force: true });
+        }
+    }
 }
 exports.BymlYamlProvider = BymlYamlProvider;
 //# sourceMappingURL=bymlFsProvider.js.map
