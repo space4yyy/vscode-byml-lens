@@ -28,6 +28,12 @@
         "command": "byml-inspector.openByml",
         "title": "Inspect BYML as YAML",
         "category": "BYML"
+      },
+      {
+        "command": "byml-inspector.compareWithOriginal",
+        "title": "Compare with Original Binary",
+        "category": "BYML",
+        "icon": "$(diff)"
       }
     ],
     "menus": {
@@ -39,6 +45,11 @@
         },
         {
           "command": "byml-inspector.openByml",
+          "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
+          "group": "navigation"
+        },
+        {
+          "command": "byml-inspector.compareWithOriginal",
           "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
           "group": "navigation"
         }
