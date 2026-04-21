@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { PackFileSystemProvider } from './providers/packFsProvider.js';
 import { BymlYamlProvider } from './providers/bymlFsProvider.js';
+import { BymlSearchProvider } from './providers/searchProvider.js';
 import { Logger } from './core/logger.js';
 
 /**
@@ -43,11 +45,7 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
         };
 
         if (!checkAndToggle()) {
-            webviewPanel.webview.html = `
-                <html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;">
-                    <div>Double-click to Mount/Unmount Archive</div>
-                </body></html>`;
-            
+            webviewPanel.webview.html = `<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;"><div>Double-click to Mount/Unmount Archive</div></body></html>`;
             const disposable = vscode.window.tabGroups.onDidChangeTabs(_ => {
                 if (checkAndToggle()) disposable.dispose();
             });
@@ -66,18 +64,18 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
 
     private toggleSarc(uri: vscode.Uri) {
         const sarcUri = vscode.Uri.parse(`sarc://${uri.fsPath}`);
-        const existingFolder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === sarcUri.toString());
+        const folders = vscode.workspace.workspaceFolders || [];
+        const existingFolder = folders.find(f => f.uri.toString() === sarcUri.toString());
 
         if (existingFolder) {
-            // Instant unmount without prompt
             vscode.workspace.updateWorkspaceFolders(existingFolder.index, 1);
-            vscode.window.setStatusBarMessage('$(trash) Archive Unmounted', 2000);
+            vscode.window.setStatusBarMessage('$(trash) Unmounted', 2000);
         } else {
-            vscode.workspace.updateWorkspaceFolders(vscode.workspace.workspaceFolders?.length || 0, 0, {
+            vscode.workspace.updateWorkspaceFolders(folders.length, 0, {
                 uri: sarcUri,
-                name: `Archive: ${vscode.workspace.asRelativePath(uri)}`
+                name: `[Pack] ${path.basename(uri.fsPath)}`
             });
-            vscode.window.setStatusBarMessage('$(folder-opened) Archive Mounted', 2000);
+            vscode.window.setStatusBarMessage('$(folder-opened) Mounted', 2000);
         }
     }
 
@@ -92,25 +90,28 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
 export function activate(context: vscode.ExtensionContext) {
     Logger.init();
     try {
+        // 1. Core Providers
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', new PackFileSystemProvider(), { isCaseSensitive: true }));
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', new BymlYamlProvider(), { isCaseSensitive: true }));
         
+        // 2. SEARCH ENGINE INJECTION (Bypassing types for Antigravity compatibility)
+        const searchProvider = new BymlSearchProvider();
+        if ((vscode.workspace as any).registerTextSearchProvider) {
+            context.subscriptions.push((vscode.workspace as any).registerTextSearchProvider('sarc', searchProvider));
+            Logger.log("Global Search injected for 'sarc' scheme.");
+        }
+
+        // 3. Custom Editor Redirectors
         context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.redirector', new BymlRedirectProvider()));
         context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.sarc-redirector', new SarcRedirectProvider()));
         
-        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.openByml', async (uri: vscode.Uri) => {
-            const targetUri = uri || vscode.window.activeTextEditor?.document.uri;
-            if (!targetUri) return;
-            const virtualUri = vscode.Uri.from({ scheme: 'byml-edit', path: targetUri.path + '.yaml', query: targetUri.toString() });
-            await vscode.window.showTextDocument(virtualUri, { preview: false });
-        }));
-        
+        // 4. Commands
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {
             const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
             if (folder) vscode.workspace.updateWorkspaceFolders(folder.index, 1);
         }));
 
-        Logger.log("BYML Inspector (v7 - Simplistic Mode) Activated.");
+        Logger.log("BYML Inspector Activated with Global Search support.");
     } catch (err: any) {
         Logger.error("Activation Failed", err);
     }

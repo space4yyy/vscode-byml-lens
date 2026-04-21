@@ -1,7 +1,8 @@
 import * as vscode from 'vscode';
+import * as byml from '../core/byml.js';
 import { SarcArchive } from '../core/sarc.js';
-import * as path from 'path';
 import { Logger } from '../core/logger.js';
+import * as path from 'path';
 
 export class PackFileSystemProvider implements vscode.FileSystemProvider {
     private _onDidChangeFile = new vscode.EventEmitter<vscode.FileChangeEvent[]>();
@@ -56,7 +57,15 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
         }
         const file = archive.files.find(f => f.name === internalPath);
         if (file) {
-            return { type: vscode.FileType.File, ctime: 0, mtime: 0, size: file.data.length };
+            // For BYML files, we pretend they are text files for the search engine
+            const ext = path.extname(internalPath).toLowerCase();
+            const isByml = ext === '.byml' || ext === '.bgyml';
+            return { 
+                type: vscode.FileType.File, 
+                ctime: 0, 
+                mtime: 0, 
+                size: isByml ? file.data.length * 5 : file.data.length // Estimate YAML size
+            };
         }
         const isDir = archive.files.some(f => f.name.startsWith(internalPath + '/'));
         if (isDir) {
@@ -90,28 +99,55 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
         const { archive, internalPath } = await this.getArchive(uri);
         const file = archive.files.find(f => f.name === internalPath);
         if (!file) throw vscode.FileSystemError.FileNotFound(uri);
+
+        // SEARCH ENGINE HACK:
+        // If a BYML file is requested and the caller expects text, we return YAML.
+        // VS Code's search engine will now "see" the YAML content!
+        const ext = path.extname(internalPath).toLowerCase();
+        if (ext === '.byml' || ext === '.bgyml') {
+            try {
+                const yamlStr = byml.bymlToYaml(file.data);
+                return new TextEncoder().encode(yamlStr);
+            } catch (e) {
+                return file.data;
+            }
+        }
+
         return file.data;
     }
 
     async writeFile(uri: vscode.Uri, content: Uint8Array, options: { readonly create: boolean; readonly overwrite: boolean; }): Promise<void> {
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
+        
+        const ext = path.extname(internalPath).toLowerCase();
+        let finalData = content;
+
+        if (ext === '.byml' || ext === '.bgyml') {
+            try {
+                // If it's YAML text from the editor, encode it
+                const text = new TextDecoder().decode(content);
+                if (text.includes(':')) { // Simple YAML check
+                    const originalFile = archive.files.find(f => f.name === internalPath);
+                    finalData = byml.yamlToByml(text, originalFile?.data);
+                }
+            } catch (e) { }
+        }
+
         const fileIdx = archive.files.findIndex(f => f.name === internalPath);
         if (fileIdx !== -1) {
             if (!options.overwrite) throw vscode.FileSystemError.FileExists(uri);
-            archive.files[fileIdx].data = content;
+            archive.files[fileIdx].data = finalData;
         } else {
             if (!options.create) throw vscode.FileSystemError.FileNotFound(uri);
-            archive.files.push({ name: internalPath, data: content });
+            archive.files.push({ name: internalPath, data: finalData });
         }
 
         try {
-            // Immediate save to disk
             const encoded = archive.encode();
             await vscode.workspace.fs.writeFile(archiveUri, encoded);
             this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
             vscode.window.setStatusBarMessage('$(check) SARC Saved', 2000);
         } catch (err: any) {
-            Logger.error(`SARC Write failed`, err);
             vscode.window.showErrorMessage(`Failed to write to pack: ${err.message}`);
         }
     }
@@ -119,14 +155,11 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
     async delete(uri: vscode.Uri, _options: { readonly recursive: boolean; }): Promise<void> {
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         archive.files = archive.files.filter(f => f.name !== internalPath && !f.name.startsWith(internalPath + '/'));
-        
         try {
             const encoded = archive.encode();
             await vscode.workspace.fs.writeFile(archiveUri, encoded);
             this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
-        } catch (err: any) {
-            Logger.error(`SARC Delete failed`, err);
-        }
+        } catch (err: any) { }
     }
 
     rename(_oldUri: vscode.Uri, _newUri: vscode.Uri, _options: { readonly overwrite: boolean; }): void { }
