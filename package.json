@@ -2,7 +2,7 @@
   "name": "vscode-byml-inspector",
   "displayName": "BYML Lens",
   "description": "High-performance editor for .byml, .bgyml, .pack and .zs files. Features native YAML views and SARC mounting.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "space4",
   "license": "MIT",
   "engines": {
@@ -29,7 +29,7 @@
     "onCustomEditor:byml-inspector.redirector",
     "onCustomEditor:byml-inspector.sarc-redirector"
   ],
-  "main": "./out/extension.js",
+  "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
@@ -82,9 +82,10 @@
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run bundle",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "bundle": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
@@ -103,6 +104,7 @@
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "@vscode/test-electron": "^2.3.8",
+    "esbuild": "^0.28.0",
     "eslint": "^8.54.0",
     "glob": "^10.3.10",
     "mocha": "^10.2.0",

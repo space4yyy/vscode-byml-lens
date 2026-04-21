@@ -10,6 +10,9 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 # Prevent duplicate runs for the same commit/ref
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -18,8 +21,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,11 +33,11 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Compile
-        run: npm run compile
+      - name: Bundle
+        run: npm run bundle
 
       - name: Package Extension
-        run: npx @vscode/vsce package -o byml-lens.vsix
+        run: npx @vscode/vsce package -o byml-lens.vsix --no-dependencies
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4

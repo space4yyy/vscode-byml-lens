@@ -14,9 +14,7 @@ debug-zstd.js
 debug-encoded.js
 test-core.js
 package-lock.json
-node_modules/@types
-node_modules/**/*.ts
-node_modules/**/*.md
-node_modules/**/*.map
-out/test
+node_modules
+out
 src/test
+esbuild.js
