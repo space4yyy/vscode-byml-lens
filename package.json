@@ -25,11 +25,6 @@
         "category": "BYML"
       },
       {
-        "command": "byml-inspector.openByml",
-        "title": "Inspect BYML as YAML",
-        "category": "BYML"
-      },
-      {
         "command": "byml-inspector.compareWithOriginal",
         "title": "Compare with Original Binary",
         "category": "BYML",
@@ -41,11 +36,6 @@
         {
           "command": "byml-inspector.unmountPack",
           "when": "resourceScheme == sarc",
-          "group": "navigation"
-        },
-        {
-          "command": "byml-inspector.openByml",
-          "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
           "group": "navigation"
         },
         {
