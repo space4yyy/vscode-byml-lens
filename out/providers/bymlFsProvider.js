@@ -49,7 +49,7 @@ class BymlYamlProvider {
     tempDir;
     constructor() {
         this.tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'byml-shadow-'));
-        logger_js_1.Logger.log(`Shadow backup directory initialized at: ${this.tempDir}`);
+        logger_js_1.Logger.info(`Shadow backup directory initialized at: ${this.tempDir}`);
     }
     getSourceUri(uri) {
         let isOriginal = false;
@@ -77,7 +77,7 @@ class BymlYamlProvider {
                 const shadowPath = path.join(this.tempDir, Buffer.from(key).toString('hex').slice(-16) + '.bin');
                 fs.writeFileSync(shadowPath, data);
                 this.shadowCache.set(key, shadowPath);
-                logger_js_1.Logger.log(`Created shadow backup for: ${sourceUri.fsPath}`);
+                logger_js_1.Logger.info(`Created shadow backup for: ${sourceUri.fsPath}`);
             }
             catch (e) {
                 logger_js_1.Logger.error(`Failed to create shadow backup`, e);
@@ -108,7 +108,7 @@ class BymlYamlProvider {
                 const shadowPath = this.shadowCache.get(sourceUri.toString());
                 if (shadowPath && fs.existsSync(shadowPath)) {
                     binaryData = fs.readFileSync(shadowPath);
-                    logger_js_1.Logger.log(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
+                    logger_js_1.Logger.info(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
                 }
                 else {
                     // Fallback if no backup yet

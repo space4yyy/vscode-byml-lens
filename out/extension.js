@@ -143,7 +143,7 @@ function activate(context) {
             if (folder)
                 vscode.workspace.updateWorkspaceFolders(folder.index, 1);
         }));
-        logger_js_1.Logger.log("BYML Lens Activated.");
+        logger_js_1.Logger.info("BYML Lens Activated.");
     }
     catch (err) {
         logger_js_1.Logger.error("Activation Failed", err);

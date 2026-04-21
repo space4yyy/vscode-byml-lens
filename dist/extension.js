@@ -4524,15 +4524,20 @@ var Logger = class {
   static channel;
   static init() {
     this.channel = vscode.window.createOutputChannel("BYML Lens");
-    this.log("Logger initialized. Ready to debug.");
+    this.info("BYML Lens Logger Initialized.");
   }
-  static log(message, data) {
-    const timestamp2 = (/* @__PURE__ */ new Date()).toLocaleTimeString();
-    let logMsg = `[${timestamp2}] ${message}`;
-    if (data) {
-      logMsg += ` | Data: ${JSON.stringify(data)}`;
-    }
-    this.channel.appendLine(logMsg);
+  static get currentLevel() {
+    const config = vscode.workspace.getConfiguration("byml-lens");
+    return config.get("debug", false) ? 0 /* DEBUG */ : 1 /* INFO */;
+  }
+  static debug(message, data) {
+    if (this.currentLevel <= 0 /* DEBUG */) this.write("DEBUG", message, data);
+  }
+  static info(message, data) {
+    if (this.currentLevel <= 1 /* INFO */) this.write("INFO", message, data);
+  }
+  static warn(message, data) {
+    if (this.currentLevel <= 2 /* WARN */) this.write("WARN", message, data);
   }
   static error(message, error) {
     const timestamp2 = (/* @__PURE__ */ new Date()).toLocaleTimeString();
@@ -4541,6 +4546,14 @@ var Logger = class {
       this.channel.appendLine(`   Stack: ${error.stack || error}`);
     }
     this.channel.show(true);
+  }
+  static write(label, message, data) {
+    const timestamp2 = (/* @__PURE__ */ new Date()).toLocaleTimeString();
+    let logMsg = `[${timestamp2}] [${label}] ${message}`;
+    if (data) {
+      logMsg += ` | Data: ${JSON.stringify(data)}`;
+    }
+    this.channel.appendLine(logMsg);
   }
   static show() {
     this.channel.show(true);
@@ -4598,7 +4611,7 @@ var SarcArchive = class _SarcArchive {
     return h;
   }
   encode() {
-    Logger.log(`Encoding SARC with ${this.files.length} files...`);
+    Logger.info(`Encoding SARC with ${this.files.length} files...`);
     const sortedFiles = [...this.files].sort((a, b) => _SarcArchive.hash(a.name) - _SarcArchive.hash(b.name));
     let stringTableSize = 0;
     const nameOffsets = sortedFiles.map((f) => {
@@ -4650,7 +4663,7 @@ var SarcArchive = class _SarcArchive {
     for (let i = 0; i < sortedFiles.length; i++) {
       out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
     }
-    Logger.log(`SARC encoded successfully. Total size: ${out.length}`);
+    Logger.info(`SARC encoded successfully. Total size: ${out.length}`);
     if (this.isCompressed) {
       return compressData(out);
     }
@@ -7761,7 +7774,7 @@ var BymlYamlProvider = class {
   tempDir;
   constructor() {
     this.tempDir = fs.mkdtempSync(path2.join(os.tmpdir(), "byml-shadow-"));
-    Logger.log(`Shadow backup directory initialized at: ${this.tempDir}`);
+    Logger.info(`Shadow backup directory initialized at: ${this.tempDir}`);
   }
   getSourceUri(uri) {
     let isOriginal = false;
@@ -7788,7 +7801,7 @@ var BymlYamlProvider = class {
         const shadowPath = path2.join(this.tempDir, Buffer.from(key).toString("hex").slice(-16) + ".bin");
         fs.writeFileSync(shadowPath, data);
         this.shadowCache.set(key, shadowPath);
-        Logger.log(`Created shadow backup for: ${sourceUri.fsPath}`);
+        Logger.info(`Created shadow backup for: ${sourceUri.fsPath}`);
       } catch (e) {
         Logger.error(`Failed to create shadow backup`, e);
       }
@@ -7820,7 +7833,7 @@ var BymlYamlProvider = class {
         const shadowPath = this.shadowCache.get(sourceUri.toString());
         if (shadowPath && fs.existsSync(shadowPath)) {
           binaryData = fs.readFileSync(shadowPath);
-          Logger.log(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
+          Logger.info(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
         } else {
           binaryData = await vscode4.workspace.fs.readFile(sourceUri);
         }
@@ -7981,7 +7994,7 @@ function activate(context) {
       const folder = vscode5.workspace.workspaceFolders?.find((f) => f.uri.toString() === uri.toString());
       if (folder) vscode5.workspace.updateWorkspaceFolders(folder.index, 1);
     }));
-    Logger.log("BYML Lens Activated.");
+    Logger.info("BYML Lens Activated.");
   } catch (err) {
     Logger.error("Activation Failed", err);
   }

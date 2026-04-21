@@ -61,7 +61,7 @@ export class SarcArchive {
     }
 
     public encode(): Uint8Array {
-        Logger.log(`Encoding SARC with ${this.files.length} files...`);
+        Logger.info(`Encoding SARC with ${this.files.length} files...`);
         
         // 1. Prepare String Table
         const sortedFiles = [...this.files].sort((a, b) => SarcArchive.hash(a.name) - SarcArchive.hash(b.name));
@@ -132,7 +132,7 @@ export class SarcArchive {
             out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
         }
 
-        Logger.log(`SARC encoded successfully. Total size: ${out.length}`);
+        Logger.info(`SARC encoded successfully. Total size: ${out.length}`);
         
         if (this.isCompressed) {
             return zstd.compressData(out);

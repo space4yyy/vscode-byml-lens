@@ -33,21 +33,36 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Logger = void 0;
+exports.Logger = exports.LogLevel = void 0;
 const vscode = __importStar(require("vscode"));
+var LogLevel;
+(function (LogLevel) {
+    LogLevel[LogLevel["DEBUG"] = 0] = "DEBUG";
+    LogLevel[LogLevel["INFO"] = 1] = "INFO";
+    LogLevel[LogLevel["WARN"] = 2] = "WARN";
+    LogLevel[LogLevel["ERROR"] = 3] = "ERROR";
+})(LogLevel || (exports.LogLevel = LogLevel = {}));
 class Logger {
     static channel;
     static init() {
         this.channel = vscode.window.createOutputChannel("BYML Lens");
-        this.log("Logger initialized. Ready to debug.");
+        this.info("BYML Lens Logger Initialized.");
     }
-    static log(message, data) {
-        const timestamp = new Date().toLocaleTimeString();
-        let logMsg = `[${timestamp}] ${message}`;
-        if (data) {
-            logMsg += ` | Data: ${JSON.stringify(data)}`;
-        }
-        this.channel.appendLine(logMsg);
+    static get currentLevel() {
+        const config = vscode.workspace.getConfiguration('byml-lens');
+        return config.get('debug', false) ? LogLevel.DEBUG : LogLevel.INFO;
+    }
+    static debug(message, data) {
+        if (this.currentLevel <= LogLevel.DEBUG)
+            this.write("DEBUG", message, data);
+    }
+    static info(message, data) {
+        if (this.currentLevel <= LogLevel.INFO)
+            this.write("INFO", message, data);
+    }
+    static warn(message, data) {
+        if (this.currentLevel <= LogLevel.WARN)
+            this.write("WARN", message, data);
     }
     static error(message, error) {
         const timestamp = new Date().toLocaleTimeString();
@@ -55,7 +70,16 @@ class Logger {
         if (error) {
             this.channel.appendLine(`   Stack: ${error.stack || error}`);
         }
-        this.channel.show(true); // Pop up on error
+        // Force show output on error to help users realize something went wrong
+        this.channel.show(true);
+    }
+    static write(label, message, data) {
+        const timestamp = new Date().toLocaleTimeString();
+        let logMsg = `[${timestamp}] [${label}] ${message}`;
+        if (data) {
+            logMsg += ` | Data: ${JSON.stringify(data)}`;
+        }
+        this.channel.appendLine(logMsg);
     }
     static show() {
         this.channel.show(true);

@@ -16,7 +16,7 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
 
     constructor() {
         this.tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'byml-shadow-'));
-        Logger.log(`Shadow backup directory initialized at: ${this.tempDir}`);
+        Logger.info(`Shadow backup directory initialized at: ${this.tempDir}`);
     }
 
     private getSourceUri(uri: vscode.Uri): { uri: vscode.Uri, isOriginal: boolean } {
@@ -47,7 +47,7 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
                 const shadowPath = path.join(this.tempDir, Buffer.from(key).toString('hex').slice(-16) + '.bin');
                 fs.writeFileSync(shadowPath, data);
                 this.shadowCache.set(key, shadowPath);
-                Logger.log(`Created shadow backup for: ${sourceUri.fsPath}`);
+                Logger.info(`Created shadow backup for: ${sourceUri.fsPath}`);
             } catch (e) {
                 Logger.error(`Failed to create shadow backup`, e);
             }
@@ -82,7 +82,7 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
                 const shadowPath = this.shadowCache.get(sourceUri.toString());
                 if (shadowPath && fs.existsSync(shadowPath)) {
                     binaryData = fs.readFileSync(shadowPath);
-                    Logger.log(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
+                    Logger.info(`Reading from shadow backup for Diff: ${sourceUri.fsPath}`);
                 } else {
                     // Fallback if no backup yet
                     binaryData = await vscode.workspace.fs.readFile(sourceUri);
