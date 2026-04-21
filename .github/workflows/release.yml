@@ -34,6 +34,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.get_version.outputs.VERSION }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -41,22 +43,26 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20 # Switching back to 20 for internal actions compatibility
+          node-version: 20
 
       - name: Install dependencies
         run: npm install
+
+      - name: Get Version
+        id: get_version
+        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
 
       - name: Bundle
         run: npm run bundle
 
       - name: Package Extension
-        run: npx @vscode/vsce package -o byml-lens.vsix --no-dependencies
+        run: npx @vscode/vsce package -o byml-lens-${{ steps.get_version.outputs.VERSION }}.vsix --no-dependencies
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: byml-lens-vsix
-          path: byml-lens.vsix
+          path: byml-lens-${{ steps.get_version.outputs.VERSION }}.vsix
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -73,11 +79,11 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: byml-lens.vsix
+          files: byml-lens-${{ needs.build.outputs.version }}.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to Marketplace
-        run: npx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath byml-lens.vsix
+        run: npx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath byml-lens-${{ needs.build.outputs.version }}.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
