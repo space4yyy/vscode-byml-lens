@@ -2,7 +2,7 @@
   "name": "vscode-byml-inspector",
   "displayName": "BYML Lens",
   "description": "High-performance editor for .byml, .bgyml, .pack and .zs files. Features native YAML views and SARC mounting.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "space4",
   "license": "MIT",
   "engines": {
@@ -90,13 +90,9 @@
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
-  "dependencies": {
+  "devDependencies": {
     "@pretendonetwork/nintendo-files": "^1.1.0",
     "@themezernx/sarclib": "^1.0.2",
-    "js-yaml": "^4.1.0",
-    "zstdify": "^1.4.0"
-  },
-  "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/mocha": "^10.0.6",
     "@types/node": "18.x",
@@ -104,10 +100,13 @@
     "@typescript-eslint/eslint-plugin": "^6.13.1",
     "@typescript-eslint/parser": "^6.13.1",
     "@vscode/test-electron": "^2.3.8",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.25.0",
     "eslint": "^8.54.0",
+    "fzstd": "^0.1.0",
     "glob": "^10.3.10",
+    "js-yaml": "^4.1.0",
     "mocha": "^10.2.0",
-    "typescript": "^5.3.2"
+    "typescript": "^5.3.2",
+    "zstdify": "^1.4.0"
   }
 }

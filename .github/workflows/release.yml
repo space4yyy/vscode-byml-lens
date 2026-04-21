@@ -11,7 +11,8 @@ on:
       - main
 
 env:
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  # Suppress Node 20 deprecation warnings by allowing it explicitly
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
 
 # Prevent duplicate runs for the same commit/ref
 concurrency:
@@ -28,7 +29,7 @@ jobs:
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 20 # Switching back to 20 for internal actions compatibility
 
       - name: Install dependencies
         run: npm install
