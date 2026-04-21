@@ -29,18 +29,13 @@ BYML Lens is an Antigravity/VS Code extension specifically designed for high-fre
   ```
 - Re-open a BYML file to see the IDs automatically replaced with your custom names.
 
-## Advantages
-
-- **Zero-Friction Design**: No tedious export/import steps. All conversions happen in-memory.
-- **High-Performance Driver**: Custom-built SARC/BYML v7 parsing engine that reads data blocks only when needed, ensuring minimal memory footprint.
-- **Data Security**: Strict encoding validation before saving. If the YAML format is invalid, the save is blocked to protect the original binary file.
-
 ## Development & Build
 
-### Requirements
-- **Node.js** (v18+)
-- **npm**
-- **Antigravity** or **VS Code**
+### Recommended Development Workflow
+For active development, use the built-in VS Code debugger:
+1. **Open the project** in Antigravity or VS Code.
+2. **Press `F5`** to launch the "Extension Development Host".
+3. This opens a new window with your latest code active, supporting breakpoints and live logs.
 
 ### Build from Source
 1. **Clone and Install**:
@@ -49,28 +44,11 @@ BYML Lens is an Antigravity/VS Code extension specifically designed for high-fre
    cd byml-vscode-extension
    make install
    ```
-2. **Compile**:
-   ```bash
-   make compile
-   ```
-3. **Debug**:
-   - Open the project in VS Code/Antigravity and press `F5`.
-4. **Package**:
+2. **Package to VSIX**:
    ```bash
    make package
    ```
-
-### Local Testing & Development
-- **Production Mode** (Simulate Marketplace):
-  ```bash
-  make install-local
-  ```
-  This bundles everything into a single file and syncs it to Antigravity. Ideal for final testing.
-- **Development Mode** (Full Source & Debugging):
-  ```bash
-  make install-dev
-  ```
-  This syncs the full source code and `node_modules`. Ideal for active development and debugging.
+3. **Manual Install**: In the Extensions view, click `...` -> `Install from VSIX...` and select the generated file.
 
 ---
 Produced by **space4** with 🩵
