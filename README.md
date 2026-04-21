@@ -28,6 +28,9 @@ byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
 
 # Unpack SARC archive
 byml-lens unpack Vss_Yunohana.pack.zs ./out_folder
+
+# Pack a directory into SARC
+byml-lens pack ./in_folder new_archive.pack.zs --zstd
 ```
 
 ### 2. Editing BYML/BGYML in VS Code

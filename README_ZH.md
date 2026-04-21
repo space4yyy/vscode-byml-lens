@@ -28,6 +28,9 @@ byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
 
 # 解压 SARC 存档
 byml-lens unpack Vss_Yunohana.pack.zs ./out_folder
+
+# 将目录打包为 SARC
+byml-lens pack ./in_folder new_archive.pack.zs --zstd
 ```
 
 ### 2. 在 VS Code 中编辑 BYML/BGYML

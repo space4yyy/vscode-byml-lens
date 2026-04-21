@@ -20,6 +20,8 @@ export class SarcArchive {
 
             const headerSize = view.getUint16(4, true);
             this.bom = view.getUint16(6, true);
+            // 0xFEFF in LE reading means FF FE on disk (Little Endian)
+            // 0xFFFE in LE reading means FE FF on disk (Big Endian)
             this.le = (this.bom === 0xFEFF);
 
             const dataStart = view.getUint32(0x0C, this.le);
@@ -93,7 +95,11 @@ export class SarcArchive {
         // 3. Write SARC Header
         out.set([0x53, 0x41, 0x52, 0x43], 0); // 'SARC'
         view.setUint16(4, headerSize, true);
-        view.setUint16(6, this.bom, true);
+        
+        // Ensure BOM is correct for target endianness
+        const finalBom = this.le ? 0xFEFF : 0xFFFE;
+        view.setUint16(6, finalBom, true);
+        
         view.setUint32(8, totalSize, this.le);
         view.setUint32(0x0C, dataStart, this.le);
         view.setUint32(0x10, 0x00000100, this.le); // Version/Reserved
