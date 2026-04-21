@@ -42,26 +42,6 @@ class PackFileSystemProvider {
     _onDidChangeFile = new vscode.EventEmitter();
     onDidChangeFile = this._onDidChangeFile.event;
     archives = new Map();
-    isDirty(uri) {
-        const key = this.getArchiveKey(uri);
-        return this.archives.get(key)?.isDirty || false;
-    }
-    getArchiveKey(uri) {
-        const parts = uri.path.split('/');
-        let archivePath = '';
-        for (let i = 0; i < parts.length; i++) {
-            if (!parts[i])
-                continue;
-            archivePath = archivePath === '' ? '/' + parts[i] : path.join(archivePath, parts[i]);
-            if (parts[i].toLowerCase().endsWith('.pack') ||
-                parts[i].toLowerCase().endsWith('.pack.zs') ||
-                parts[i].toLowerCase().endsWith('.sarc') ||
-                parts[i].toLowerCase().endsWith('.sarc.zs')) {
-                return vscode.Uri.file(archivePath).toString();
-            }
-        }
-        return '';
-    }
     async getArchive(uri) {
         const parts = uri.path.split('/');
         let archivePath = '';
@@ -86,27 +66,13 @@ class PackFileSystemProvider {
         const archiveKey = archiveUri.toString();
         if (!this.archives.has(archiveKey)) {
             const data = await vscode.workspace.fs.readFile(archiveUri);
-            this.archives.set(archiveKey, {
-                archive: new sarc_js_1.SarcArchive(new Uint8Array(data)),
-                isDirty: false
-            });
+            this.archives.set(archiveKey, new sarc_js_1.SarcArchive(new Uint8Array(data)));
         }
         return {
-            archive: this.archives.get(archiveKey).archive,
+            archive: this.archives.get(archiveKey),
             internalPath,
             archiveUri
         };
-    }
-    async commitChanges(uri) {
-        const archiveKey = uri.toString();
-        const entry = this.archives.get(archiveKey);
-        if (entry && entry.isDirty) {
-            logger_js_1.Logger.log(`Committing SARC changes to disk: ${uri.fsPath}`);
-            const encoded = entry.archive.encode();
-            await vscode.workspace.fs.writeFile(uri, encoded);
-            entry.isDirty = false;
-            logger_js_1.Logger.log(`SARC saved successfully.`);
-        }
     }
     watch(_uri, _options) {
         return new vscode.Disposable(() => { });
@@ -168,22 +134,29 @@ class PackFileSystemProvider {
                 throw vscode.FileSystemError.FileNotFound(uri);
             archive.files.push({ name: internalPath, data: content });
         }
-        // Mark as dirty, but don't save to disk yet (Performance optimization)
-        const key = archiveUri.toString();
-        const entry = this.archives.get(key);
-        if (entry)
-            entry.isDirty = true;
-        logger_js_1.Logger.log(`Updated file in memory: ${internalPath}. SARC marked as dirty.`);
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
-        vscode.window.setStatusBarMessage(`$(sync~spin) SARC Modified (Unsaved)`, 3000);
+        try {
+            // Immediate save to disk
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Changed, uri }]);
+            vscode.window.setStatusBarMessage('$(check) SARC Saved', 2000);
+        }
+        catch (err) {
+            logger_js_1.Logger.error(`SARC Write failed`, err);
+            vscode.window.showErrorMessage(`Failed to write to pack: ${err.message}`);
+        }
     }
     async delete(uri, _options) {
         const { archive, internalPath, archiveUri } = await this.getArchive(uri);
         archive.files = archive.files.filter(f => f.name !== internalPath && !f.name.startsWith(internalPath + '/'));
-        const entry = this.archives.get(archiveUri.toString());
-        if (entry)
-            entry.isDirty = true;
-        this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        try {
+            const encoded = archive.encode();
+            await vscode.workspace.fs.writeFile(archiveUri, encoded);
+            this._onDidChangeFile.fire([{ type: vscode.FileChangeType.Deleted, uri }]);
+        }
+        catch (err) {
+            logger_js_1.Logger.error(`SARC Delete failed`, err);
+        }
     }
     rename(_oldUri, _newUri, _options) { }
 }
