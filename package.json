@@ -58,6 +58,16 @@
         }
       ]
     },
+    "configuration": {
+      "title": "BYML Lens",
+      "properties": {
+        "byml-lens.debug": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable detailed debug logging in the Output panel. Helpful for troubleshooting corrupted files."
+        }
+      }
+    },
     "customEditors": [
       {
         "viewType": "byml-inspector.redirector",

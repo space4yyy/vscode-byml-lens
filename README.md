@@ -50,5 +50,13 @@ For active development, use the built-in VS Code debugger:
    ```
 3. **Manual Install**: In the Extensions view, click `...` -> `Install from VSIX...` and select the generated file.
 
+## Troubleshooting & Feedback
+
+If you encounter issues or corrupted files, please provide logs from the Output panel:
+1. Open the **Output** panel (`View` -> `Output`).
+2. Select **BYML Lens** from the dropdown menu in the top-right corner.
+3. For deeper investigation, enable debug logs in settings: `BYML Lens > Debug`.
+4. Copy the logs and attach them to your [GitHub Issue](https://github.com/space4yyy/vscode-byml-lens/issues).
+
 ---
 Produced by **space4** with 🩵
