@@ -302,7 +302,7 @@ export function bymlToYaml(data: Uint8Array): string {
     }
 
     const root = parseNode(rootOffset);
-    return yaml.dump(root, { indent: 2, noRefs: true });
+    return yaml.dump(root, { indent: 2, noRefs: true, quotingType: '"' });
 }
 
 class Reader {
