@@ -73,7 +73,9 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-    Logger.init();
+    // 0. Initialize Logger
+    Logger.setChannel(vscode.window.createOutputChannel("BYML Lens"));
+
     try {
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', new PackFileSystemProvider(), { isCaseSensitive: true }));
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', new BymlYamlProvider(), { isCaseSensitive: true }));

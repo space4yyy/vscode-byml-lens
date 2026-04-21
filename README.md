@@ -14,8 +14,23 @@ BYML Lens is an Antigravity/VS Code extension specifically designed for high-fre
 
 ## Usage
 
-### 1. Editing BYML/BGYML
-- **Open**: Click any binary file ending in `.byml`, `.bgyml`, or `.zs` in the Explorer.
+### 1. Command Line Interface (CLI)
+For AI Agents and batch processing, you can use the `byml-lens` command:
+```bash
+# Install globally
+npm install -g .
+
+# Decompile BYML to YAML
+byml-lens deyaml Versus.byml.zs result.yaml
+
+# Recompile YAML to binary
+byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
+
+# Unpack SARC archive
+byml-lens unpack Vss_Yunohana.pack.zs ./out_folder
+```
+
+### 2. Editing BYML/BGYML in VS Code
 - **Edit**: The file opens as a native YAML document with full syntax highlighting.
 - **Save**: Press `Cmd+S` (Mac) or `Ctrl+S` (Win). The extension automatically handles binary encoding and Zstd compression before writing back to disk.
 

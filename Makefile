@@ -11,6 +11,10 @@ compile:
 bundle:
 	npm run bundle
 
+# Install CLI tool globally
+install-cli: bundle
+	npm install -g .
+
 watch:
 	npm run watch
 

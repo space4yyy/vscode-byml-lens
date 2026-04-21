@@ -1,4 +1,3 @@
-import * as vscode from 'vscode';
 
 export enum LogLevel {
     DEBUG = 0,
@@ -8,16 +7,23 @@ export enum LogLevel {
 }
 
 export class Logger {
-    private static channel: vscode.OutputChannel;
+    private static channel: any | undefined;
 
-    public static init() {
-        this.channel = vscode.window.createOutputChannel("BYML Lens");
+    /**
+     * In VS Code, we call this with the output channel.
+     * In CLI, we don't call it, and it defaults to console logging.
+     */
+    public static setChannel(channel: any) {
+        this.channel = channel;
         this.info("BYML Lens Logger Initialized.");
     }
 
+    public static init() {
+        // No-op by default, extension will call setChannel
+    }
+
     private static get currentLevel(): LogLevel {
-        const config = vscode.workspace.getConfiguration('byml-lens');
-        return config.get<boolean>('debug', false) ? LogLevel.DEBUG : LogLevel.INFO;
+        return LogLevel.INFO;
     }
 
     public static debug(message: string, data?: any) {
@@ -34,12 +40,17 @@ export class Logger {
 
     public static error(message: string, error?: any) {
         const timestamp = new Date().toLocaleTimeString();
-        this.channel.appendLine(`[${timestamp}] ❌ ERROR: ${message}`);
-        if (error) {
-            this.channel.appendLine(`   Stack: ${error.stack || error}`);
+        const header = `[${timestamp}] ❌ ERROR: ${message}`;
+        const stack = error?.stack || error || "";
+        
+        if (this.channel) {
+            this.channel.appendLine(header);
+            if (stack) this.channel.appendLine(`   Stack: ${stack}`);
+            this.channel.show(true);
+        } else {
+            console.error(header);
+            if (stack) console.error(stack);
         }
-        // Force show output on error to help users realize something went wrong
-        this.channel.show(true);
     }
 
     private static write(label: string, message: string, data?: any) {
@@ -48,10 +59,15 @@ export class Logger {
         if (data) {
             logMsg += ` | Data: ${JSON.stringify(data)}`;
         }
-        this.channel.appendLine(logMsg);
+
+        if (this.channel) {
+            this.channel.appendLine(logMsg);
+        } else {
+            console.log(logMsg);
+        }
     }
 
     public static show() {
-        this.channel.show(true);
+        if (this.channel) this.channel.show(true);
     }
 }
