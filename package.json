@@ -1,14 +1,25 @@
 {
   "name": "vscode-byml-inspector",
-  "displayName": "BYML Inspector",
-  "description": "Read, edit, and save .byml, .bgyml, .pack, and .zs files directly in VS Code.",
+  "displayName": "BYML Lens",
+  "description": "High-performance editor for .byml, .bgyml, .pack and .zs files. Features native YAML views and SARC mounting.",
   "version": "0.1.0",
   "publisher": "space4",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
+  "icon": "icon.png",
   "categories": [
     "Other"
+  ],
+  "keywords": [
+    "nintendo",
+    "byml",
+    "sarc",
+    "pack",
+    "zstd",
+    "splatoon",
+    "zelda"
   ],
   "activationEvents": [
     "onFileSystem:sarc",

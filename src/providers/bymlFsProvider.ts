@@ -98,7 +98,7 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
             yamlStr = await AliasManager.applyDisplayAliases(yamlStr);
             return new TextEncoder().encode(yamlStr);
         } catch (err: any) {
-            return new TextEncoder().encode(`# Error: ${err.message}`);
+            return new TextEncoder().encode(`# BYML Lens Error\n# Source: ${sourceUri.toString()}\n# Error: ${err.message}`);
         }
     }
 

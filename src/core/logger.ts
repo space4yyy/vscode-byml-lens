@@ -4,7 +4,7 @@ export class Logger {
     private static channel: vscode.OutputChannel;
 
     public static init() {
-        this.channel = vscode.window.createOutputChannel("BYML Inspector");
+        this.channel = vscode.window.createOutputChannel("BYML Lens");
         this.log("Logger initialized. Ready to debug.");
     }
 

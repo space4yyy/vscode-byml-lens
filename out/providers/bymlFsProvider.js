@@ -126,7 +126,7 @@ class BymlYamlProvider {
             return new TextEncoder().encode(yamlStr);
         }
         catch (err) {
-            return new TextEncoder().encode(`# Error: ${err.message}`);
+            return new TextEncoder().encode(`# BYML Lens Error\n# Source: ${sourceUri.toString()}\n# Error: ${err.message}`);
         }
     }
     async writeFile(uri, content, _options) {

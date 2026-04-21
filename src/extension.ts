@@ -109,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
             if (folder) vscode.workspace.updateWorkspaceFolders(folder.index, 1);
         }));
 
-        Logger.log("BYML Inspector Activated with Diff support.");
+        Logger.log("BYML Lens Activated.");
     } catch (err: any) {
         Logger.error("Activation Failed", err);
     }

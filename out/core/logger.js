@@ -38,7 +38,7 @@ const vscode = __importStar(require("vscode"));
 class Logger {
     static channel;
     static init() {
-        this.channel = vscode.window.createOutputChannel("BYML Inspector");
+        this.channel = vscode.window.createOutputChannel("BYML Lens");
         this.log("Logger initialized. Ready to debug.");
     }
     static log(message, data) {
