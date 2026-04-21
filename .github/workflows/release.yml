@@ -64,3 +64,8 @@ jobs:
           files: byml-lens.vsix
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to Marketplace
+        run: npx @vscode/vsce publish -p ${{ secrets.VSCE_PAT }} --packagePath byml-lens.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}
