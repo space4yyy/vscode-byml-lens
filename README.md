@@ -26,11 +26,14 @@ byml-lens deyaml Versus.byml.zs result.yaml
 # Recompile YAML to binary
 byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
 
-# Unpack SARC archive
-byml-lens unpack Vss_Yunohana.pack.zs ./out_folder
+# Unpack SARC archive (Extract raw binary)
+byml-lens unpack Versus.pack.zs ./out_folder
 
-# Pack a directory into SARC
-byml-lens pack ./in_folder new_archive.pack.zs --zstd
+# Unpack and Decompile (Ideal for AI Agents)
+byml-lens unpack Versus.pack.zs ./editable_folder --yaml
+
+# Pack a directory into SARC (with auto-encoding)
+byml-lens pack ./editable_folder new_archive.pack.zs --zstd --yaml
 ```
 
 ### 2. Editing BYML/BGYML in VS Code

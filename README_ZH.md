@@ -26,11 +26,14 @@ byml-lens deyaml Versus.byml.zs result.yaml
 # 将 YAML 转换回二进制
 byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
 
-# 解压 SARC 存档
-byml-lens unpack Vss_Yunohana.pack.zs ./out_folder
+# 解压 SARC 存档 (提取原始二进制)
+byml-lens unpack Versus.pack.zs ./out_folder
 
-# 将目录打包为 SARC
-byml-lens pack ./in_folder new_archive.pack.zs --zstd
+# 解压并反编译 (AI Agent 推荐模式)
+byml-lens unpack Versus.pack.zs ./editable_folder --yaml
+
+# 将目录打包为 SARC (自动执行 YAML 编码)
+byml-lens pack ./editable_folder new_archive.pack.zs --zstd --yaml
 ```
 
 ### 2. 在 VS Code 中编辑 BYML/BGYML

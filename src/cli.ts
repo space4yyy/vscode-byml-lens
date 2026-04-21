@@ -10,7 +10,7 @@ const program = new Command();
 program
     .name('byml-lens')
     .description('CLI tool for Nintendo BYML and SARC files')
-    .version('0.1.9');
+    .version('0.2.0');
 
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
@@ -57,7 +57,8 @@ program.command('unpack')
     .description('Unpack SARC archive')
     .argument('<input>', 'Input SARC file (.pack, .sarc, .zs)')
     .argument('<outDir>', 'Output directory')
-    .action(async (input, outDir) => {
+    .option('-y, --yaml', 'Automatically convert internal BYML files to YAML', false)
+    .action(async (input, outDir, options) => {
         try {
             const data = fs.readFileSync(input);
             const archive = new SarcArchive(new Uint8Array(data));
@@ -66,16 +67,32 @@ program.command('unpack')
                 fs.mkdirSync(outDir, { recursive: true });
             }
 
+            let convertedCount = 0;
             for (const file of archive.files) {
-                const outPath = path.join(outDir, file.name);
+                let outName = file.name;
+                let finalData = file.data;
+                const isByml = outName.endsWith('.byml') || outName.endsWith('.bgyml');
+
+                if (options.yaml && isByml) {
+                    try {
+                        const yamlStr = byml.bymlToYaml(file.data);
+                        finalData = new TextEncoder().encode(yamlStr);
+                        outName += '.yaml'; // Save as .byml.yaml
+                        convertedCount++;
+                    } catch (e) {
+                        console.warn(`Warning: Failed to deyaml ${file.name}, extracting as binary.`);
+                    }
+                }
+
+                const outPath = path.join(outDir, outName);
                 const parentDir = path.dirname(outPath);
                 if (!fs.existsSync(parentDir)) {
                     fs.mkdirSync(parentDir, { recursive: true });
                 }
-                fs.writeFileSync(outPath, file.data);
-                console.log(`Extracted: ${file.name}`);
+                fs.writeFileSync(outPath, finalData);
+                console.log(`Extracted: ${outName}`);
             }
-            console.log(`Successfully unpacked ${archive.files.length} files to ${outDir}`);
+            console.log(`Successfully unpacked ${archive.files.length} files to ${outDir} (${convertedCount} converted to YAML)`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);
@@ -88,6 +105,7 @@ program.command('pack')
     .argument('<output>', 'Output SARC file')
     .option('-z, --zstd', 'Compress the output with Zstandard', false)
     .option('-B, --big-endian', 'Use Big Endian byte order', false)
+    .option('-y, --yaml', 'Automatically convert .yaml files back to binary BYML', false)
     .action(async (inDir, output, options) => {
         try {
             if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
@@ -113,9 +131,25 @@ program.command('pack')
             walk(inDir);
 
             for (const file of allFiles) {
-                const relPath = path.relative(inDir, file);
-                const data = fs.readFileSync(file);
-                archive.files.push({ name: relPath, data: new Uint8Array(data) });
+                let relPath = path.relative(inDir, file);
+                let finalData = fs.readFileSync(file);
+
+                // If it's a .byml.yaml or .bgyml.yaml, convert it back
+                if (options.yaml && relPath.endsWith('.yaml')) {
+                    const baseName = relPath.slice(0, -5);
+                    if (baseName.endsWith('.byml') || baseName.endsWith('.bgyml')) {
+                        try {
+                            const yamlStr = fs.readFileSync(file, 'utf-8');
+                            finalData = byml.yamlToByml(yamlStr);
+                            relPath = baseName; // Strip .yaml for the archive
+                            console.log(`Converted back: ${relPath}`);
+                        } catch (e) {
+                            console.warn(`Warning: Failed to encode ${file}, packing as raw text.`);
+                        }
+                    }
+                }
+
+                archive.files.push({ name: relPath, data: new Uint8Array(finalData) });
                 console.log(`Added: ${relPath}`);
             }
 
