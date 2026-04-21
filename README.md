@@ -60,9 +60,17 @@ BYML Lens is an Antigravity/VS Code extension specifically designed for high-fre
    make package
    ```
 
-### Manual Installation to Antigravity
-1. Copy the project folder (including `out`, `package.json`, and `node_modules`) to `~/.antigravity/extensions/`.
-2. Restart Antigravity.
+### Local Testing & Development
+- **Production Mode** (Simulate Marketplace):
+  ```bash
+  make install-local
+  ```
+  This bundles everything into a single file and syncs it to Antigravity. Ideal for final testing.
+- **Development Mode** (Full Source & Debugging):
+  ```bash
+  make install-dev
+  ```
+  This syncs the full source code and `node_modules`. Ideal for active development and debugging.
 
 ---
 Produced by **space4** with 🩵
