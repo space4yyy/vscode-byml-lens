@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { PackFileSystemProvider } from './providers/packFsProvider.js';
 import { BymlYamlProvider } from './providers/bymlFsProvider.js';
-import { BymlSearchProvider } from './providers/searchProvider.js';
 import { Logger } from './core/logger.js';
 
 /**
@@ -11,13 +10,21 @@ import { Logger } from './core/logger.js';
 class BymlRedirectProvider implements vscode.CustomEditorProvider {
     async openCustomDocument(uri: vscode.Uri) { return { uri, dispose: () => { } }; }
     async resolveCustomEditor(document: vscode.CustomDocument, webviewPanel: vscode.WebviewPanel) {
+        Logger.log(`BYML Redirector: Opening YAML view for ${document.uri.fsPath}`);
         const virtualUri = vscode.Uri.from({
             scheme: 'byml-edit',
             path: document.uri.path + '.yaml',
             query: document.uri.toString()
         });
-        await vscode.window.showTextDocument(virtualUri, { preview: true, preserveFocus: false });
-        setTimeout(() => webviewPanel.dispose(), 100);
+        
+        try {
+            await vscode.window.showTextDocument(virtualUri, { preview: true, preserveFocus: false });
+        } catch (err: any) {
+            Logger.error("Failed to open YAML document", err);
+        } finally {
+            // Must dispose or VS Code hangs with a loading bar
+            setTimeout(() => webviewPanel.dispose(), 100);
+        }
     }
     private readonly _onDidChangeCustomDocument = new vscode.EventEmitter<any>();
     public readonly onDidChangeCustomDocument = this._onDidChangeCustomDocument.event;
@@ -37,15 +44,17 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
         const checkAndToggle = () => {
             const tab = this.findTab(document.uri);
             if (tab && !tab.isPreview) {
+                Logger.log(`SARC Redirector: Double-click detected for ${document.uri.fsPath}`);
                 this.toggleSarc(document.uri);
-                setTimeout(() => webviewPanel.dispose(), 50);
+                setTimeout(() => webviewPanel.dispose(), 100);
                 return true;
             }
             return false;
         };
 
         if (!checkAndToggle()) {
-            webviewPanel.webview.html = `<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;"><div>Double-click to Mount/Unmount Archive</div></body></html>`;
+            webviewPanel.webview.html = `<html><body style="display:flex;align-items:center;justify-content:center;height:100vh;color:#888;font-family:sans-serif;background-color:transparent;"><div>Double-click to Mount/Unmount Archive</div></body></html>`;
+            
             const disposable = vscode.window.tabGroups.onDidChangeTabs(_ => {
                 if (checkAndToggle()) disposable.dispose();
             });
@@ -56,7 +65,8 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
     private findTab(uri: vscode.Uri): vscode.Tab | undefined {
         for (const group of vscode.window.tabGroups.all) {
             for (const tab of group.tabs) {
-                if ((tab.input as any)?.uri?.toString() === uri.toString()) return tab;
+                const input = tab.input as any;
+                if (input?.uri?.toString() === uri.toString()) return tab;
             }
         }
         return undefined;
@@ -90,28 +100,27 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
 export function activate(context: vscode.ExtensionContext) {
     Logger.init();
     try {
-        // 1. Core Providers
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', new PackFileSystemProvider(), { isCaseSensitive: true }));
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', new BymlYamlProvider(), { isCaseSensitive: true }));
         
-        // 2. SEARCH ENGINE INJECTION (Bypassing types for Antigravity compatibility)
-        const searchProvider = new BymlSearchProvider();
-        if ((vscode.workspace as any).registerTextSearchProvider) {
-            context.subscriptions.push((vscode.workspace as any).registerTextSearchProvider('sarc', searchProvider));
-            Logger.log("Global Search injected for 'sarc' scheme.");
-        }
-
-        // 3. Custom Editor Redirectors
+        // Register editors
         context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.redirector', new BymlRedirectProvider()));
         context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.sarc-redirector', new SarcRedirectProvider()));
         
-        // 4. Commands
+        // Register manual commands
+        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.openByml', async (uri: vscode.Uri) => {
+            const targetUri = uri || vscode.window.activeTextEditor?.document.uri;
+            if (!targetUri) return;
+            const virtualUri = vscode.Uri.from({ scheme: 'byml-edit', path: targetUri.path + '.yaml', query: targetUri.toString() });
+            await vscode.window.showTextDocument(virtualUri, { preview: false });
+        }));
+        
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {
             const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
             if (folder) vscode.workspace.updateWorkspaceFolders(folder.index, 1);
         }));
 
-        Logger.log("BYML Inspector Activated with Global Search support.");
+        Logger.log("BYML Inspector Activated (Emergency Recovery).");
     } catch (err: any) {
         Logger.error("Activation Failed", err);
     }
