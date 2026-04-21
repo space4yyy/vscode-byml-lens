@@ -101,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
                 query: uri.toString() // In readFile, we can check for .original.yaml and return unmodified data
             });
 
-            await vscode.commands.executeCommand('vscode.diff', virtualUri, baseUri, `${path.basename(uri.fsPath)} (Modified ↔ Original)`);
+            await vscode.commands.executeCommand('vscode.diff', baseUri, virtualUri, `${path.basename(uri.fsPath)} (Original ↔ Modified)`);
         }));
 
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {

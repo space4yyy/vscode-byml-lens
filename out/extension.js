@@ -136,7 +136,7 @@ function activate(context) {
                 path: uri.path + '.original.yaml',
                 query: uri.toString() // In readFile, we can check for .original.yaml and return unmodified data
             });
-            await vscode.commands.executeCommand('vscode.diff', virtualUri, baseUri, `${path.basename(uri.fsPath)} (Modified ↔ Original)`);
+            await vscode.commands.executeCommand('vscode.diff', baseUri, virtualUri, `${path.basename(uri.fsPath)} (Original ↔ Modified)`);
         }));
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri) => {
             const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
