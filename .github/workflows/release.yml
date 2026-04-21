@@ -6,9 +6,21 @@ on:
       - main
     tags:
       - 'v*'
+    paths-ignore:
+      - 'README.md'
+      - 'README_ZH.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - 'byml-aliases.yml'
   pull_request:
     branches:
       - main
+    paths-ignore:
+      - 'README.md'
+      - 'README_ZH.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - 'byml-aliases.yml'
 
 env:
   # Suppress Node 20 deprecation warnings by allowing it explicitly
