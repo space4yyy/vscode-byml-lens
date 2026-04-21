@@ -1,5 +1,7 @@
 # BYML Lens
 
+[English] | [简体中文](./README_ZH.md)
+
 BYML Lens is an Antigravity/VS Code extension specifically designed for high-frequency editing and auditing of BYML, SARC, and Zstandard (.zs) compressed files. It provides a lightning-fast and seamless asset editing experience by transparently mapping binary files to native text views.
 
 ## Core Features
