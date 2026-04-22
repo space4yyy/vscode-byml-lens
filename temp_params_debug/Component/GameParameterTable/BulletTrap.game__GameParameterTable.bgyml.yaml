@@ -1,7 +1,0 @@
-GameParameters:
-  spl__ConstraintBindableHelperParam:
-    $type: spl__ConstraintBindableHelperParam
-    CreateNum: 2
-  spl__PaintMonitorSetParam:
-    $type: spl__PaintMonitorSetParam
-    PaintMonitorNum: 2

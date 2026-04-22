@@ -11050,7 +11050,7 @@ var SarcArchive = class _SarcArchive {
 
 // src/cli.ts
 var program2 = new Command();
-program2.name("byml-lens").description("CLI tool for Nintendo BYML and SARC files").version("0.2.0");
+program2.name("byml-lens").description("CLI tool for Nintendo BYML and SARC files (v0.2.2)").version("0.2.2");
 program2.command("deyaml").description("Convert binary BYML to YAML").argument("<input>", "Input binary BYML file (.byml, .bgyml, .zs)").argument("[output]", "Output YAML file").action(async (input, output) => {
   try {
     const data = fs.readFileSync(input);
