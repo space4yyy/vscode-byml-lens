@@ -4623,7 +4623,7 @@ var SarcArchive = class _SarcArchive {
     return h;
   }
   encode() {
-    Logger.info(`Encoding SARC (v0.2.3) with ${this.files.length} files...`);
+    Logger.info(`Encoding SARC with ${this.files.length} files...`);
     const sortedFiles = [...this.files].sort((a, b) => {
       const ha = _SarcArchive.hash(a.name);
       const hb = _SarcArchive.hash(b.name);
@@ -4642,16 +4642,18 @@ var SarcArchive = class _SarcArchive {
     const sfntSize = 8 + stringTableSize;
     const headerSize = 20;
     let dataStart = headerSize + sfatSize + sfntSize;
-    while (dataStart % 256 !== 0) dataStart++;
+    while (dataStart % 8 !== 0) dataStart++;
     let totalSize = dataStart;
-    const fileOffsets = sortedFiles.map((f) => {
-      while (totalSize % 256 !== 0) totalSize++;
+    const fileOffsets = sortedFiles.map((f, i) => {
+      if (i > 0) {
+        while (totalSize % 256 !== 0) totalSize++;
+      }
       const start = totalSize - dataStart;
       totalSize += f.data.length;
       const end = totalSize - dataStart;
       return { start, end };
     });
-    while (totalSize % 256 !== 0) totalSize++;
+    while (totalSize % 8 !== 0) totalSize++;
     const out = new Uint8Array(totalSize);
     const view = new DataView(out.buffer);
     out.set([83, 65, 82, 67], 0);

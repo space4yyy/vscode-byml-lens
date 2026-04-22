@@ -9,8 +9,8 @@ const program = new Command();
 
 program
     .name('byml-lens')
-    .description('CLI tool for Nintendo BYML and SARC files (v0.2.3)')
-    .version('0.2.3');
+    .description('CLI tool for Nintendo BYML and SARC files (v0.2.4)')
+    .version('0.2.4');
 
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
@@ -70,6 +70,10 @@ program.command('unpack')
                 const parentDir = path.dirname(outPath);
                 if (!fs.existsSync(parentDir)) fs.mkdirSync(parentDir, { recursive: true });
 
+                // Write the original binary (Standard for modding)
+                fs.writeFileSync(outPath, file.data);
+                console.log(`Extracted: ${file.name}`);
+
                 if (options.yaml && (file.name.endsWith('.byml') || file.name.endsWith('.bgyml'))) {
                     try {
                         const yamlStr = byml.bymlToYaml(file.data);
@@ -79,9 +83,6 @@ program.command('unpack')
                         console.warn(`Warning: Failed to deyaml ${file.name}`);
                     }
                 }
-                // Always write original binary as well to keep the 'Smart Hybrid' option available for packing
-                fs.writeFileSync(outPath, file.data);
-                console.log(`Extracted: ${file.name}`);
             }
             console.log(`Successfully unpacked ${archive.files.length} files to ${outDir} (${convertedCount} YAMLs generated)`);
         } catch (err: any) {
@@ -96,7 +97,7 @@ program.command('pack')
     .argument('<output>', 'Output SARC file')
     .option('-z, --zstd', 'Compress the output with Zstandard', false)
     .option('-B, --big-endian', 'Use Big Endian byte order', false)
-    .option('-y, --yaml', 'Prefer .yaml files if binary is missing or if explicitly forced', false)
+    .option('-y, --yaml', 'Force re-compilation of all .yaml files even if binary exists', false)
     .action(async (inDir, output, options) => {
         try {
             if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
@@ -107,6 +108,7 @@ program.command('pack')
             archive.isCompressed = options.zstd;
             archive.le = !options.bigEndian;
 
+            // 1. Map out the folder content
             const filesInFolder: string[] = [];
             const walk = (dir: string) => {
                 const list = fs.readdirSync(dir);
@@ -118,45 +120,42 @@ program.command('pack')
             };
             walk(inDir);
 
-            // Logic: 
-            // 1. If 'file.bgyml' exists -> Use it directly (Safest)
-            // 2. If 'file.bgyml' missing AND 'file.bgyml.yaml' exists -> Recompile
-            // 3. If --yaml is forced, and both exist -> Prefer Recompile
-            
-            const processedBinaryPaths = new Set<string>();
-
-            for (const fullPath of filesInFolder) {
-                const relPath = path.relative(inDir, fullPath);
-                
-                // Skip .yaml if we already have or prefer the binary version
-                if (relPath.endsWith('.yaml')) {
-                    const binaryRelPath = relPath.slice(0, -5);
-                    const binaryFullPath = path.join(inDir, binaryRelPath);
-                    
-                    if (options.yaml || !fs.existsSync(binaryFullPath)) {
-                        console.log(`Re-compiling BYML: ${binaryRelPath}`);
-                        const yamlStr = fs.readFileSync(fullPath, 'utf-8');
-                        const encoded = byml.yamlToByml(yamlStr);
-                        archive.files.push({ name: binaryRelPath, data: new Uint8Array(encoded) });
-                        processedBinaryPaths.add(binaryRelPath);
-                        continue;
-                    } else {
-                        // Skip this yaml, we will use the binary file instead
-                        continue;
-                    }
+            // 2. Decide which files to include (Binary first, then YAML)
+            const fileMap = new Map<string, { binary?: string, yaml?: string }>();
+            for (const f of filesInFolder) {
+                const rel = path.relative(inDir, f);
+                if (rel.endsWith('.yaml')) {
+                    const base = rel.slice(0, -5);
+                    const entry = fileMap.get(base) || {};
+                    entry.yaml = f;
+                    fileMap.set(base, entry);
+                } else {
+                    const entry = fileMap.get(rel) || {};
+                    entry.binary = f;
+                    fileMap.set(rel, entry);
                 }
+            }
 
-                // If it's a binary file and not already handled by yaml logic
-                if (!processedBinaryPaths.has(relPath)) {
-                    const data = fs.readFileSync(fullPath);
-                    archive.files.push({ name: relPath, data: new Uint8Array(data) });
-                    console.log(`Added (Raw Binary): ${relPath}`);
+            // 3. Process the unique entries
+            for (const [name, paths] of fileMap.entries()) {
+                // If YAML exists AND (Binary is missing OR --yaml is forced), Recompile
+                if (paths.yaml && (options.yaml || !paths.binary)) {
+                    console.log(`Packing (Re-compiled): ${name}`);
+                    const yamlStr = fs.readFileSync(paths.yaml, 'utf-8');
+                    const encoded = byml.yamlToByml(yamlStr);
+                    archive.files.push({ name, data: new Uint8Array(encoded) });
+                } 
+                // Otherwise, use Raw Binary (Safe path)
+                else if (paths.binary) {
+                    console.log(`Packing (Raw Binary): ${name}`);
+                    const data = fs.readFileSync(paths.binary);
+                    archive.files.push({ name, data: new Uint8Array(data) });
                 }
             }
 
             const encoded = archive.encode();
             fs.writeFileSync(output, encoded);
-            console.log(`Successfully packed ${archive.files.length} files to ${output} using Smart Hybrid Mode.`);
+            console.log(`Successfully packed ${archive.files.length} files to ${output} (No duplicates).`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);

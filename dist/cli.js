@@ -10991,7 +10991,7 @@ var SarcArchive = class _SarcArchive {
     return h;
   }
   encode() {
-    Logger.info(`Encoding SARC (v0.2.3) with ${this.files.length} files...`);
+    Logger.info(`Encoding SARC with ${this.files.length} files...`);
     const sortedFiles = [...this.files].sort((a, b) => {
       const ha = _SarcArchive.hash(a.name);
       const hb = _SarcArchive.hash(b.name);
@@ -11010,16 +11010,18 @@ var SarcArchive = class _SarcArchive {
     const sfntSize = 8 + stringTableSize;
     const headerSize = 20;
     let dataStart = headerSize + sfatSize + sfntSize;
-    while (dataStart % 256 !== 0) dataStart++;
+    while (dataStart % 8 !== 0) dataStart++;
     let totalSize = dataStart;
-    const fileOffsets = sortedFiles.map((f) => {
-      while (totalSize % 256 !== 0) totalSize++;
+    const fileOffsets = sortedFiles.map((f, i) => {
+      if (i > 0) {
+        while (totalSize % 256 !== 0) totalSize++;
+      }
       const start = totalSize - dataStart;
       totalSize += f.data.length;
       const end = totalSize - dataStart;
       return { start, end };
     });
-    while (totalSize % 256 !== 0) totalSize++;
+    while (totalSize % 8 !== 0) totalSize++;
     const out = new Uint8Array(totalSize);
     const view = new DataView(out.buffer);
     out.set([83, 65, 82, 67], 0);
@@ -11059,7 +11061,7 @@ var SarcArchive = class _SarcArchive {
 
 // src/cli.ts
 var program2 = new Command();
-program2.name("byml-lens").description("CLI tool for Nintendo BYML and SARC files (v0.2.3)").version("0.2.3");
+program2.name("byml-lens").description("CLI tool for Nintendo BYML and SARC files (v0.2.4)").version("0.2.4");
 program2.command("deyaml").description("Convert binary BYML to YAML").argument("<input>", "Input binary BYML file (.byml, .bgyml, .zs)").argument("[output]", "Output YAML file").action(async (input, output) => {
   try {
     const data = fs.readFileSync(input);
@@ -11100,6 +11102,8 @@ program2.command("unpack").description("Unpack SARC archive").argument("<input>"
       const outPath = path.join(outDir, file.name);
       const parentDir = path.dirname(outPath);
       if (!fs.existsSync(parentDir)) fs.mkdirSync(parentDir, { recursive: true });
+      fs.writeFileSync(outPath, file.data);
+      console.log(`Extracted: ${file.name}`);
       if (options.yaml && (file.name.endsWith(".byml") || file.name.endsWith(".bgyml"))) {
         try {
           const yamlStr = bymlToYaml(file.data);
@@ -11109,8 +11113,6 @@ program2.command("unpack").description("Unpack SARC archive").argument("<input>"
           console.warn(`Warning: Failed to deyaml ${file.name}`);
         }
       }
-      fs.writeFileSync(outPath, file.data);
-      console.log(`Extracted: ${file.name}`);
     }
     console.log(`Successfully unpacked ${archive.files.length} files to ${outDir} (${convertedCount} YAMLs generated)`);
   } catch (err) {
@@ -11118,7 +11120,7 @@ program2.command("unpack").description("Unpack SARC archive").argument("<input>"
     process.exit(1);
   }
 });
-program2.command("pack").description("Pack a directory into a SARC archive (Smart Hybrid Mode)").argument("<inDir>", "Input directory").argument("<output>", "Output SARC file").option("-z, --zstd", "Compress the output with Zstandard", false).option("-B, --big-endian", "Use Big Endian byte order", false).option("-y, --yaml", "Prefer .yaml files if binary is missing or if explicitly forced", false).action(async (inDir, output, options) => {
+program2.command("pack").description("Pack a directory into a SARC archive (Smart Hybrid Mode)").argument("<inDir>", "Input directory").argument("<output>", "Output SARC file").option("-z, --zstd", "Compress the output with Zstandard", false).option("-B, --big-endian", "Use Big Endian byte order", false).option("-y, --yaml", "Force re-compilation of all .yaml files even if binary exists", false).action(async (inDir, output, options) => {
   try {
     if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
       throw new Error(`${inDir} is not a directory`);
@@ -11136,32 +11138,35 @@ program2.command("pack").description("Pack a directory into a SARC archive (Smar
       }
     };
     walk(inDir);
-    const processedBinaryPaths = /* @__PURE__ */ new Set();
-    for (const fullPath of filesInFolder) {
-      const relPath = path.relative(inDir, fullPath);
-      if (relPath.endsWith(".yaml")) {
-        const binaryRelPath = relPath.slice(0, -5);
-        const binaryFullPath = path.join(inDir, binaryRelPath);
-        if (options.yaml || !fs.existsSync(binaryFullPath)) {
-          console.log(`Re-compiling BYML: ${binaryRelPath}`);
-          const yamlStr = fs.readFileSync(fullPath, "utf-8");
-          const encoded2 = yamlToByml(yamlStr);
-          archive.files.push({ name: binaryRelPath, data: new Uint8Array(encoded2) });
-          processedBinaryPaths.add(binaryRelPath);
-          continue;
-        } else {
-          continue;
-        }
+    const fileMap = /* @__PURE__ */ new Map();
+    for (const f of filesInFolder) {
+      const rel = path.relative(inDir, f);
+      if (rel.endsWith(".yaml")) {
+        const base = rel.slice(0, -5);
+        const entry = fileMap.get(base) || {};
+        entry.yaml = f;
+        fileMap.set(base, entry);
+      } else {
+        const entry = fileMap.get(rel) || {};
+        entry.binary = f;
+        fileMap.set(rel, entry);
       }
-      if (!processedBinaryPaths.has(relPath)) {
-        const data = fs.readFileSync(fullPath);
-        archive.files.push({ name: relPath, data: new Uint8Array(data) });
-        console.log(`Added (Raw Binary): ${relPath}`);
+    }
+    for (const [name, paths] of fileMap.entries()) {
+      if (paths.yaml && (options.yaml || !paths.binary)) {
+        console.log(`Packing (Re-compiled): ${name}`);
+        const yamlStr = fs.readFileSync(paths.yaml, "utf-8");
+        const encoded2 = yamlToByml(yamlStr);
+        archive.files.push({ name, data: new Uint8Array(encoded2) });
+      } else if (paths.binary) {
+        console.log(`Packing (Raw Binary): ${name}`);
+        const data = fs.readFileSync(paths.binary);
+        archive.files.push({ name, data: new Uint8Array(data) });
       }
     }
     const encoded = archive.encode();
     fs.writeFileSync(output, encoded);
-    console.log(`Successfully packed ${archive.files.length} files to ${output} using Smart Hybrid Mode.`);
+    console.log(`Successfully packed ${archive.files.length} files to ${output} (No duplicates).`);
   } catch (err) {
     console.error(`Error: ${err.message}`);
     process.exit(1);
