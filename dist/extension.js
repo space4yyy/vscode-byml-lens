@@ -4594,8 +4594,7 @@ var SarcArchive = class _SarcArchive {
       let pos = headerSize;
       const sfatCount = view.getUint16(pos + 6, this.le);
       const sfatNodesPos = pos + 12;
-      const sfntPos = sfatNodesPos + sfatCount * 16;
-      const stringTablePos = sfntPos + 8;
+      const stringTablePos = sfatNodesPos + sfatCount * 16 + 8;
       for (let i = 0; i < sfatCount; i++) {
         const nodeOff = sfatNodesPos + i * 16;
         const nameAttr = view.getUint32(nodeOff + 4, this.le);
@@ -4636,10 +4635,11 @@ var SarcArchive = class _SarcArchive {
     const sfatSize = 12 + sortedFiles.length * 16;
     const sfntSize = 8 + stringTableSize;
     const headerSize = 20;
-    const dataStart = headerSize + sfatSize + sfntSize;
+    let dataStart = headerSize + sfatSize + sfntSize;
+    while (dataStart % 256 !== 0) dataStart++;
     let totalSize = dataStart;
     const fileOffsets = sortedFiles.map((f) => {
-      while (totalSize % 4 !== 0) totalSize++;
+      while (totalSize % 256 !== 0) totalSize++;
       const start = totalSize - dataStart;
       totalSize += f.data.length;
       return { start, end: totalSize - dataStart };
@@ -4648,8 +4648,7 @@ var SarcArchive = class _SarcArchive {
     const view = new DataView(out.buffer);
     out.set([83, 65, 82, 67], 0);
     view.setUint16(4, headerSize, true);
-    const finalBom = this.le ? 65279 : 65534;
-    view.setUint16(6, finalBom, true);
+    view.setUint16(6, this.le ? 65279 : 65534, true);
     view.setUint32(8, totalSize, this.le);
     view.setUint32(12, dataStart, this.le);
     view.setUint32(16, 256, this.le);
@@ -4677,10 +4676,7 @@ var SarcArchive = class _SarcArchive {
     for (let i = 0; i < sortedFiles.length; i++) {
       out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
     }
-    Logger.info(`SARC encoded successfully. Total size: ${out.length}`);
-    if (this.isCompressed) {
-      return compressData(out);
-    }
+    if (this.isCompressed) return compressData(out);
     return out;
   }
 };

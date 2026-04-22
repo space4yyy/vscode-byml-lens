@@ -1,0 +1,13 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponSpSuperLanding.game__GameParameterTable.gyml
+GameParameters:
+  spl__BulletBlastParam:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 7000
+        Distance: 7
+      - Damage: 7000
+        Distance: 10
+      - Damage: 7000
+        Distance: 15
+    PaintRadius: 14

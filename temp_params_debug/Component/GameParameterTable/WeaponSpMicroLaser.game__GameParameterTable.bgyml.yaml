@@ -1,0 +1,34 @@
+GameParameters:
+  spl__BulletSpMicroLaserBitParam:
+    $type: spl__BulletSpMicroLaserBitParam
+    ChargeParam:
+      ChargeFrame: 36
+      InterpRate: 0.4000000059604645
+      MaxAngularVel: 30
+      MaxAngularVelChargeStateNoTgt: 1.5
+    FollowParam:
+      LockonEndFrame: 15
+    LaserParam:
+      AfterLaserWaitFrame: 20
+      FreeMoveRotSpeed: 0.30000001192092896
+      LaserDamage: 35
+      LaserDamageIntervalFrame: 5
+      LaserFrame:
+        High: 240
+        Low: 180
+        Mid: 220
+  spl__WeaponSpMicroLaserParam:
+    $type: spl__WeaponSpMicroLaserParam
+    LaunchParam:
+      EnableDualLaunch: true
+      LaserBitCenterOffset:
+        X: 0
+        "Y": 1.7000000476837158
+        Z: -0.6000000238418579
+      LaserBitRadius: 1.2999999523162842
+      LockonDeg: 80
+      LockonRadius: 10
+    PlayerParam:
+      AfterShot_NoBombFrm: 40
+      AfterShot_NoShotFrm: 40
+      AfterShot_NoSquidFrm: 40

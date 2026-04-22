@@ -1,0 +1,77 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletSpTripleTornadoBlastParam
+    DamageHeightDown: 10
+    DamageHeightUp: 20
+    DamageRadiusEnd: 7
+    DamageRadiusStart: 0.009999999776482582
+    DamageSpanFrame: 5
+    DamageValueEnd: 50
+    DamageValueStart: 50
+    KnockBackParam:
+      Accel: 93.33300018310547
+      Bias: 0.800000011920929
+      DirectionZeroAccelRate: 0
+      Distance: 8
+    PaintRadiusEnd: 7
+    PaintRadiusStart: 0.5
+    PaintRotateDegree: 8.5
+    PaintSpanFrame: 2
+    RadiusSpreadBias: 0.6000000238418579
+    RadiusSpreadFrame: 50
+  MissileParam:
+    $type: spl__BulletSpTripleTornadoMissileParam
+    GraphDirect:
+      Data:
+        - 0
+        - 0
+        - 0
+        - 0.575757622718811
+        - 0.10000000149011612
+        - 0.17933879792690277
+        - 0.9720280170440674
+        - 0.400943398475647
+        - 2.2365949153900146
+        - 1
+        - 1
+        - 25.42222023010254
+      MaxX: 1
+      Type: Hermit2DSmooth
+    GraphEndX: 1
+    GraphPowerN: 2
+    GraphStartX: 0
+    UseDirect: false
+    XZBias: 0.800000011920929
+  MotherParam:
+    $type: spl__BulletSpTripleTornadoMotherParam
+    TargetHeight: 150
+  MoveParam:
+    $type: spl__BulletSpTripleTornadoGuideDeviceMoveParam
+    FlyGravity: 0.01600000075995922
+    FlyPositionAirResist: 0.05866000056266785
+    FlyRotateAirResist: 0.019850000739097595
+    GuideEmissionFrame: 10
+    GuideHitCollisionType: TripleTornadoGuideDevice
+    GuideRadius: 0.5
+    OccurTornadoFrame: 70
+    SpawnRotatePitch: 0.4000000059604645
+    SpawnRotateRoll: 0.11999999731779099
+    SpawnSpeedY: 0.2759999930858612
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 2.5999999046325684
+      Low: 2
+      Mid: 2.299999952316284
+  WeaponParam:
+    $type: spl__WeaponSpTripleTornadoParam
+    GuideDeviceNum: 3
+    PrepareFrame: 20
+    SpecialTotalFrame: 360
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    GuideYMinusZero: false
+    XRate: 1.600000023841858
+    YMax: 0.1599999964237213
+    YMinusRate: 0
+    YPlusRate: 4
+    ZRate: 2

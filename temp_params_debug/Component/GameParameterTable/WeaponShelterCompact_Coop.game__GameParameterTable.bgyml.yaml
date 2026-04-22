@@ -1,0 +1,125 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponShelterCompact.game__GameParameterTable.gyml
+GameParameters:
+  spl__BulletShelterCanopyParam:
+    $type: spl__BulletShelterCanopyParam
+    CanopyDamage: 500
+    CanopyHoldKnockBackCoreImpactNP: 80
+    CanopyMoveKnockBackCoreImpactNP: 80
+  spl__BulletShelterShotgunParam:
+    $type: spl__BulletShelterShotgunParam
+    DamageEffectiveTotalMax: 1500
+    GroupParams:
+      - AddDegree: 0
+        CollisionParam:
+          ChangeFrameForField: 0
+          ChangeFrameForPlayer: 0
+          EndRadiusForField: 0.25
+          EndRadiusForPlayer: 0.25
+          FriendThroughFrameForPlayer: 0
+          InitRadiusForField: 0.25
+          InitRadiusForPlayer: 0.25
+        DamageParam:
+          ReduceEndFrame: 24
+          ReduceStartFrame: 8
+          ValueMax: 300
+          ValueMin: 250
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 0
+        HorizontalOffset: 0
+        InitVelRandom: 0
+        MoveParam:
+          BrakeAirResist: 0.36000001430511475
+          BrakeGravity: 0.07000000029802322
+          BrakeToFreeStateFrame: 4
+          BrakeToFreeVelocityXZ: 0.23549999296665192
+          BrakeToFreeVelocityY: -0.15000000596046448
+          FreeAirResist: 0.019999999552965164
+          FreeGravity: 0.01600000075995922
+          GoStraightStateEndMaxSpeed: 1.9084999561309814
+          GoStraightToBrakeStateFrame: 4
+          SpawnSpeed: 2
+        PaintParam:
+          WidthHalfFar: 1.6200000047683716
+          WidthHalfMiddle: 1.6200000047683716
+          WidthHalfNear: 1.899999976158142
+        TotalNum: 1
+        VerticalDegree: 0
+        VerticalOffset: 0
+      - AddDegree: 0
+        CollisionParam:
+          ChangeFrameForField: 0
+          ChangeFrameForPlayer: 0
+          EndRadiusForField: 0.1599999964237213
+          EndRadiusForPlayer: 0.1599999964237213
+          FriendThroughFrameForPlayer: 0
+          InitRadiusForField: 0.1599999964237213
+          InitRadiusForPlayer: 0.1599999964237213
+        DamageParam:
+          ReduceEndFrame: 24
+          ReduceStartFrame: 8
+          ValueMax: 300
+          ValueMin: 250
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 4
+        HorizontalOffset: 0.11999999731779099
+        InitVelRandom: 0.20000000298023224
+        MoveParam:
+          BrakeAirResist: 0.36000001430511475
+          BrakeGravity: 0.07000000029802322
+          BrakeToFreeStateFrame: 4
+          BrakeToFreeVelocityXZ: 0.23549999296665192
+          BrakeToFreeVelocityY: -0.15000000596046448
+          FreeAirResist: 0.019999999552965164
+          FreeGravity: 0.01600000075995922
+          GoStraightStateEndMaxSpeed: 1.9084999561309814
+          GoStraightToBrakeStateFrame: 4
+          SpawnSpeed: 2
+        PaintParam:
+          WidthHalfFar: 1.6200000047683716
+          WidthHalfMiddle: 1.6200000047683716
+          WidthHalfNear: 1.6200000047683716
+        TotalNum: 2
+        VerticalDegree: 2.700000047683716
+        VerticalOffset: 0.10000000149011612
+      - AddDegree: 45
+        CollisionParam:
+          ChangeFrameForField: 0
+          ChangeFrameForPlayer: 0
+          EndRadiusForField: 0.1599999964237213
+          EndRadiusForPlayer: 0.1599999964237213
+          FriendThroughFrameForPlayer: 0
+          InitRadiusForField: 0.1599999964237213
+          InitRadiusForPlayer: 0.1599999964237213
+        DamageParam:
+          ReduceEndFrame: 24
+          ReduceStartFrame: 8
+          ValueMax: 300
+          ValueMin: 250
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 2
+        HorizontalOffset: 0.05000000074505806
+        InitVelRandom: 0.20000000298023224
+        MoveParam:
+          BrakeAirResist: 0.36000001430511475
+          BrakeGravity: 0.07000000029802322
+          BrakeToFreeStateFrame: 4
+          BrakeToFreeVelocityXZ: 0.23549999296665192
+          BrakeToFreeVelocityY: -0.15000000596046448
+          FreeAirResist: 0.019999999552965164
+          FreeGravity: 0.01600000075995922
+          GoStraightStateEndMaxSpeed: 1.9084999561309814
+          GoStraightToBrakeStateFrame: 4
+          SpawnSpeed: 2
+        PaintParam:
+          WidthHalfFar: 1.6200000047683716
+          WidthHalfMiddle: 1.6200000047683716
+          WidthHalfNear: 1.6200000047683716
+        TotalNum: 4
+        VerticalDegree: 2.5999999046325684
+        VerticalOffset: 0.05000000074505806
+  spl__WeaponShelterCanopyParam:
+    $type: spl__WeaponShelterCanopyParam
+  spl__WeaponShelterShotgunParam:
+    $type: spl__WeaponShelterShotgunParam
+    InkConsume: 0.029999999329447746

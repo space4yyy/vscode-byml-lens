@@ -110,7 +110,8 @@ class SarcRedirectProvider {
     revertCustomDocument() { return Promise.resolve(); }
 }
 function activate(context) {
-    logger_js_1.Logger.init();
+    // 0. Initialize Logger
+    logger_js_1.Logger.setChannel(vscode.window.createOutputChannel("BYML Lens"));
     try {
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', new packFsProvider_js_1.PackFileSystemProvider(), { isCaseSensitive: true }));
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', new bymlFsProvider_js_1.BymlYamlProvider(), { isCaseSensitive: true }));

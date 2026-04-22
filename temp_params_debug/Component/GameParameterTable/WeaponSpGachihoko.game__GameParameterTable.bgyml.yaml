@@ -1,0 +1,91 @@
+GameParameters:
+  BlastParamFullCharge:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 3
+    CrossPaintRadius: 3
+    DamageOffsetY: 0.5
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 4.599999904632568
+      - Damage: 400
+        Distance: 7
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 12
+    PaintOffsetY: 0.5
+    PaintRadius: 5
+    SplashAroundParam:
+      Num: 15
+      PaintRadius: 1.440000057220459
+      PitchMax: 45
+      PitchMin: 10
+      VelocityMax: 0.5199999809265137
+      VelocityMin: 0.44999998807907104
+  CollisionParam:
+    $type: spl__BulletSpGachihokoCollisionParam
+  DamageParam:
+    $type: spl__BulletSpGachihokoDamageParam
+    DirectAccelFullCharge: 200
+    DirectAccelMaxCharge: 200
+    DirectAccelMinCharge: 100
+  MoveParam:
+    $type: spl__BulletSpGachihokoParam
+    GuideHitCollisionType: EnemyOffFenceOff
+    GuideRadius: 0.1599999964237213
+    SpawnSpeedY: 0.14000000059604645
+    SpawnSpeedYFullCharge: 0.2800000011920929
+    SpawnSpeedYMaxCharge: 0.20999999344348907
+    SpawnSpeedZFullCharge: 1.5
+    SpawnSpeedZMaxCharge: 1.2000000476837158
+    SpawnSpeedZSpecUp:
+      High: 0.800000011920929
+      Low: 0.800000011920929
+      Mid: 0.800000011920929
+  SplashNearestParam:
+    $type: spl__BulletSplashSpGachihokoNearestParam
+    PaintRadiusFullCharge: 2.4000000953674316
+    PaintRadiusMaxCharge: 2.4000000953674316
+    PaintRadiusMinCharge: 1.7999999523162842
+    SpawnOffset:
+      X: 0
+      "Y": -1.399999976158142
+  SplashPaintSpawnParam:
+    $type: spl__BulletSplashSpGachihokoPaintSpawnParam
+    PaintRadiusFullCharge: 2.4000000953674316
+    PaintRadiusMaxCharge: 2.4000000953674316
+    PaintRadiusMinCharge: 1.7999999523162842
+  SplashWallHitParam:
+    $type: spl__BulletSpGachihokoSplashWallHitParam
+    WallDropCollisionPaintParam:
+      FallPeriodFirstSecondTargetAlp: 1
+      PaintRadiusFall: 0.800000011920929
+      PaintRadiusGround: 0.699999988079071
+      PaintRadiusShock: 1.2000000476837158
+    WallDropMoveParam:
+      FallPeriodFirstFrameMax: 40
+      FallPeriodFirstFrameMin: 20
+      FallPeriodFirstTargetSpeed: 0.05000000074505806
+      FallPeriodLastFrameMax: 35
+      FallPeriodLastFrameMin: 15
+      FallPeriodSecondFrame: 20
+      FallPeriodSecondTargetSpeed: 0.05999999865889549
+  WeaponParam:
+    $type: spl__WeaponSpGachihokoParam
+    KnockBackParamFullCharge:
+      AirBreakRt: 0.800000011920929
+      ImpactValue: 0.11999999731779099
+      StickDownRt: 5
+    KnockBackParamMaxCharge:
+      AirBreakRt: 0.800000011920929
+      ImpactValue: 0.09000000357627869
+      StickDownRt: 5
+    KnockBackParamMinCharge:
+      AirBreakRt: 0.800000011920929
+      ImpactValue: 0.05999999865889549
+      StickDownRt: 5
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0
+    YPlusRate: 0
+    ZRate: 0

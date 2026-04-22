@@ -1,0 +1,222 @@
+GameParameters:
+  BodyParam:
+    $type: spl__BulletRollerBodyParam
+    CollisionParam:
+      DownRayCastLength: 0.6499999761581421
+      KnockBackDefeat: true
+      KnockBackOpponent:
+        AccelMax: 1000
+        AccelMin: 500
+        MyVelocityRate: 30
+        OpponentVelocityRate: 4800
+      KnockBackRollerPlayerDamageOff:
+        AccelMax: 350
+        AccelMin: 350
+        MyVelocityRate: 4800
+        OpponentVelocityRate: 30
+      KnockBackRollerPlayerDamageOn:
+        AccelMax: 720
+        AccelMin: 540
+        MyVelocityRate: 4800
+        OpponentVelocityRate: 30
+      Radius: 0.4000000059604645
+      WidthHalf: 0.800000011920929
+    Damage: 200
+    PaintParam:
+      SpeedMax: 0.19200000166893005
+      SpeedMin: 0.11999999731779099
+      WidthHalfMax: 0.6000000238418579
+      WidthHalfMin: 0.6000000238418579
+    SideParam:
+      CheckLength: 0.5199999809265137
+      Radius: 0.75
+  BulletAdditionMovePlayerSplashNearestParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0.30000001192092896
+    YPlusRate: 0
+    ZRate: 0.30000001192092896
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp_SlosherAndBrush
+    BaseDistance: 12.5
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+    WeaponSpeedType: Fast
+  SwingUnitGroupParam:
+    $type: spl__BulletRollerBrushInkUnitGroupParam
+    DamageParam:
+      DamageRejectEndFrame: 40
+      DamageRejectRate: 0.5
+      DamageRejectStartFrame: 20
+      Inside:
+        DamageHighDistance: 6.800000190734863
+        DamageHighValue: 250
+        DamageLowDistance: 10.300000190734863
+        DamageLowValue: 150
+        DamageMaxDistance: 4.300000190734863
+        DamageMaxValue: 300
+        DamageMinDistance: 10.300000190734863
+        DamageMinValue: 150
+        Degree: 60
+        FinalDamageMinValue: 150
+        InsideDistanceXZ: 0
+      Outside:
+        DamageHighDistance: 6.800000190734863
+        DamageHighValue: 250
+        DamageLowDistance: 10.300000190734863
+        DamageLowValue: 150
+        DamageMaxDistance: 4.300000190734863
+        DamageMaxValue: 300
+        DamageMinDistance: 10.300000190734863
+        DamageMinValue: 150
+        DamageRate: 1
+        Degree: 80
+        FinalDamageMinValue: 150
+    SplashNearestParam:
+      LoopNum: 6
+      OrderNum: 2
+      SpawnParam:
+        MaxHeight: 1000
+        Offset:
+          X: -0.20000000298023224
+          "Y": -1
+          Z: 0.20000000298023224
+        PaintWidthHalf: 1.5
+        Visible: true
+    Unit:
+      - AddSpawnSpeedYRateBySpeed: -0.019999999552965164
+        BulletNum: 2
+        DepletionBulletNum: 1
+        DepletionSpeedRate: 0.5
+        SpawnPositionOffsetHeight: 0
+        SpawnPositionRandomCube: 0.10000000149011612
+        SpawnPositionWidth: 0.05000000074505806
+        SpawnRotateYDegreeLeftToRight: -10
+        SpawnRotateYDegreeRightToLeft: 10
+        SpawnSpeedBase: 0.7200000286102295
+        SpawnSpeedRandom: 0.11999999731779099
+        SpawnWideDegree: 18
+        SwerveRateBySpeed: 0.10000000149011612
+        UnitParam:
+          CollisionParam:
+            ChangeFrameForField: 2
+            ChangeFrameForPlayer: 5
+            DepletionRate: 0.5
+            EndRadiusForField: 0.800000011920929
+            EndRadiusForPlayer: 1.5
+            FriendThroughFrameForPlayer: 3
+            InitRadiusForField: 0.10000000149011612
+            InitRadiusForPlayer: 0.11500000208616257
+          DrawSizeParam:
+            EndRadius: 0.3499999940395355
+            InitRadius: 0.3499999940395355
+          MoveParam:
+            FreeAirResist: 0.10000000149011612
+            FreeGravity: 0.03999999910593033
+            GoStraightToBrakeStateFrame: 7
+            SpawnSpeed: 0
+          PaintParam:
+            ChangeFrameWidthRate: 0.6000000238418579
+            ChangeWidthEndFrame: 45
+            ChangeWidthStartFrame: 18
+            DegreeUseDepthScaleMin: 50
+            DepletionDepthWidthRate: 0.5
+            DepthScaleMaxBreakFree: 2.200000047683716
+            DepthScaleMaxStraight: 2.200000047683716
+            DepthScaleMinBreakFree: 1.399999976158142
+            DepthScaleMinStraight: 1.399999976158142
+            DistanceNear: 10
+            HeightUseDepthScaleMaxBreakFree: 2
+            HeightUseDepthScaleMinBreakFree: 8
+            WidthHalfFar: 2.5510001182556152
+            WidthHalfNear: 2.5510001182556152
+          WallDropCollisionPaintParam:
+            PaintRadiusFall: 0.699999988079071
+            PaintRadiusGround: 0.550000011920929
+            PaintRadiusShock: 1.440000057220459
+          WallDropMoveParam:
+            FallPeriodFirstFrameMax: 90
+            FallPeriodFirstFrameMin: 70
+            FallPeriodFirstTargetSpeed: 0.05999999865889549
+            FallPeriodLastFrameMax: 35
+            FallPeriodLastFrameMin: 20
+            FallPeriodSecondFrame: 5
+            FallPeriodSecondTargetSpeed: 0.07500000298023224
+      - AddSpawnSpeedYRateBySpeed: -0.019999999552965164
+        BulletNum: 1
+        DepletionSpeedRate: 0.5
+        SpawnPositionRandomCube: 0.10000000149011612
+        SpawnPositionWidth: 0.05000000074505806
+        SpawnRotateYDegreeLeftToRight: -10
+        SpawnRotateYDegreeRightToLeft: 10
+        SpawnSpeedBase: 0.44999998807907104
+        SpawnSpeedRandom: 0.11999999731779099
+        SpawnWideDegree: 22
+        SwerveRateBySpeed: 0.30000001192092896
+        UnitParam:
+          CollisionParam:
+            ChangeFrameForField: 1
+            ChangeFrameForPlayer: 2
+            DepletionRate: 0.5
+            EndRadiusForField: 0.4000000059604645
+            EndRadiusForPlayer: 0.8999999761581421
+            FriendThroughFrameForPlayer: 3
+            InitRadiusForField: 0.10000000149011612
+            InitRadiusForPlayer: 0.11500000208616257
+          DrawSizeParam:
+            EndRadius: 0.3499999940395355
+            InitRadius: 0.20000000298023224
+          MoveParam:
+            FreeAirResist: 0.10000000149011612
+            FreeGravity: 0.03999999910593033
+            GoStraightToBrakeStateFrame: 4
+            SpawnSpeed: 0
+          PaintParam:
+            ChangeFrameWidthRate: 0.6000000238418579
+            ChangeWidthEndFrame: 45
+            ChangeWidthStartFrame: 18
+            DegreeUseDepthScaleMin: 50
+            DepletionDepthWidthRate: 0.5
+            DepthScaleMaxBreakFree: 2.200000047683716
+            DepthScaleMaxStraight: 2.200000047683716
+            DepthScaleMinBreakFree: 1.399999976158142
+            DepthScaleMinStraight: 1.399999976158142
+            DistanceFar: 5
+            DistanceNear: 1
+            HeightUseDepthScaleMaxBreakFree: 2
+            HeightUseDepthScaleMinBreakFree: 8
+            WidthHalfFar: 1.8140000104904175
+            WidthHalfNear: 1.8140000104904175
+          WallDropCollisionPaintParam:
+            PaintRadiusFall: 0.5
+            PaintRadiusGround: 0.4000000059604645
+            PaintRadiusShock: 1.2000000476837158
+          WallDropMoveParam:
+            FallPeriodFirstFrameMax: 80
+            FallPeriodFirstFrameMin: 60
+            FallPeriodFirstTargetSpeed: 0.05000000074505806
+            FallPeriodLastFrameMax: 35
+            FallPeriodLastFrameMin: 20
+            FallPeriodSecondFrame: 5
+            FallPeriodSecondTargetSpeed: 0.07000000029802322
+  WeaponRollParam:
+    $type: spl__WeaponBrushRollParam
+    InkConsumeMaxPerFrame: 0.0012499999720603228
+    InkConsumeMinPerFrame: 0.0012499999720603228
+    NoOpInkEffect: true
+    SpeedInkConsumeMax: 0.1979999989271164
+    SpeedInkConsumeMin: 0.1979999989271164
+    SpeedNormal: 0.1979999989271164
+    SwingRepeatFrame: 6
+    ToPaintFrame: 12
+  WeaponSwingParam:
+    $type: spl__WeaponRollerSwingParam
+    GuideParam:
+      Frame: 8
+      WidthScale: 1.2000000476837158
+    InkConsume: 0.019999999552965164
+    InkRecoverStop: 30
+    SwingFrame: 1
+    SwingMoveSpeed: 0.05000000074505806
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2

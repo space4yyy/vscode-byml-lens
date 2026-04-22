@@ -140,7 +140,8 @@ program.command('pack')
                     if (baseName.endsWith('.byml') || baseName.endsWith('.bgyml')) {
                         try {
                             const yamlStr = fs.readFileSync(file, 'utf-8');
-                            finalData = byml.yamlToByml(yamlStr);
+                            const encoded = byml.yamlToByml(yamlStr);
+                            finalData = Buffer.from(encoded);
                             relPath = baseName; // Strip .yaml for the archive
                             console.log(`Converted back: ${relPath}`);
                         } catch (e) {

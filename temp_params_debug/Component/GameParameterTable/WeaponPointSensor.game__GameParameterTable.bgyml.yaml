@@ -1,0 +1,36 @@
+GameParameters:
+  AreaParam:
+    $type: spl__BulletPointSensorAreaParam
+    Distance:
+      High: 6
+      Low: 6
+      Mid: 6
+    MarkingFrameSubSpec:
+      High: 960
+      Low: 480
+      Mid: 720
+  MoveParam:
+    $type: spl__BulletPointSensorParam
+    GuideHitCollisionType: EnemyOnFenceOnTorpedoOff
+    MarkingFrameSubSpec:
+      High: 960
+      Low: 480
+      Mid: 720
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.8700000047683716
+      Low: 1.3799999952316284
+      Mid: 1.6399999856948853
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+    SubInkSaveLv: 1
+  WeaponParam:
+    $type: spl__WeaponSubParam
+    InkConsume: 0.44999998807907104
+    InkRecoverStop: 75
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.3199999928474426
+    YPlusRate: 4
