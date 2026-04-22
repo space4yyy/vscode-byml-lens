@@ -1,0 +1,112 @@
+GameParameters:
+  CollisionLapOverParam:
+    $type: spl__BulletSimpleCollisionParam
+    ChangeFrameForField: 0
+    ChangeFrameForPlayer: 0
+    EndRadiusForField: 0.20000000298023224
+    EndRadiusForPlayer: 0.3100000023841858
+    FriendThroughFrameForPlayer: 0
+    InitRadiusForField: 0.20000000298023224
+    InitRadiusForPlayer: 0.3100000023841858
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    ChangeFrameForField: 0
+    ChangeFrameForPlayer: 0
+    EndRadiusForField: 0.20000000298023224
+    EndRadiusForPlayer: 0.25999999046325684
+    FriendThroughFrameForPlayer: 0
+    InitRadiusForField: 0.20000000298023224
+    InitRadiusForPlayer: 0.25999999046325684
+  DamageParam:
+    $type: spl__BulletShooterDamageParam
+    ReduceEndFrame: 16
+    ReduceStartFrame: 8
+    ValueMax: 280
+    ValueMin: 140
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    FreeGravity: 0.01600000075995922
+    GoStraightStateEndMaxSpeed: 2.63100004196167
+    GoStraightToBrakeStateFrame: 3
+    SpawnSpeed: 2.63700008392334
+  PaintParam:
+    $type: spl__BulletShooterPaintParam
+    DepthScaleMax: 2.180000066757202
+    DepthScaleMaxBreakFree: 2.180000066757202
+    DepthScaleMin: 1.2699999809265137
+    DepthScaleMinBreakFree: 1.090000033378601
+    DistanceMiddle: 1.100000023841858
+    WidthHalfFar: 1.7100000381469727
+    WidthHalfMiddle: 1.7599999904632568
+    WidthHalfNear: 1.7599999904632568
+  SideStepParam:
+    $type: spl__PlayerSideStepParam
+    ChargeFrame: 5
+    InkConsume: 0.029999999329447746
+    IsShootableInMove: true
+    MoveDist: 3.5
+    RepeatCnt: 4
+    SplashSlideParam:
+      PaintWidthHalf: 1.7999999523162842
+    UnrelaxFrameMove: 45
+    UnrelaxFrameMove_Last: 45
+    UnrelaxFrameNoSideStep: 45
+    UnrelaxFrameNoSideStep_Last: 45
+    UnrelaxFrameNoSquid: 45
+    UnrelaxFrameNoSquid_Last: 45
+    UnrelaxFrameNoWeapon: 8
+    UnrelaxFrameNoWeapon_Last: 8
+    UnrelaxFrameOneMuzzle: 45
+    UnrelaxFrameOneMuzzle_Last: 45
+  SplashPaintParam:
+    $type: spl__BulletSplashShooterPaintParam
+    DepthMaxDropHeight: 3
+    DepthMinDropHeight: 10
+    DepthScaleMin: 1
+    WidthHalf: 1.5410000085830688
+    WidthHalfNearest: 2.157399892807007
+  SplashSpawnParam:
+    $type: spl__BulletSplashShooterSpawnParam
+    ForceSpawnNearestAddNumArray: []
+    SpawnBetweenLength: 13.5
+    SpawnNearestLength: 1
+    SpawnNum: 1.2000000476837158
+    SplitNum: 7
+  WallDropCollisionPaintParam:
+    $type: spl__BulletWallDropCollisionPaintParam
+    PaintRadiusFall: 0.6499999761581421
+    PaintRadiusGround: 0.6000000238418579
+    PaintRadiusShock: 1.2999999523162842
+  WallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMax: 40
+    FallPeriodFirstFrameMin: 20
+    FallPeriodFirstTargetSpeed: 0.05999999865889549
+    FallPeriodLastFrameMax: 35
+    FallPeriodLastFrameMin: 15
+    FallPeriodSecondFrame: 10
+    FallPeriodSecondTargetSpeed: 0.05999999865889549
+    FreeGravityType: value_0_008
+  WeaponParam:
+    $type: spl__WeaponManeuverParam
+    InkConsume: 0.00800000037997961
+    Jump_DegBiasDecreaseStartFrame: 25
+    Jump_DegBiasEndFrame: 70
+    Jump_DegBiasMax: 0.4000000059604645
+    Jump_DegSwerve: 12.800000190734863
+    LapOver_DegSwerve: 2.700000047683716
+    LapOver_RepeatFrame: 5
+    MoveSpeed: 0.07199999690055847
+    RepeatFrame: 6
+    ShotGuideFrame: 8
+    Stand_DegBiasDecrease: 0.004999999888241291
+    Stand_DegBiasKf: 0.03999999910593033
+    Stand_DegBiasMin: 0.03999999910593033
+    Stand_DegSwerve: 7.400000095367432
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2

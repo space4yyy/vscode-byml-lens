@@ -1,0 +1,10 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponSpNiceBall.game__GameParameterTable.gyml
+GameParameters:
+  BlastParam:
+    $type: spl__BulletSpNiceBallBlastParam
+    DamageRadiusEnd: 13
+    DamageValue: 70
+    PaintRadiusEnd: 15
+  MoveParam:
+    $type: spl__BulletSpNiceBallParam

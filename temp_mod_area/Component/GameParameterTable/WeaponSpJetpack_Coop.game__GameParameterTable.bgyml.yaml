@@ -1,0 +1,23 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponSpJetpack.game__GameParameterTable.gyml
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 1000
+        Distance: 2.0999999046325684
+      - Damage: 750
+        Distance: 5
+  JetParam:
+    $type: spl__BulletSpJetpackJetParam
+    DamageSpanFrame: 16
+    DamageValue: 20
+  MoveParam:
+    $type: spl__BulletSpJetpackLauncherParam
+    DamageToObject: 3000
+  WeaponParam:
+    $type: spl__WeaponSpJetpackParam
+    SpecialTotalFrame:
+      High: 600
+      Low: 600
+      Mid: 600

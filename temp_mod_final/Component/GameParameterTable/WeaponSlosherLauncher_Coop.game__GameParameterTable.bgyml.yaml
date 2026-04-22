@@ -1,0 +1,266 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponSlosherLauncher.game__GameParameterTable.gyml
+GameParameters:
+  SplashSlosherSpiralParam:
+    $type: spl__BulletSplashSlosherSpiralParam
+  UnitGroupParam:
+    $type: spl__BulletSlosherUnitGroupParam
+    Unit:
+      - AddSpawnSpeedYRateByXZ: 0.10000000149011612
+        AfterOffsetDelayFrame: 0
+        AfterOffsetSpawnSpeed: 0
+        AfterPaintParam:
+          DepthScaleFar: 1.5
+          DepthScaleNear: 1.5
+          DistanceXZFar: 10
+          DistanceXZNear: 10
+          ScaleEndFallDistance: 10
+          ScaleStartFallDistance: 1.5
+          WidthDepthScaleFall: 0.5
+          WidthHalfFar: 0
+          WidthHalfNear: 0
+        AfterWallDropCollisionPaintPrm:
+          FallPeriodFirstSecondTargetAlp: 1
+          PaintRadiusFall: 1
+          PaintRadiusGround: 0.699999988079071
+          PaintRadiusShock: 2.200000047683716
+        AfterWallDropMoveParam:
+          FallPeriodFirstFrameMax: 40
+          FallPeriodFirstFrameMin: 20
+          FallPeriodFirstTargetSpeed: 0.05000000074505806
+          FallPeriodLastFrameMax: 35
+          FallPeriodLastFrameMin: 15
+          FallPeriodSecondFrame: 20
+          FallPeriodSecondTargetSpeed: 0.05999999865889549
+          FreeGravityType: value_0_008
+        BaseRotateYDegree: 0
+        BulletNum: 1
+        CollisionParam:
+          AfterOffsetEndRadiusForField: 0
+          AfterOffsetEndRadiusForPlayer: 0
+          AfterOffsetInitRadiusForField: 0
+          AfterOffsetInitRadiusForPlayer: 0
+          ChangeFrameForField: 4
+          ChangeFrameForPlayer: 5
+          EndRadiusForField: 0.10000000149011612
+          EndRadiusForPlayer: 0.25
+          FriendThroughFrameForPlayer: 2
+          InitRadiusForField: 0.009999999776482582
+          InitRadiusForPlayer: 0.02500000037252903
+        DamageParam:
+          GroupNum: 0
+          ReduceEndFallDistance: 8.5
+          ReduceStartFallDistance: 1.5
+          ValueMax: 1700
+          ValueMin: 1000
+        DrawSizeParam:
+          AfterOffsetEndRadius: 0
+          AfterOffsetInitRadius: 0
+          ChangeFrame: 0
+          EndRadius: 0.10000000149011612
+          InitRadius: 0.10000000149011612
+          TailID: 0
+          TailLengthMax: 0.5
+          TailLengthMaxLastTail: -1
+          TailLengthMin: 0.5
+          TailSolidFrame: 5
+        HitEffectBigOrderNum: []
+        MoveParam:
+          BrakeAirResist: 0.10000000149011612
+          BrakeGravity: 0.03999999910593033
+          BrakeToFreeStateFrame: 1
+          BrakeToFreeVelocityXZ: 20
+          BrakeToFreeVelocityY: 10
+          FreeAirResist: 0.1599999964237213
+          FreeGravity: 0.05999999865889549
+          GoStraightStateEndMaxSpeed: 10
+          GoStraightToBrakeStateFrame: 5
+          SpawnSpeed: 0
+        PaintParam:
+          DepthScaleFar: 0.8970000147819519
+          DepthScaleNear: 0.8970000147819519
+          DistanceXZFar: 15
+          DistanceXZNear: 5
+          ScaleEndFallDistance: 10
+          ScaleStartFallDistance: 1.5
+          WidthDepthScaleFall: 0.5
+          WidthHalfFar: 4.156000137329102
+          WidthHalfNear: 4.156000137329102
+        RandomRotateYBias: 0.44999998807907104
+        RandomRotateYDegree: 0
+        RandomRotateYOffOrderNum: []
+        SpawnSpeedAir: 1.4563000202178955
+        SpawnSpeedGround: 1.4737000465393066
+        SplashAndSplashWallHitSpawnPrm:
+          Combination:
+            - OrderNum: 0
+              SplashArrayOrderNum: 0
+              SplashWallHitArrayOrderNum: 0
+              TotalNum: 4
+          SplashParam:
+            - DrawSizeCollisionPaintParam:
+                CollisionParam:
+                  ChangeFrameForField: 0
+                  ChangeFrameForPlayer: 0
+                  EndRadiusForField: 0.10000000149011612
+                  EndRadiusForPlayer: 0.10000000149011612
+                  FriendThroughFrameForPlayer: 0
+                  InitRadiusForField: 0.10000000149011612
+                  InitRadiusForPlayer: 0.10000000149011612
+                DrawRadius: 0.20000000298023224
+                PaintDepthScale: 2.200000047683716
+                PaintWidthHalf: 1.559000015258789
+              SpawnParam:
+                FirstSplashRateForLengthMax: 0.3499999940395355
+                FirstSplashRateForLengthMin: 0.10000000149011612
+                SpawnBetweenLength: 3.5999999046325684
+                SpawnNum: 4
+          SplashWallHitParam:
+            - SpawnParam:
+                BetweenDistance: 1.25
+                DistanceXZRate: 1.5
+                FirstDistance: 2.5
+                VelocityMinusYRate: 0.44999998807907104
+              WallDropCollisionPaintParam:
+                FallPeriodFirstSecondTargetAlp: 1
+                PaintRadiusFall: 0.6499999761581421
+                PaintRadiusGround: 0.4000000059604645
+                PaintRadiusShock: 0.8999999761581421
+              WallDropMoveParam:
+                FallPeriodFirstFrameMax: 40
+                FallPeriodFirstFrameMin: 20
+                FallPeriodFirstTargetSpeed: 0.05000000074505806
+                FallPeriodLastFrameMax: 35
+                FallPeriodLastFrameMin: 20
+                FallPeriodSecondFrame: 10
+                FallPeriodSecondTargetSpeed: 0.03999999910593033
+                FreeGravityType: value_0_008
+        SplashSlosherHitParam:
+          - CollisionRadius: 0.20000000298023224
+            DrawRadius: 0.4000000059604645
+            PaintRadiusRatePerWidthHalf: 0.6000000238418579
+            SpawnOffsetHitByPlayer: 1
+            SpawnOffsetY: 1.600000023841858
+        UnitDelayFrame: 0
+        WallDropCollisionPaintParam:
+          FallPeriodFirstSecondTargetAlp: 1
+          PaintRadiusFall: 1
+          PaintRadiusGround: 0.699999988079071
+          PaintRadiusShock: 2.640000104904175
+        WallDropMoveParam:
+          FallPeriodFirstFrameMax: 40
+          FallPeriodFirstFrameMin: 20
+          FallPeriodFirstTargetSpeed: 0.05000000074505806
+          FallPeriodLastFrameMax: 35
+          FallPeriodLastFrameMin: 15
+          FallPeriodSecondFrame: 20
+          FallPeriodSecondTargetSpeed: 0.05999999865889549
+          FreeGravityType: value_0_008
+      - AddSpawnSpeedYRateByXZ: 0.10000000149011612
+        AfterOffsetDelayFrame: 2
+        AfterOffsetSpawnSpeed: 0
+        AfterPaintParam:
+          DepthScaleFar: 1
+          DepthScaleNear: 1
+          DistanceXZFar: 0
+          DistanceXZNear: 0
+          ScaleEndFallDistance: 10
+          ScaleStartFallDistance: 1.5
+          WidthDepthScaleFall: 0.5
+          WidthHalfFar: 0
+          WidthHalfNear: 0
+        AfterWallDropCollisionPaintPrm:
+          FallPeriodFirstSecondTargetAlp: 1
+          PaintRadiusFall: 1
+          PaintRadiusGround: 0.699999988079071
+          PaintRadiusShock: 2
+        AfterWallDropMoveParam:
+          FallPeriodFirstFrameMax: 30
+          FallPeriodFirstFrameMin: 10
+          FallPeriodFirstTargetSpeed: 0.05999999865889549
+          FallPeriodLastFrameMax: 20
+          FallPeriodLastFrameMin: 15
+          FallPeriodSecondFrame: 10
+          FallPeriodSecondTargetSpeed: 0.05999999865889549
+          FreeGravityType: value_0_008
+        BaseRotateYDegree: 0
+        BulletNum: 4
+        CollisionParam:
+          AfterOffsetEndRadiusForField: 0
+          AfterOffsetEndRadiusForPlayer: 0.4699999988079071
+          AfterOffsetInitRadiusForField: 0
+          AfterOffsetInitRadiusForPlayer: 0.04699999839067459
+          ChangeFrameForField: 4
+          ChangeFrameForPlayer: 5
+          EndRadiusForField: 0
+          EndRadiusForPlayer: 0.4699999988079071
+          FriendThroughFrameForPlayer: 2
+          InitRadiusForField: 0
+          InitRadiusForPlayer: 0.04699999839067459
+        DamageParam:
+          GroupNum: 0
+          ReduceEndFallDistance: 8.5
+          ReduceStartFallDistance: 1.5
+          ValueMax: 1000
+          ValueMin: 1000
+        DrawSizeParam:
+          AfterOffsetEndRadius: 0
+          AfterOffsetInitRadius: 0
+          ChangeFrame: 0
+          EndRadius: 0
+          InitRadius: 0
+          TailID: 0
+          TailLengthMax: 0.5
+          TailLengthMaxLastTail: -1
+          TailLengthMin: 0.5
+          TailSolidFrame: 5
+        HitEffectBigOrderNum: []
+        MoveParam:
+          BrakeAirResist: 0.10000000149011612
+          BrakeGravity: 0.03999999910593033
+          BrakeToFreeStateFrame: 1
+          BrakeToFreeVelocityXZ: 20
+          BrakeToFreeVelocityY: 10
+          FreeAirResist: 0.1599999964237213
+          FreeGravity: 0.05999999865889549
+          GoStraightStateEndMaxSpeed: 10
+          GoStraightToBrakeStateFrame: 5
+          SpawnSpeed: 0
+        PaintParam:
+          DepthScaleFar: 1
+          DepthScaleNear: 1
+          DistanceXZFar: 0
+          DistanceXZNear: 0
+          ScaleEndFallDistance: 10
+          ScaleStartFallDistance: 1.5
+          WidthDepthScaleFall: 0.5
+          WidthHalfFar: 0
+          WidthHalfNear: 0
+        RandomRotateYBias: 0.44999998807907104
+        RandomRotateYDegree: 0
+        RandomRotateYOffOrderNum: []
+        SpawnSpeedAir: 1.4563000202178955
+        SpawnSpeedGround: 1.4737000465393066
+        SplashAndSplashWallHitSpawnPrm:
+          Combination: []
+          SplashParam: []
+          SplashWallHitParam: []
+        SplashSlosherHitParam: []
+        UnitDelayFrame: 1
+        WallDropCollisionPaintParam:
+          FallPeriodFirstSecondTargetAlp: 1
+          PaintRadiusFall: 1
+          PaintRadiusGround: 0.699999988079071
+          PaintRadiusShock: 2.4000000953674316
+        WallDropMoveParam:
+          FallPeriodFirstFrameMax: 30
+          FallPeriodFirstFrameMin: 10
+          FallPeriodFirstTargetSpeed: 0.05999999865889549
+          FallPeriodLastFrameMax: 20
+          FallPeriodLastFrameMin: 15
+          FallPeriodSecondFrame: 10
+          FallPeriodSecondTargetSpeed: 0.05999999865889549
+          FreeGravityType: value_0_008
+  WeaponParam:
+    $type: spl__WeaponSlosherParam
+    InkConsume: 0.054999999701976776

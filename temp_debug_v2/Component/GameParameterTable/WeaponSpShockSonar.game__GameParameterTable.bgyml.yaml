@@ -1,0 +1,80 @@
+GameParameters:
+  spl__BulletInformImpactControlForGeyserParam:
+    $type: spl__BulletInformImpactControlForGeyserParam
+    AddSpeedPerImpact: 0.05999999865889549
+  spl__BulletSpShockSonarParam:
+    $type: spl__BulletSpShockSonarParam
+    GeneratorParam:
+      HeadColRadius: 0.75
+      HitDamage: 300
+      HitDamageInterval: 0.5
+      HitKnockback: 400
+      MarkingFrame: 45
+      MarkingGroundFrameRadiusRatio:
+        - Frame: 4
+          Ratio: 0.1899999976158142
+        - Frame: 10
+          Ratio: 0.4000000059604645
+        - Frame: 18
+          Ratio: 0.6150000095367432
+        - Frame: 27
+          Ratio: 0.6150000095367432
+        - Frame: 37
+          Ratio: 0.6150000095367432
+        - Frame: 47
+          Ratio: 0.6150000095367432
+        - Frame: 57
+          Ratio: 0.6150000095367432
+      MaxHP: 4800
+      MoveParam:
+        FlyGravity: 0.008999999612569809
+        FlyPositionAirResist: 0.0010000000474974513
+        GuideHitCollisionType: Clam
+        SpawnSpeedY: 0.07000000029802322
+        SpawnSpeedYWorldMin: -0.5
+        SpawnSpeedZSpecUp:
+          High: 0.30000001192092896
+          Low: 0.30000001192092896
+          Mid: 0.30000001192092896
+      PoleColHeight: 2.75
+      SphereAnimCurve:
+        Data:
+          - 0
+          - 0
+          - 0
+          - 0.1454544961452484
+          - 0
+          - 0
+          - 0.901515007019043
+          - 1
+          - -0.1383644938468933
+          - 1
+          - 0
+          - 0
+        MaxX: 1
+        Type: Hermit2DSmooth
+      SphereAnimRadius: 0.30000001192092896
+      WaveEmitFrameArray:
+        - 90
+        - 240
+        - 390
+    WaveParam:
+      Damage: 450
+      DamageYMax: 2.799999952316284
+      DamageYMin: -5.199999809265137
+      MaxFrame:
+        High: 216
+        Low: 160
+        Mid: 192
+      MaxRadius:
+        High: 27
+        Low: 20
+        Mid: 24
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0
+    YPlusRate: 0
+    ZRate: 0
+  spl__WeaponSpShockSonarParam:
+    $type: spl__WeaponSpShockSonarParam
+    ShotParam: {}

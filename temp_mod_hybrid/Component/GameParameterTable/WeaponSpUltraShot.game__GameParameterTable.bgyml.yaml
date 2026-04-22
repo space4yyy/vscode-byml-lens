@@ -1,0 +1,82 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 530
+        Distance: 2.5
+      - Damage: 350
+        Distance: 4
+    KnockBackParam:
+      Accel: 470
+      Bias: 0.800000011920929
+      Distance: 8
+    PaintRadius: 3.200000047683716
+    SubSpecialSpecUpList:
+      - SpecUpType: PaintRadius
+        Value:
+          High: 4
+          Low: 3.200000047683716
+          Mid: 3.5999999046325684
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.2999999523162842
+          Low: 1
+          Mid: 1.149999976158142
+  CollisionParam:
+    $type: spl__BulletSpUltraShotCollisionParam
+    ChangeFrameForField: 20
+    ChangeFrameForPlayer: 10
+    EndRadiusForField: 0.30000001192092896
+    EndRadiusForPlayer: 0.75
+    InitRadiusForField: 0.009999999776482582
+    InitRadiusForPlayer: 0.009999999776482582
+  DamageParam:
+    $type: spl__BulletSpUltraShotDamageParam
+    DirectHitDamage: 2200
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    BrakeAirResist: 0.09000000357627869
+    BrakeGravity: 0.09000000357627869
+    BrakeToFreeStateFrame: 10
+    BrakeToFreeVelocityXZ: 1
+    BrakeToFreeVelocityY: -0.10000000149011612
+    FreeAirResist: 0.019850000739097595
+    FreeGravity: 0.019056500867009163
+    GoStraightStateEndMaxSpeed: 1
+    GoStraightToBrakeStateFrame: 18
+    SpawnSpeed: 1
+  UltraShotMoveParam:
+    $type: spl__BulletSpUltraShotMoveParam
+    OrbitalRadiusEnd: 1
+    OrbitalRadiusTransitionFrame: 10
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0
+    YPlusRate: 0
+    ZRate: 0
+  spl__WeaponSpUltraShotParam:
+    $type: spl__WeaponSpUltraShotParam
+    EjectCartridgeAngularVel:
+      X: 35
+      "Y": 0
+      Z: 20
+    EjectCartridgeFadeOutFrame: 5
+    EjectCartridgeFrame: 30
+    EjectCartridgeInitSpeed: 5
+    EjectCartridgeLifeTimeFrame: 60
+    HideCartridgeBeforeEjectFrame: 1
+    HoldAimFrame: 55
+    IsReqShotInStartDelay: true
+    KnockBackParam:
+      AirBreakRt: 0.800000011920929
+      ImpactValue: 0.03999999910593033
+      StickDownRt: 5
+    MoveSpeed: 0.07000000029802322
+    MoveSpeedInCharge: 0.03999999910593033
+    RepeatFrame: 55
+    ShotDelayFrame: 15
+    SpecialDurationFrame:
+      High: 480
+      Low: 330
+      Mid: 405
+    StartDelayFrame: 5

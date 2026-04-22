@@ -1,0 +1,37 @@
+GameParameters:
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    EndRadiusForField: 0.4000000059604645
+    EndRadiusForPlayer: 0.4000000059604645
+    InitRadiusForField: 0.4000000059604645
+    InitRadiusForPlayer: 0.4000000059604645
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    BrakeAirResist: 0
+    BrakeGravity: 0
+    BrakeToFreeStateFrame: 0
+    BrakeToFreeVelocityXZ: 0
+    BrakeToFreeVelocityY: 0
+    FreeAirResist: 0.07000000029802322
+    FreeGravity: 0.019999999552965164
+    GoStraightStateEndMaxSpeed: 0
+    GoStraightToBrakeStateFrame: 0
+    SpawnSpeed: 0
+  WallDropCollisionPaintParam:
+    $type: spl__BulletWallDropCollisionPaintParam
+    PaintRadiusFall: 0.5
+    PaintRadiusGround: 0.4399999976158142
+    PaintRadiusShock: 0.8999999761581421
+  WallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMax: 40
+    FallPeriodFirstFrameMin: 20
+    FallPeriodFirstTargetSpeed: 0.03999999910593033
+    FallPeriodLastFrameMax: 35
+    FallPeriodSecondFrame: 10
+    FallPeriodSecondTargetSpeed: 0.05000000074505806
+  spl__DamageParam:
+    $type: spl__DamageParam
+    DamageSenderArray:
+      - Name: BulletSprinklerInk
+        RefRigidBody: []

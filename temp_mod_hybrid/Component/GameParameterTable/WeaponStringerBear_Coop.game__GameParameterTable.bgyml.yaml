@@ -1,0 +1,249 @@
+GameParameters:
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+    High: 1.5
+    Low: 0
+    Mid: 0.75
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+    Overwrite_ConsumeRt_Main_High: -1
+    Overwrite_ConsumeRt_Main_Low: -1
+    Overwrite_ConsumeRt_Main_Mid: -1
+    Overwrite_MoveVelRt_Shot_High: -1
+    Overwrite_MoveVelRt_Shot_Low: -1
+    Overwrite_MoveVelRt_Shot_Mid: -1
+    WeaponAccType: Mid
+    WeaponSpeedType: Mid
+  spl__BulletStringerParam:
+    $type: spl__BulletStringerParam
+    CollisionParam:
+      ChangeFrameForField: 0
+      ChangeFrameForPlayer: 0
+      EndRadiusForField: 0.20000000298023224
+      EndRadiusForPlayer: 0.18000000715255737
+      FriendThroughFrameForPlayer: 0
+      InitRadiusForField: 0.20000000298023224
+      InitRadiusForPlayer: 0.18000000715255737
+    DamageParam:
+      DirectHitDamageMax: 1500
+      DirectHitDamageMid: 720
+      DirectHitDamageMin: 350
+    DetonationParam:
+      BlastParam:
+        CollisionRadiusForPaint: 0
+        CrossPaintCheckLength: 2
+        CrossPaintRadius: 2
+        CrossPaintTexture: Bomb00
+        CrossPaintUseChageArea: false
+        DamageAttackerPriority: false
+        DamageLinear: false
+        DamageOffsetY: 0.6000000238418579
+        DistanceDamage:
+          - Damage: 400
+            Distance: 2
+        KnockBackParam:
+          Accel: 200
+          Bias: 0.5
+          DirectionZeroAccelRate: 0
+          Distance: 2
+        PaintHeight: 4
+        PaintOffsetY: 0.6000000238418579
+        PaintRadius: 2
+        PaintTexture: Bomb00
+        PlaneDamage: []
+        ReactionVel: 100
+        SplashAroundParam:
+          Num: 0
+          OffsetY: 0.5
+          PaintRadius: 1
+          PitchMax: 30
+          PitchMin: 5
+          VelocityMax: 0.5400000214576721
+          VelocityMin: 0.47999998927116394
+        SubSpecialSpecUpList: []
+      DetonationFrame: 45
+      IsExplosiveBoltMidCharge: true
+      IsExplosiveBoltMinCharge: false
+    DrawParam:
+      AttInterpRate: 0.10000000149011612
+      CapsuleLength: 1.100000023841858
+      CapsuleRadius: 0.20000000298023224
+      IsDrawCapsule: false
+      IsDrawCollision: false
+    Effect1stParam:
+      DelayFrame: 8
+      MaxLen: 13.074999809265137
+    Effect2ndParam:
+      LandArrowMinAngle: 45
+      LandArrowRiseFrame: 1
+      SmokeInterval: 0.15937499701976776
+      SmokeStartLen: 0
+    MoveParam:
+      BrakeAirResist: 0.10000000149011612
+      BrakeGravity: 0.03999999910593033
+      BrakeToFreeStateFrame: 1
+      BrakeToFreeVelocityXZ: 20
+      BrakeToFreeVelocityY: 10
+      FreeAirResist: 0.23999999463558197
+      FreeGravity: 0.15000000596046448
+      GoStraightStateEndMaxSpeed: 10
+      GoStraightToBrakeStateFrame: 4
+      HitWallKeepFrame: 4
+      SpawnSpeed: 0
+      SpawnSpeedMax: 3.8499999046325684
+      SpawnSpeedMid: 2.0999999046325684
+      SpawnSpeedMin: 2.0999999046325684
+    PaintParam:
+      DepthScaleMax: 2.4000000953674316
+      DepthScaleMin: 1.399999976158142
+      PaintDegreeMax: 35
+      PaintDegreeMin: 10
+      WidthHalfMax: 2.799999952316284
+      WidthHalfMid: 2.25
+      WidthHalfMin: 2.25
+    SplashPaintParam:
+      DepthMaxDropHeight: 3
+      DepthMinDropHeight: 10
+      DepthScaleMax: 2.700000047683716
+      DepthScaleMin: 1
+      WidthHalf: 1.4800000190734863
+      WidthHalfNearest: 1.7920000553131104
+    SplashSpawnParam:
+      DropInterval: 10
+      NearestLen: 1.25
+      RandomSpawnVelXMax: 0.019999999552965164
+      RandomSpawnVelYMax: 0.014999999664723873
+      RandomSpawnVelZMax: 0.019999999552965164
+      RandomSpawnVelZMin: 0.009999999776482582
+      SplashNumMax: 5
+      SplitNum: 5
+    WallDropMoveParam:
+      FallPeriodFirstFrameMax: 40
+      FallPeriodFirstFrameMin: 20
+      FallPeriodFirstTargetSpeed: 0.05999999865889549
+      FallPeriodLastFrameMax: 35
+      FallPeriodLastFrameMin: 15
+      FallPeriodSecondFrame: 10
+      FallPeriodSecondTargetSpeed: 0.05999999865889549
+      FreeGravityType: value_0_008
+    WallDropPaintParam:
+      FallPeriodFirstSecondTargetAlp: 1
+      PaintRadiusFall: 0.6499999761581421
+      PaintRadiusGround: 0.6000000238418579
+      PaintRadiusShock: 1.2999999523162842
+  spl__WeaponStringerParam:
+    $type: spl__WeaponStringerParam
+    ChargeKeepParam:
+      EnableKeepChargeAnytime: false
+      EnableKeepChargeTransCancel: false
+      KeepChargeFullFrame: 1
+      KeepChargePreDelayFrame: 23
+      KeepChargePreDelayFrame_Pre: 18
+      MuzzleLocalPos:
+        X: 0
+        "Y": 0
+        Z: 0
+    ChargeParam:
+      AirChargeRateByInkEmpty: 1
+      ChargeFrameFullCharge: 62
+      ChargeFrameMidCharge: 30
+      ChargeFrameMinCharge: 10
+      FreezeFrameFullCharge: 15
+      FreezeFrameMidCharge: 15
+      FreezeFrameMinCharge: 12
+      InkConsumeFullCharge: 0.23999999463558197
+      InkConsumeMidCharge: 0.11999999731779099
+      InkConsumeMinCharge: 0.09000000357627869
+      InkEmptyChargeTimes: 3
+      InkRecoverStop: 20
+      InkRecoverStopChargeKeep: 4
+      JumpHeightFullCharge: 0.07000000029802322
+      MoveJumpDownBias: 0.4000000059604645
+      MoveJumpDownStartChargeRate: 0.20000000298023224
+      MoveSpeedFullCharge: 0.06800000369548798
+      PostDelayFrame: 10
+    IsEnableChargeKeep: false
+    PlayerParam:
+      BowTiltDegRcvInterpRate: 0.20000000298023224
+    ShotGuideParam:
+      DelayFrameShowShotGuide: 6
+      GuideDrawFrameDefilade: 6
+      GuideDrawFrameFirst: 8
+      GuideDrawFrameSecond: 8
+      IsDrawTrajectory: false
+      MainArrowGuideDrawFrame: 10
+      SubArrowGuideDrawFrame: 3
+      TiltGuideEnabled: false
+      TiltGuideLength: 0
+      TiltGuideWidth: 4
+    ShotParam:
+      ArrowAngleMax: 33
+      ArrowAngleMid: 33
+      ArrowAngleMin: 21
+      ArrowMargin: 0.20000000298023224
+      ArrowNum: 9
+      BearMuzzleMoveDistArray:
+        - 0.08399999886751175
+        - 0.125
+        - 0.14399999380111694
+        - 0.1875
+      BearMuzzleResetFrame: 8
+      BowJumpTiltSpeedForward: 4
+      BowJumpTiltSpeedReverse: -5.5
+      BowTiltDegreeMax: 90
+      BowTiltDistanceMax: 2
+      BowTiltKeepFrame: 45
+      BowTiltResetSpeed: 2
+      BowTiltThreshold: 0.004999999888241291
+      CheckCollisionSpawnPos: false
+      DefiladeCheckAngle: 80
+      DefiladeCheckDist: 0.5
+      DefildaedBulletSpeed: 0.10000000149011612
+      DiffusionArrowParamArray:
+        - ShotAddDeg_H: 2.5
+          ShotAddDeg_V: 2
+          SpawnSpeedMax: 4.5
+          SpawnSpeedMid: 2.4000000953674316
+          SpawnSpeedMin: 2.4000000953674316
+        - ShotAddDeg_H: 1
+          ShotAddDeg_V: -1.5
+          SpawnSpeedMax: 4
+          SpawnSpeedMid: 2.0999999046325684
+          SpawnSpeedMin: 2.0999999046325684
+        - ShotAddDeg_H: 1.5
+          ShotAddDeg_V: 1.5
+          SpawnSpeedMax: 3.700000047683716
+          SpawnSpeedMid: 1.899999976158142
+          SpawnSpeedMin: 1.899999976158142
+        - ShotAddDeg_H: -0.5
+          ShotAddDeg_V: -1
+          SpawnSpeedMax: 4.099999904632568
+          SpawnSpeedMid: 2.200000047683716
+          SpawnSpeedMin: 2.200000047683716
+        - ShotAddDeg_H: 0
+          ShotAddDeg_V: 0
+          SpawnSpeedMax: 4
+          SpawnSpeedMid: 2.0999999046325684
+          SpawnSpeedMin: 2.0999999046325684
+        - ShotAddDeg_H: -2
+          ShotAddDeg_V: 1.5
+          SpawnSpeedMax: 3.799999952316284
+          SpawnSpeedMid: 1.899999976158142
+          SpawnSpeedMin: 1.899999976158142
+        - ShotAddDeg_H: -1
+          ShotAddDeg_V: 0.5
+          SpawnSpeedMax: 3.9000000953674316
+          SpawnSpeedMid: 2
+          SpawnSpeedMin: 2
+        - ShotAddDeg_H: 3
+          ShotAddDeg_V: 1.5
+          SpawnSpeedMax: 4.199999809265137
+          SpawnSpeedMid: 2.299999952316284
+          SpawnSpeedMin: 2.299999952316284
+        - ShotAddDeg_H: -2
+          ShotAddDeg_V: -0.5
+          SpawnSpeedMax: 3.700000047683716
+          SpawnSpeedMid: 1.7999999523162842
+          SpawnSpeedMin: 1.7999999523162842
+      EnableOldTiltControl: false
+      IsStringerBear: true

@@ -1,0 +1,146 @@
+GameParameters:
+  ExhaleBlastParamMaxCharge:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 6
+    CrossPaintRadius: 9
+    DamageOffsetY: 0.5
+    DistanceDamage:
+      - Damage: 2200
+        Distance: 11
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 9
+    PaintOffsetY: 0.5
+    PaintRadius: 11
+  ExhaleBlastParamMinCharge:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 6
+    CrossPaintRadius: 5.5
+    DamageOffsetY: 0.5
+    DistanceDamage:
+      - Damage: 2200
+        Distance: 6
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      DirectionZeroAccelRate: 0
+      Distance: 9
+    PaintOffsetY: 0.5
+    PaintRadius: 6
+  ExhaleCollisionParam:
+    $type: spl__BulletSpBlowerExhaleCollisionParam
+    RadiusForPlayerMinCharge: 0.4000000059604645
+  ExhaleParam:
+    $type: spl__BulletSpBlowerExhaleParam
+    DirectAccel: 200
+    DirectDamage: 2200
+    FlyGravity: 0.003000000026077032
+    FlyPositionAirResist: 0.009999999776482582
+    GuideHitCollisionType: BlowerExhale
+    GuideRadius: 0.25
+    PaintRadiusMaxCharge: 3.200000047683716
+    PaintRadiusMinCharge: 2.4000000953674316
+    SpawnBlastWaitFrame: 50
+    SpawnSpeedY: 0.07999999821186066
+    SpawnSpeedYMaxCharge: 0.07999999821186066
+    SpawnSpeedZMaxCharge: 0.699999988079071
+    SpawnSpeedZSpecUp:
+      High: 0.550000011920929
+      Low: 0.550000011920929
+      Mid: 0.550000011920929
+  ExhaleSplashPaintSpawnParam:
+    $type: spl__BulletSplashSpBlowerExhalePaintSpawnParam
+  InhaleParam:
+    $type: spl__BulletSpBlowerInhaleParam
+    CollisionAccelRateNearest: 2
+    CollisionAccelRatePerDist: 0.009999999776482582
+    CollisionAirResist: 0.11999999731779099
+    CollisionAirResistMaxNum: 2
+    CollisionAirResistNum0: 0.019999999552965164
+    DamagePerFrameByObject: 20
+    EffectRingSpanFrame: 56
+    EffectRingSpeed:
+      Data:
+        - 0
+        - 0.550000011920929
+        - 0.1832544058561325
+        - 0.06377740204334259
+        - 0.5
+        - 0
+        - 0.42089980840682983
+        - 0.21899999678134918
+        - 0
+        - 1
+        - 0.21899999678134918
+        - 0
+      MaxX: 1
+      Type: Hermit2D
+    EffectScalePerCollision:
+      Data:
+        - 0
+        - 0.2800000011920929
+        - 2.3291969299316406
+        - 0.44062501192092896
+        - 1
+        - 0
+        - 1
+        - 1
+        - 0
+      MaxX: 1
+      Type: Hermit2D
+    EffectSpanForGeyser: 10
+    EffectSpeed: 2
+    LengthAddPerFrame: 0.33340001106262207
+    LengthMax: 15
+    MuzzleCollisionOffset: 1
+    MuzzleCollisionRadius: 1.2000000476837158
+    PaintSplashParam:
+      DepthMaxDropHeight: 1
+      DepthMinDropHeight: 1
+      DepthScaleMax: 2
+      DepthScaleMin: 2
+      WidthHalf: 1.5
+      WidthHalfNearest: 1.5
+    PaintSplashSpanFrame: 20
+    PaintSplashSpawnOffset:
+      X: -0.30000001192092896
+      "Y": -0.699999988079071
+      Z: -0.699999988079071
+    PoisonMistForPlayer:
+      EffectFrame: 5
+      Level:
+        - {}
+        - NextLevelCount: 4
+        - Frame: 15
+          NextLevelCount: 0
+      SideStepInkConsumeRate: 3.5
+      SpecialWeapon: true
+    RadiusMax:
+      High: 4.300000190734863
+      Low: 3.299999952316284
+      Mid: 3.799999952316284
+    RadiusMin:
+      High: 1.399999976158142
+      Low: 0.800000011920929
+      Mid: 1.100000023841858
+    ReceiveDamageForGeyser: 10
+    ReceiveDamageForPlayer: 15
+  WeaponParam:
+    $type: spl__WeaponSpBlowerParam
+    ExhaleWaitFrame: 150
+    InhaleToExhaleWaitFrame: 20
+    JumpHeightFullCharge: 0.07000000029802322
+    JumpHeightMinCharge: 0.11500000208616257
+    JumpVelExhale: 0.07000000029802322
+    MoveJumpDownBias: 1
+    MoveJumpDownStartChargeRate: 0.10000000149011612
+    MoveSpeedFullCharge: 0.07000000029802322
+    MoveSpeedMinCharge: 0.09000000357627869
+    ShotDirXZ_RotDegH: 2
+    ShotPitVel: 0.15000000596046448
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0.10000000149011612
+    YPlusRate: 0.5
+    ZRate: 0.5

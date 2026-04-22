@@ -1,0 +1,86 @@
+GameParameters:
+  BulletBlastParam:
+    $type: spl__BulletBlastParam
+    DamageOffsetY: 0.6000000238418579
+    DistanceDamage:
+      - Damage: 2200
+        Distance: 9
+      - Damage: 700
+        Distance: 14.899999618530273
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 12
+    PaintRadius: 0
+    PaintTexture: Bomb00
+    SplashAroundParam:
+      Num: 15
+      OffsetY: 0.30000001192092896
+      PaintRadius: 0
+      PitchMax: 30
+      VelocityMax: 0
+      VelocityMin: 0
+    SubSpecialSpecUpList:
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+      - SpecUpType: PaintRadius
+        Value:
+          High: 9.01200008392334
+          Low: 7.510000228881836
+          Mid: 8.260000228881836
+      - SpecUpType: SplashAroundVelocityMin
+        Value:
+          High: 0.699999988079071
+          Low: 0.6000000238418579
+          Mid: 0.6499999761581421
+      - SpecUpType: SplashAroundVelocityMax
+        Value:
+          High: 0.800000011920929
+          Low: 0.699999988079071
+          Mid: 0.75
+      - SpecUpType: SplashAroundPaintRadius
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+  BulletParam:
+    $type: spl__BulletSpSkewerParam
+    CollisionRadiusForPlayer: 0.800000011920929
+    DamageValue: 2200
+    KnockBackLen: 250
+  WeaponParam:
+    $type: spl__WeaponSpSkewerParam
+    ChargeFrame: 0
+    Distance_Afterglow: 5
+    GravityKf: 1.2000000476837158
+    MoveAcc: 0.03099999949336052
+    MoveBrk: 0.03099999949336052
+    MoveCancelableFrame: 15
+    MoveFrame: 54
+    MoveFrameOmen: 27
+    MoveRotDeg: 0.5
+    MoveSpeed: 0.4050000011920929
+    MoveSpeed_Aerial: 0.2199999988079071
+    NoDamageFrame_AfterBurst: 28
+    NoDamageStartFrame_PreMove: 25
+    OffsetLocal_DetectPlayer:
+      X: 0
+      "Y": 0.800000011920929
+      Z: 1
+    PaintSplashParam:
+      DepthMaxDropHeight: 1
+      DepthMinDropHeight: 1
+      DepthScaleMax: 1.7999999523162842
+      DepthScaleMin: 1.7999999523162842
+      WidthHalf: 3
+      WidthHalfNearest: 3
+    PaintSplashSpanFrame: 3
+    PreBurstEmitFrame: 15
+    PreBurstFrame: 38
+    PreMoveFrame: 38
+    Radius_DetectPlayer: 1
+    RutPaintRadius: 1.2000000476837158
+    UnrelaxFrame: 28

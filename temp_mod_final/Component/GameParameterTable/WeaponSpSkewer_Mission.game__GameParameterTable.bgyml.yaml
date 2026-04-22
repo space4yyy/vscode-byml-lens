@@ -1,0 +1,92 @@
+GameParameters:
+  BulletBlastParam:
+    $type: spl__BulletBlastParam
+    CollisionRadiusForPaint: 0
+    CrossPaintCheckLength: 2
+    CrossPaintRadius: 2
+    CrossPaintTexture: Bomb00
+    CrossPaintUseChageArea: false
+    DamageAttackerPriority: false
+    DamageLinear: false
+    DamageOffsetY: 0
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 7.5
+      - Damage: 600
+        Distance: 11.5
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      DirectionZeroAccelRate: 0
+      Distance: 12
+    PaintHeight: 4
+    PaintOffsetY: 0
+    PaintRadius: 0
+    PaintTexture: Bomb00
+    PlaneDamage: []
+    ReactionVel: 100
+    SplashAroundParam:
+      Num: 15
+      OffsetY: 0.30000001192092896
+      PaintRadius: 0
+      PitchMax: 30
+      PitchMin: 5
+      VelocityMax: 0
+      VelocityMin: 0
+    SubSpecialSpecUpList:
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+      - SpecUpType: PaintRadius
+        Value:
+          High: 8.399999618530273
+          Low: 7
+          Mid: 7.699999809265137
+      - SpecUpType: SplashAroundVelocityMin
+        Value:
+          High: 0.6000000238418579
+          Low: 0.5
+          Mid: 0.550000011920929
+      - SpecUpType: SplashAroundVelocityMax
+        Value:
+          High: 0.699999988079071
+          Low: 0.6000000238418579
+          Mid: 0.6499999761581421
+      - SpecUpType: SplashAroundPaintRadius
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+  BulletParam:
+    $type: spl__BulletSpSkewerParam
+    CollisionRadiusForPlayer: 0.800000011920929
+    DamageValue: 1800
+  WeaponParam:
+    $type: spl__WeaponSpSkewerParam
+    ArmorHP: 1000
+    ChargeFrame: 0
+    CourseOutDist_MinY: -14
+    CourseOutDist_XZ: 3
+    Distance_Afterglow: 5
+    GravityKf: 1.2000000476837158
+    MoveAcc: 0.03099999949336052
+    MoveBrk: 0.03099999949336052
+    MoveCancelableFrame: 15
+    MoveFrame: 60
+    MoveFrameOmen: 27
+    MoveRotDeg: 0.5
+    MoveSpeed: 0.44999998807907104
+    MoveSpeed_Aerial: 0.2199999988079071
+    MoveSpeed_Afterglow: 0.699999988079071
+    OffsetLocal_DetectPlayer:
+      X: 0
+      "Y": 0.800000011920929
+      Z: 1
+    PreBurstEmitFrame: 15
+    PreBurstFrame: 38
+    PreMoveFrame: 38
+    Radius_DetectPlayer: 1
+    RutPaintRadius: 1.2000000476837158
+    UnrelaxFrame: 28

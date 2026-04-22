@@ -1,0 +1,40 @@
+$parent: Work/Component/GameParameterTable/WeaponSpSkewer.game__GameParameterTable.gyml
+GameParameters:
+  BulletBlastParam:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 7000
+        Distance: 13
+    SubSpecialSpecUpList:
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+      - Value:
+          High: 9.6899995803833
+          Low: 8.074999809265137
+          Mid: 8.881999969482422
+      - SpecUpType: SplashAroundVelocityMin
+        Value:
+          High: 0.699999988079071
+          Low: 0.6000000238418579
+          Mid: 0.6499999761581421
+      - SpecUpType: SplashAroundVelocityMax
+        Value:
+          High: 0.800000011920929
+          Low: 0.699999988079071
+          Mid: 0.75
+      - SpecUpType: SplashAroundPaintRadius
+        Value:
+          High: 1.2000000476837158
+          Low: 1
+          Mid: 1.100000023841858
+  BulletParam:
+    $type: spl__BulletSpSkewerParam
+    CollisionRadiusForPlayer: 1.2000000476837158
+    DamageValue: 5000
+  WeaponParam:
+    $type: spl__WeaponSpSkewerParam
+    MoveFrame: 60
+    MoveSpeed: 0.44999998807907104

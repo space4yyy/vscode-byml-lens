@@ -1,0 +1,24 @@
+$parent: Work/Component/GameParameterTable/WeaponSpPogo.game__GameParameterTable.gyml
+GameParameters:
+  BlastParamDokanWarp:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 3000
+        Distance: 7
+      - Damage: 3000
+        Distance: 12
+  BlastParamNormal:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 3000
+        Distance: 7
+      - Damage: 3000
+        Distance: 12
+    PlaneDamage:
+      - Damage: 10000
+        Distance: -12
+      - Damage: 10000
+        Distance: 12
+  BulletParam:
+    $type: spl__BulletSpPogoParam
+    HitPoint: 20000

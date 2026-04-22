@@ -1,0 +1,162 @@
+GameParameters:
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+    WeaponSpeedType: Mid
+  spl__BulletShelterCanopyParam:
+    $type: spl__BulletShelterCanopyParam
+    CanopyAttackedDamageRate: 0.6000000238418579
+    CanopyCureHPPerFrame: 5
+    CanopyDamage: 200
+    CanopyFrame: 170
+    CanopyGravity: 0.75
+    CanopyHP: 1500
+    CanopyHitOtherCanopyDamage: 1000
+    CanopyHitOtherCanopyVolume: 1
+    CanopyHitShieldAttackDamage: 750
+    CanopyInitSpeed: 9
+    CanopyMoveKnockBackSideStepRate: 1
+    CanopyNakedFrame: 130
+    CanopyPaintRadius: 2
+    CanopySpeedAirAddScaleXZ: 0.7200000286102295
+    CanopySpeedGroundAddScale: 0.47999998927116394
+    FootSplashPaintRadius: 1
+    FootSplashShapeCastOffset: 0.4000000059604645
+    FootSplashSpanFrame: 4
+    FootSplashWaitFrame: 20
+  spl__BulletShelterShotgunParam:
+    $type: spl__BulletShelterShotgunParam
+    DamageEffectiveTotalMax: 900
+    GroupParams:
+      - CollisionParam:
+          EndRadiusForField: 0.20000000298023224
+          EndRadiusForPlayer: 0.25999999046325684
+          InitRadiusForField: 0.20000000298023224
+          InitRadiusForPlayer: 0.25999999046325684
+        DamageParam:
+          ValueMax: 150
+          ValueMin: 100
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 0
+        HorizontalOffset: 0
+        InitVelRandom: 0
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 3
+          SpawnSpeed: 3
+        PaintParam:
+          WidthHalfFar: 1.2999999523162842
+          WidthHalfMiddle: 1.2999999523162842
+          WidthHalfNear: 1.600000023841858
+        TotalNum: 1
+        VerticalDegree: 0
+        VerticalOffset: 0
+      - AddDegree: 0
+        CollisionParam:
+          EndRadiusForField: 0.10000000149011612
+          EndRadiusForPlayer: 0.1599999964237213
+          InitRadiusForField: 0.10000000149011612
+          InitRadiusForPlayer: 0.1599999964237213
+        DamageParam:
+          ValueMax: 150
+          ValueMin: 100
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 3
+        HorizontalOffset: 0.10000000149011612
+        InitVelRandom: 0.4000000059604645
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 3
+          SpawnSpeed: 3
+        PaintParam:
+          WidthHalfFar: 1.2999999523162842
+          WidthHalfMiddle: 1.2999999523162842
+          WidthHalfNear: 1.2999999523162842
+        TotalNum: 6
+        VerticalDegree: 1.5
+        VerticalOffset: 0.10000000149011612
+      - AddDegree: 0
+        CollisionParam:
+          EndRadiusForField: 0.10000000149011612
+          EndRadiusForPlayer: 0.1599999964237213
+          InitRadiusForField: 0.10000000149011612
+          InitRadiusForPlayer: 0.1599999964237213
+        DamageParam:
+          ValueMax: 150
+          ValueMin: 100
+        DrawRadius: 1.3250000476837158
+        HorizontalDegree: 2
+        HorizontalOffset: 0.05000000074505806
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 3
+          SpawnSpeed: 3
+        PaintParam:
+          WidthHalfFar: 1.2999999523162842
+          WidthHalfMiddle: 1.2999999523162842
+          WidthHalfNear: 1.2999999523162842
+        TotalNum: 4
+        VerticalDegree: 1.5
+        VerticalOffset: 0.05000000074505806
+    ShotgunWallDropMoveParam:
+      FallPeriodFirstFrameMax: 40
+      FallPeriodFirstFrameMin: 20
+      FallPeriodFirstTargetSpeed: 0.05999999865889549
+      FallPeriodLastFrameMax: 35
+      FallPeriodLastFrameMin: 15
+    SplashParam:
+      CreateSplashLength: 3.299999952316284
+      CreateSplashNum: 6
+      RandomSpawnVelXMax: 0.02500000037252903
+      RandomSpawnVelZMax: 0.019999999552965164
+      RandomSpawnVelZMin: 0.009999999776482582
+      SplashPaintDepthScaleFullActive: 2.4000000953674316
+      SplashPaintDepthScaleOneActive: 4.800000190734863
+      SplashPaintWidthFullActive: 2
+      SplashPaintWidthOneActive: 0.699999988079071
+    SplashWallDropCollisionParam:
+      PaintRadiusFall: 0.6499999761581421
+      PaintRadiusGround: 0.6000000238418579
+      PaintRadiusShock: 1.2999999523162842
+    SplashWallDropMoveParam:
+      FallPeriodFirstFrameMax: 15
+      FallPeriodFirstTargetSpeed: 0.029999999329447746
+      FallPeriodLastFrameMax: 25
+      FallPeriodLastFrameMin: 10
+      FallPeriodSecondFrame: 5
+      FallPeriodSecondTargetSpeed: 0.07999999821186066
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2
+  spl__WeaponShelterCanopyParam:
+    $type: spl__WeaponShelterCanopyParam
+    CanopyChargeFrame: 10
+    CanopyDirXZ_DiffDeg_H: 30
+    CanopyDirXZ_DiffDeg_L: 1
+    CanopyDirXZ_RotDegBias: 0.5
+    CanopyDirXZ_RotDeg_H: 2
+    CanopyDirXZ_RotDeg_L: 1
+    CanopyNakedFrame: 130
+    CanopyOpenEndBias: 0.699999988079071
+    CanopyOpenEndOffset: 0
+    CanopyOpenFrame: 10
+    CanopyOpenStartOffset: -0.6000000238418579
+    CanopyShotFrame: 20
+    InkConsumeUmbrella: 0.15000000596046448
+    IsCanopyShot: true
+    IsRecoverCanopyByKill: false
+  spl__WeaponShelterShotgunParam:
+    $type: spl__WeaponShelterShotgunParam
+    InkConsume: 0.05999999865889549
+    InkRecoverStop: 50
+    InkRecoverStopCanopy: 55
+    InkRecoverStopCharge: 20
+    JumpGndCharge: 0.06499999761581421
+    MoveSpeed: 0.057999998331069946
+    MoveSpeedCharge: 0.05000000074505806
+    PostDelayFrame_Main: 25
+    PostDelayFrame_MoveLmt: 25
+    PostNoShotReqFrame: 20
+    RepeatFrame: 0
+    ShotGuideFrame: 8

@@ -1,0 +1,151 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 0
+    CrossPaintRadius: 0
+    DamageAttackerPriority: true
+    DamageLinear: true
+    DistanceDamage:
+      - Damage: 700
+        Distance: 1.7999999523162842
+      - Damage: 500
+        Distance: 4
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 4
+    PaintRadius: 0
+  BlasterBurstParam:
+    $type: spl__BulletBlasterBurstParam
+    BurstFrame: 11
+    ShotCollisionHitRadiusRate: 0.41659998893737793
+    SplashDropPaintRadius: 3.8399999141693115
+    SplashDropPaintShotColHitRadius: 2.759999990463257
+    SplashPaintRadius: 2.4000000953674316
+    SplashPaintShotColHitRadius: 1.6799999475479126
+    SplashRoundAxisXArray:
+      - -90
+      - -45
+      - 0
+      - 45
+    SplashRoundAxisYArray:
+      - 0
+      - 30
+      - 60
+      - 90
+      - 120
+    SplashWallDropMoveParam:
+      FallPeriodFirstFrameMax: 1
+      FallPeriodFirstFrameMin: 1
+      FallPeriodFirstTargetSpeed: 0
+      FallPeriodLastFrameMax: 1
+      FallPeriodLastFrameMin: 1
+      FallPeriodSecondFrame: 1
+      FallPeriodSecondTargetSpeed: 0
+    SplashWallDropPaintParam:
+      PaintRadiusFall: 0
+      PaintRadiusGround: 0
+      PaintRadiusShock: 1.2000000476837158
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    ChangeFrameForField: 0
+    EndRadiusForField: 0.20000000298023224
+    EndRadiusForPlayer: 0.30000001192092896
+    FriendThroughFrameForPlayer: 1000
+    InitRadiusForField: 0.20000000298023224
+    InitRadiusForPlayer: 0.30000001192092896
+  DamageParam:
+    $type: spl__BulletShooterDamageParam
+    ReduceEndFrame: 99
+    ReduceStartFrame: -1
+    ValueMax: 1250
+    ValueMin: 1250
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+    Overwrite_ConsumeRt_Main_High: 0.5
+    Overwrite_ConsumeRt_Main_Mid: 0.699999988079071
+    WeaponSpeedType: Fast
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    FreeGravity: 0.01600000075995922
+    GoStraightStateEndMaxSpeed: 0.8483999967575073
+    GoStraightToBrakeStateFrame: 7
+    SpawnSpeed: 0.8700000047683716
+  PaintParam:
+    $type: spl__BulletShooterPaintParam
+    DistanceMiddle: 0
+    WidthHalfFar: 0
+    WidthHalfMiddle: 0
+    WidthHalfNear: 0
+  SplashPaintParam:
+    $type: spl__BulletSplashShooterPaintParam
+    DepthMaxDropHeight: 3
+    DepthMinDropHeight: 10
+    WidthHalf: 1.559999942779541
+    WidthHalfNearest: 2.496000051498413
+  SplashSpawnParam:
+    $type: spl__BulletSplashShooterSpawnParam
+    ForceSpawnNearestAddNumArray: []
+    SpawnBetweenLength: 1.5
+    SpawnNearestLength: 1
+    SpawnNum: 6
+    SplitNum: 1
+  SplashWallHitParam:
+    $type: spl__BulletSplashWallHitParam
+    SpawnParam:
+      FirstDistance: 1.7999999523162842
+      VelocityMinusYRate: 0.4000000059604645
+    WallDropCollisionPaintParam:
+      FallPeriodFirstSecondTargetAlp: 0.5
+      PaintRadiusFall: 1
+      PaintRadiusShock: 1.399999976158142
+    WallDropMoveParam:
+      FallPeriodFirstFrameMin: 15
+      FallPeriodFirstTargetSpeed: 0.07000000029802322
+      FallPeriodLastFrameMax: 35
+      FallPeriodLastFrameMin: 20
+      FallPeriodSecondFrame: 35
+      FallPeriodSecondTargetSpeed: 0.03999999910593033
+  WallDropCollisionPaintParam:
+    $type: spl__BulletWallDropCollisionPaintParam
+    FallPeriodFirstSecondTargetAlp: 0.5
+    PaintRadiusFall: 1
+    PaintRadiusGround: 0.6000000238418579
+    PaintRadiusShock: 1.2999999523162842
+  WallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMax: 30
+    FallPeriodFirstFrameMin: 15
+    FallPeriodFirstTargetSpeed: 0.07000000029802322
+    FallPeriodLastFrameMax: 35
+    FallPeriodLastFrameMin: 20
+    FallPeriodSecondFrame: 35
+    FallPeriodSecondTargetSpeed: 0.03999999910593033
+  WeaponParam:
+    $type: spl__WeaponShooterParam
+    InkConsume: 0.07500000298023224
+    InkRecoverStop: 55
+    Jump_DegBiasDecreaseStartFrame: 25
+    Jump_DegBiasEndFrame: 70
+    Jump_DegBiasMax: 0.5
+    Jump_DegSwerve: 6
+    MoveSpeed: 0.05000000074505806
+    PostDelayFrame: 4
+    PostDelayFrame_Blaster: 26
+    PreDelayFrame_HumanShot: 10
+    PreDelayFrame_SquidShot: 15
+    RepeatFrame: 40
+    ShotGuideFrame: 11
+    Stand_DegBiasDecrease: 0
+    Stand_DegBiasKf: 0
+    Stand_DegBiasMax: 0
+    Stand_DegBiasMin: 0
+    Stand_DegSwerve: 0
+  spl__PlayerGearSkillParam_ActionSpecUp_ReduceJumpSwerveRate:
+    $type: spl__PlayerGearSkillParam_ActionSpecUp_ReduceJumpSwerveRate
+    Mid: 0.625
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2

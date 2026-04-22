@@ -1,0 +1,27 @@
+GameParameters:
+  spl__DamageParam:
+    $type: spl__DamageParam
+    DamageReceiverArray:
+      - DamageHistMaxSize: 64
+        DamageRateInfoCol: BlowerInhale
+        Flag:
+          - CantParasiteSalmonBuddy
+        IsManualRefRigidBody: false
+        Name: Main
+        RefHitPointHolder: []
+        RefRigidBody:
+          - BulletSpBlowerInhale
+        ShotTargetLocatorName: ""
+    DamageSenderArray:
+      - Name: Main
+        RefRigidBody: []
+    HitPointHolderArray:
+      - IsRefComplementPaintToModel: false
+        MaxHitPoint: 12000
+        Name: Main
+        PaintBias: 0.5
+        PaintMagnification: 1
+        RefComplementPaintMatName: ""
+        RefComplementPaintModelKey: ""
+        SkipFrmSlipCure: 60
+        SlipCure: 0

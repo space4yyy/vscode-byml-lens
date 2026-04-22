@@ -1,0 +1,91 @@
+GameParameters:
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    EndRadiusForField: 0.019999999552965164
+    EndRadiusForPlayer: 0.11249999701976776
+    InitRadiusForField: 0.019999999552965164
+    InitRadiusForPlayer: 0.11249999701976776
+  DamageParam:
+    $type: spl__BulletChargerDamageParam
+    ValueFullCharge: 1800
+    ValueMaxCharge: 800
+    ValueMinCharge: 400
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+    Overwrite_ConsumeRt_Main_High: 0.5
+    Overwrite_ConsumeRt_Main_Mid: 0.699999988079071
+    WeaponSpeedType: Slow
+  MoveParam:
+    $type: spl__BulletChargerMoveParam
+    DistanceFullCharge: 31.049999237060547
+    DistanceMaxCharge: 29.049999237060547
+    DistanceMinCharge: 9.045000076293945
+    SpawnSpeedFullCharge: 9.600000381469727
+    SpawnSpeedMaxCharge: 6.400000095367432
+    SpawnSpeedMinCharge: 2.4000000953674316
+  PaintParam:
+    $type: spl__BulletChargerPaintParam
+    RadiusFullCharge: 3.690000057220459
+    RadiusMaxCharge: 3.2039999961853027
+    RadiusMinCharge: 1.0679999589920044
+  SplashPaintParam:
+    $type: spl__BulletSplashChargerPaintParam
+    DepthHalfFullCharge: 1.7725000381469727
+    DepthHalfMaxCharge: 1.8487169742584229
+    DepthHalfMinCharge: 3.23215389251709
+    RadiusSpawnNearest: 1.2000000476837158
+    WidthHalfFullCharge: 1.7725000381469727
+    WidthHalfMaxCharge: 1.8487169742584229
+    WidthHalfMinCharge: 0.92347252368927
+  SplashSpawnParam:
+    $type: spl__BulletSplashChargerSpawnParam
+    OnTopRateFullCharge: 0.3400000035762787
+    OnTopRateMaxCharge: 0.25
+    OnTopRateMinCharge: 0.125
+    SkipNum: 1
+  SplashWallHitParam:
+    $type: spl__BulletChargerSplashWallHitParam
+    WallDropCollisionPaintParam:
+      PaintRadiusFall: 0.675000011920929
+      PaintRadiusFallMaxCharge: 0.675000011920929
+      PaintRadiusFallMinCharge: 0.44999998807907104
+      PaintRadiusGround: 0.4000000059604645
+      PaintRadiusShock: 0.8999999761581421
+      PaintRadiusShockMaxCharge: 0.8999999761581421
+      PaintRadiusShockMinCharge: 0.6000000238418579
+    WallDropMoveParam:
+      FallPeriodFirstFrameMax: 30
+      FallPeriodFirstFrameMin: 15
+      FallPeriodFirstTargetSpeed: 0.03999999910593033
+      FallPeriodLastFrameMax: 30
+      FallPeriodLastFrameMin: 15
+      FallPeriodSecondTargetSpeed: 0.05000000074505806
+  WallDropCollisionPaintParam:
+    $type: spl__BulletChargerWallDropCollisionPaintParam
+    PaintRadiusFall: 1.2000000476837158
+    PaintRadiusFallMaxCharge: 1.2000000476837158
+    PaintRadiusFallMinCharge: 0.800000011920929
+    PaintRadiusShock: 1.7999999523162842
+    PaintRadiusShockMaxCharge: 1.7999999523162842
+    PaintRadiusShockMinCharge: 1.2000000476837158
+  WallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMin: 15
+    FallPeriodFirstTargetSpeed: 0.03999999910593033
+    FallPeriodLastFrameMax: 30
+    FallPeriodSecondTargetSpeed: 0.05000000074505806
+  WeaponParam:
+    $type: spl__WeaponChargerParam
+    ChargeFrameFullCharge: 92
+    FreezeFrameFullCharge: 1
+    FreezeFrameMinCharge: 1
+    InkConsumeFullCharge: 0.25
+    InkConsumeMinCharge: 0.02250000089406967
+    JumpHeightFullCharge: 0.07000000029802322
+    MoveJumpDownBias: 0.5
+    MoveSpeedFullCharge: 0.014999999664723873
+  WeaponScopeParam:
+    $type: spl__WeaponScopeParam
+    CameraFovy: 20

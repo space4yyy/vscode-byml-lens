@@ -9,8 +9,8 @@ const program = new Command();
 
 program
     .name('byml-lens')
-    .description('CLI tool for Nintendo BYML and SARC files (v0.2.2)')
-    .version('0.2.2');
+    .description('CLI tool for Nintendo BYML and SARC files (v0.2.3)')
+    .version('0.2.3');
 
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
@@ -45,7 +45,7 @@ program.command('yaml2byml')
                 refData = new Uint8Array(fs.readFileSync(options.reference));
             }
             const encoded = byml.yamlToByml(yamlStr, refData);
-            fs.writeFileSync(output, encoded);
+            fs.writeFileSync(output, Buffer.from(encoded));
             console.log(`Successfully converted ${input} to ${output}`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
@@ -62,37 +62,28 @@ program.command('unpack')
         try {
             const data = fs.readFileSync(input);
             const archive = new SarcArchive(new Uint8Array(data));
-            
-            if (!fs.existsSync(outDir)) {
-                fs.mkdirSync(outDir, { recursive: true });
-            }
+            if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
 
             let convertedCount = 0;
             for (const file of archive.files) {
-                let outName = file.name;
-                let finalData = file.data;
-                const isByml = outName.endsWith('.byml') || outName.endsWith('.bgyml');
+                const outPath = path.join(outDir, file.name);
+                const parentDir = path.dirname(outPath);
+                if (!fs.existsSync(parentDir)) fs.mkdirSync(parentDir, { recursive: true });
 
-                if (options.yaml && isByml) {
+                if (options.yaml && (file.name.endsWith('.byml') || file.name.endsWith('.bgyml'))) {
                     try {
                         const yamlStr = byml.bymlToYaml(file.data);
-                        finalData = new TextEncoder().encode(yamlStr);
-                        outName += '.yaml'; // Save as .byml.yaml
+                        fs.writeFileSync(outPath + '.yaml', yamlStr);
                         convertedCount++;
                     } catch (e) {
-                        console.warn(`Warning: Failed to deyaml ${file.name}, extracting as binary.`);
+                        console.warn(`Warning: Failed to deyaml ${file.name}`);
                     }
                 }
-
-                const outPath = path.join(outDir, outName);
-                const parentDir = path.dirname(outPath);
-                if (!fs.existsSync(parentDir)) {
-                    fs.mkdirSync(parentDir, { recursive: true });
-                }
-                fs.writeFileSync(outPath, finalData);
-                console.log(`Extracted: ${outName}`);
+                // Always write original binary as well to keep the 'Smart Hybrid' option available for packing
+                fs.writeFileSync(outPath, file.data);
+                console.log(`Extracted: ${file.name}`);
             }
-            console.log(`Successfully unpacked ${archive.files.length} files to ${outDir} (${convertedCount} converted to YAML)`);
+            console.log(`Successfully unpacked ${archive.files.length} files to ${outDir} (${convertedCount} YAMLs generated)`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);
@@ -100,12 +91,12 @@ program.command('unpack')
     });
 
 program.command('pack')
-    .description('Pack a directory into a SARC archive')
+    .description('Pack a directory into a SARC archive (Smart Hybrid Mode)')
     .argument('<inDir>', 'Input directory')
     .argument('<output>', 'Output SARC file')
     .option('-z, --zstd', 'Compress the output with Zstandard', false)
     .option('-B, --big-endian', 'Use Big Endian byte order', false)
-    .option('-y, --yaml', 'Automatically convert .yaml files back to binary BYML', false)
+    .option('-y, --yaml', 'Prefer .yaml files if binary is missing or if explicitly forced', false)
     .action(async (inDir, output, options) => {
         try {
             if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
@@ -116,47 +107,56 @@ program.command('pack')
             archive.isCompressed = options.zstd;
             archive.le = !options.bigEndian;
 
-            const allFiles: string[] = [];
+            const filesInFolder: string[] = [];
             const walk = (dir: string) => {
-                const files = fs.readdirSync(dir);
-                for (const file of files) {
-                    const fullPath = path.join(dir, file);
-                    if (fs.statSync(fullPath).isDirectory()) {
-                        walk(fullPath);
-                    } else {
-                        allFiles.push(fullPath);
-                    }
+                const list = fs.readdirSync(dir);
+                for (const item of list) {
+                    const fullPath = path.join(dir, item);
+                    if (fs.statSync(fullPath).isDirectory()) walk(fullPath);
+                    else filesInFolder.push(fullPath);
                 }
             };
             walk(inDir);
 
-            for (const file of allFiles) {
-                let relPath = path.relative(inDir, file);
-                let finalData = fs.readFileSync(file);
+            // Logic: 
+            // 1. If 'file.bgyml' exists -> Use it directly (Safest)
+            // 2. If 'file.bgyml' missing AND 'file.bgyml.yaml' exists -> Recompile
+            // 3. If --yaml is forced, and both exist -> Prefer Recompile
+            
+            const processedBinaryPaths = new Set<string>();
 
-                // If it's a .byml.yaml or .bgyml.yaml, convert it back
-                if (options.yaml && relPath.endsWith('.yaml')) {
-                    const baseName = relPath.slice(0, -5);
-                    if (baseName.endsWith('.byml') || baseName.endsWith('.bgyml')) {
-                        try {
-                            const yamlStr = fs.readFileSync(file, 'utf-8');
-                            const encoded = byml.yamlToByml(yamlStr);
-                            finalData = Buffer.from(encoded);
-                            relPath = baseName; // Strip .yaml for the archive
-                            console.log(`Converted back: ${relPath}`);
-                        } catch (e) {
-                            console.warn(`Warning: Failed to encode ${file}, packing as raw text.`);
-                        }
+            for (const fullPath of filesInFolder) {
+                const relPath = path.relative(inDir, fullPath);
+                
+                // Skip .yaml if we already have or prefer the binary version
+                if (relPath.endsWith('.yaml')) {
+                    const binaryRelPath = relPath.slice(0, -5);
+                    const binaryFullPath = path.join(inDir, binaryRelPath);
+                    
+                    if (options.yaml || !fs.existsSync(binaryFullPath)) {
+                        console.log(`Re-compiling BYML: ${binaryRelPath}`);
+                        const yamlStr = fs.readFileSync(fullPath, 'utf-8');
+                        const encoded = byml.yamlToByml(yamlStr);
+                        archive.files.push({ name: binaryRelPath, data: new Uint8Array(encoded) });
+                        processedBinaryPaths.add(binaryRelPath);
+                        continue;
+                    } else {
+                        // Skip this yaml, we will use the binary file instead
+                        continue;
                     }
                 }
 
-                archive.files.push({ name: relPath, data: new Uint8Array(finalData) });
-                console.log(`Added: ${relPath}`);
+                // If it's a binary file and not already handled by yaml logic
+                if (!processedBinaryPaths.has(relPath)) {
+                    const data = fs.readFileSync(fullPath);
+                    archive.files.push({ name: relPath, data: new Uint8Array(data) });
+                    console.log(`Added (Raw Binary): ${relPath}`);
+                }
             }
 
             const encoded = archive.encode();
             fs.writeFileSync(output, encoded);
-            console.log(`Successfully packed ${archive.files.length} files to ${output}`);
+            console.log(`Successfully packed ${archive.files.length} files to ${output} using Smart Hybrid Mode.`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);

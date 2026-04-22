@@ -1,0 +1,25 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponStringerExplosion.game__GameParameterTable.gyml
+GameParameters:
+  spl__BulletStringerParam:
+    $type: spl__BulletStringerParam
+    CollisionParam:
+      EndRadiusForPlayer: 0.18000000715255737
+      InitRadiusForPlayer: 0.18000000715255737
+    DamageParam:
+      DirectHitDamageMax: 1200
+      DirectHitDamageMid: 800
+      DirectHitDamageMin: 500
+    DetonationParam:
+      BlastParam:
+        DistanceDamage:
+          - Damage: 400
+            Distance: 2
+        KnockBackParam:
+          Distance: 2
+  spl__WeaponStringerParam:
+    $type: spl__WeaponStringerParam
+    ChargeParam:
+      InkConsumeFullCharge: 0.07999999821186066
+      InkConsumeMidCharge: 0.05999999865889549
+      InkConsumeMinCharge: 0.03999999910593033

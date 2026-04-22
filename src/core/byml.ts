@@ -7,7 +7,7 @@ class Writer {
     private offset: number = 0;
     public le: boolean = true;
 
-    constructor(size: number = 1024 * 1024) {
+    constructor(size: number = 2 * 1024 * 1024) {
         this.buffer = new Uint8Array(size);
         this.view = new DataView(this.buffer.buffer);
     }
@@ -74,7 +74,7 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     const sortedKeys = Array.from(keys).sort();
     const sortedStrings = Array.from(strings).sort();
     
-    // Header (16 bytes)
+    // 1. Header (16 bytes)
     writer.writeUInt8(le ? 0x59 : 0x42); 
     writer.writeUInt8(le ? 0x42 : 0x59);
     writer.writeUInt16(version);
@@ -82,20 +82,20 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     const stringTableOffsetPos = writer.tell(); writer.writeUInt32(0);
     const rootOffsetPos = writer.tell(); writer.writeUInt32(0);
     
-    // Key Table
+    // 2. Key Table
     const keyTableOffset = writer.tell();
     writer.view.setUint32(keyTableOffsetPos, keyTableOffset, le);
     writeStringTable(sortedKeys);
     
-    // String Table
+    // 3. String Table
     writer.align(4);
     const stringTableOffset = writer.tell();
     writer.view.setUint32(stringTableOffsetPos, stringTableOffset, le);
     writeStringTable(sortedStrings);
     
-    // Nodes Phase: We need to write nodes in a specific order to keep pointers together
-    const nodeOffsets = new Map<any, number>();
-    const pendingNodes: any[] = [];
+    // 4. Nodes Phase
+    const nodeOffsets = new Map<string, number>(); // Use JSON.stringify for deduplication
+    const pendingNodes: { parentPos: number, node: any }[] = [];
 
     function writeStringTable(arr: string[]) {
         const start = writer.tell();
@@ -131,11 +131,12 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
 
     function writeNode(node: any): number {
-        if (nodeOffsets.has(node)) return nodeOffsets.get(node)!;
+        const nodeKey = JSON.stringify(node);
+        if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey)!;
         
         writer.align(4);
         const offset = writer.tell();
-        nodeOffsets.set(node, offset);
+        nodeOffsets.set(nodeKey, offset);
         
         if (Array.isArray(node)) {
             writer.writeUInt8(0xC0);
@@ -145,27 +146,25 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
             }
             writer.align(4);
             const valuePos = writer.tell();
-            for (const item of node) writer.writeUInt32(0); // Placeholders
+            for (let i = 0; i < node.length; i++) writer.writeUInt32(0);
             
             for (let i = 0; i < node.length; i++) {
                 const item = node[i];
                 const type = getNodeType(item);
-                let val = 0;
                 if (type === 0xC0 || type === 0xC1) {
                     pendingNodes.push({ parentPos: valuePos + i * 4, node: item });
                 } else {
-                    val = encodeValue(type, item);
                     const savedPos = writer.tell();
                     writer.seek(valuePos + i * 4);
-                    writer.writeUInt32(val);
+                    writer.writeUInt32(encodeValue(type, item));
                     writer.seek(savedPos);
                 }
             }
         } else {
             const entries = Object.entries(node).sort((a, b) => {
-                const idxA = sortedKeys.indexOf(a[0]);
-                const idxB = sortedKeys.indexOf(b[0]);
-                return idxA - idxB;
+                const ha = SarcArchive_hash(a[0]);
+                const hb = SarcArchive_hash(b[0]);
+                return ha - hb;
             });
             writer.writeUInt8(0xC1);
             writer.writeUInt24(entries.length);
@@ -173,26 +172,32 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
             for (const [k, v] of entries) {
                 writer.writeUInt24(sortedKeys.indexOf(k));
                 writer.writeUInt8(getNodeType(v));
-                writer.writeUInt32(0); // Placeholder
+                writer.writeUInt32(0); 
             }
             
             for (let i = 0; i < entries.length; i++) {
                 const [k, v] = entries[i];
                 const type = getNodeType(v);
-                let val = 0;
                 if (type === 0xC0 || type === 0xC1) {
                     pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: v });
                 } else {
-                    val = encodeValue(type, v);
                     const savedPos = writer.tell();
                     writer.seek(entryPos + i * 8 + 4);
-                    writer.writeUInt32(val);
+                    writer.writeUInt32(encodeValue(type, v));
                     writer.seek(savedPos);
                 }
             }
         }
         writer.align(4);
         return offset;
+    }
+
+    function SarcArchive_hash(name: string): number {
+        let h = 0;
+        for (let i = 0; i < name.length; i++) {
+            h = (Math.imul(h, 0x65) + name.charCodeAt(i)) >>> 0;
+        }
+        return h;
     }
 
     function encodeValue(type: number, v: any): number {
@@ -211,25 +216,20 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
         }
     }
 
-    // Start with root
     const rootOffset = writeNode(obj);
     writer.view.setUint32(rootOffsetPos, rootOffset, le);
     
-    // Process pending nodes until empty
     while (pendingNodes.length > 0) {
-        const { parentPos, node } = pendingNodes.shift();
+        const { parentPos, node } = pendingNodes.shift()!;
         const offset = writeNode(node);
         const savedPos = writer.tell();
         writer.seek(parentPos);
-        writer.writeUInt32(offset);
+        writer.writeUInt32(offset, le);
         writer.seek(savedPos);
     }
     
     const encoded = writer.getBytes();
-    if (originalData && zstd.isCompressed(originalData)) {
-        return zstd.compressData(encoded);
-    }
-    return encoded;
+    return originalData && zstd.isCompressed(originalData) ? zstd.compressData(encoded) : encoded;
 }
 
 export function bymlToYaml(data: Uint8Array): string {
@@ -297,7 +297,7 @@ export function bymlToYaml(data: Uint8Array): string {
             case 0xD0: return value !== 0; // Bool
             case 0xC0: case 0xC1: return parseNode(value);
             case 0xFF: return null;
-            default: return value; // Fallback
+            default: return value; 
         }
     }
 

@@ -1,0 +1,104 @@
+GameParameters:
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+  spl__BulletStringerParam:
+    $type: spl__BulletStringerParam
+    CollisionParam:
+      EndRadiusForPlayer: 0.18000000715255737
+      InitRadiusForPlayer: 0.18000000715255737
+    DamageParam:
+      DirectHitDamageMax: 350
+      DirectHitDamageMid: 350
+      DirectHitDamageMin: 300
+    DetonationParam:
+      BlastParam:
+        DamageOffsetY: 0.6000000238418579
+        DistanceDamage:
+          - Damage: 280
+            Distance: 2
+        PaintOffsetY: 0.6000000238418579
+        PaintRadius: 2
+      DetonationFrame: 45
+      IsExplosiveBoltMidCharge: true
+    DrawParam:
+      CapsuleLength: 1.100000023841858
+      CapsuleRadius: 0.20000000298023224
+      IsDrawCapsule: false
+      IsDrawCollision: false
+    Effect1stParam:
+      DelayFrame: 8
+      MaxLen: 13.074999809265137
+    Effect2ndParam:
+      SmokeInterval: 0.15937499701976776
+    MoveParam:
+      BrakeAirResist: 0.10000000149011612
+      BrakeGravity: 0.03999999910593033
+      BrakeToFreeStateFrame: 1
+      BrakeToFreeVelocityXZ: 20
+      BrakeToFreeVelocityY: 10
+      FreeAirResist: 0.23999999463558197
+      FreeGravity: 0.15000000596046448
+      GoStraightStateEndMaxSpeed: 10
+      GoStraightToBrakeStateFrame: 4
+      SpawnSpeed: 0
+      SpawnSpeedMax: 3.8499999046325684
+      SpawnSpeedMid: 2.0999999046325684
+      SpawnSpeedMin: 2.0999999046325684
+    PaintParam:
+      WidthHalfMax: 3
+      WidthHalfMid: 2.5
+      WidthHalfMin: 2.5
+    SplashPaintParam:
+      DepthScaleMax: 1.2000000476837158
+      WidthHalf: 1.2799999713897705
+    SplashSpawnParam:
+      DropInterval: 10
+      SplashNumMax: 3
+      SplitNum: 7
+    WallDropMoveParam:
+      FallPeriodFirstFrameMax: 40
+      FallPeriodFirstFrameMin: 20
+      FallPeriodLastFrameMax: 35
+  spl__WeaponStringerParam:
+    $type: spl__WeaponStringerParam
+    ChargeKeepParam:
+      KeepChargeFullFrame: 1
+      KeepChargePreDelayFrame: 23
+      KeepChargePreDelayFrame_Pre: 18
+    ChargeParam:
+      AirChargeRateByInkEmpty: 1
+      ChargeFrameFullCharge: 72
+      ChargeFrameMidCharge: 30
+      ChargeFrameMinCharge: 9
+      FreezeFrameFullCharge: 15
+      FreezeFrameMidCharge: 15
+      FreezeFrameMinCharge: 12
+      InkConsumeFullCharge: 0.08500000089406967
+      InkConsumeMidCharge: 0.05999999865889549
+      InkConsumeMinCharge: 0.05000000074505806
+      JumpHeightFullCharge: 0.07000000029802322
+      MoveSpeedFullCharge: 0.05999999865889549
+      PostDelayFrame: 10
+    IsEnableChargeKeep: false
+    PlayerParam:
+      BowTiltDegRcvInterpRate: 0.20000000298023224
+    ShotGuideParam:
+      GuideDrawFrameFirst: 8
+      GuideDrawFrameSecond: 8
+      IsDrawTrajectory: false
+      MainArrowGuideDrawFrame: 10
+      SubArrowGuideDrawFrame: 3
+      TiltGuideEnabled: false
+      TiltGuideLength: 0
+      TiltGuideWidth: 4
+    ShotParam:
+      ArrowAngleMax: 8
+      ArrowAngleMid: 8
+      ArrowMargin: 0.4000000059604645
+      BowJumpTiltSpeedForward: 9
+      BowJumpTiltSpeedReverse: -12
+      BowTiltDegreeMax: 90
+      BowTiltKeepFrame: 45
+      BowTiltResetSpeed: 2

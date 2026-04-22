@@ -89,7 +89,6 @@ class SarcArchive {
     }
     encode() {
         logger_js_1.Logger.info(`Encoding SARC with ${this.files.length} files...`);
-        // 1. Prepare String Table
         const sortedFiles = [...this.files].sort((a, b) => SarcArchive.hash(a.name) - SarcArchive.hash(b.name));
         let stringTableSize = 0;
         const nameOffsets = sortedFiles.map(f => {
@@ -99,38 +98,34 @@ class SarcArchive {
                 stringTableSize++;
             return off;
         });
-        // 2. Calculate offsets
         const sfatSize = 0x0C + sortedFiles.length * 16;
         const sfntSize = 0x08 + stringTableSize;
         const headerSize = 0x14;
         let dataStart = headerSize + sfatSize + sfntSize;
-        // CRITICAL: Splatoon 3 SARC files often use 256-byte global alignment
         while (dataStart % 256 !== 0)
             dataStart++;
         let totalSize = dataStart;
         const fileOffsets = sortedFiles.map(f => {
+            // CRITICAL FIX: Every file entry must be 256-byte aligned for some games/emulators
             while (totalSize % 256 !== 0)
-                totalSize++; // Align every file to 256 bytes
+                totalSize++;
             const start = totalSize - dataStart;
             totalSize += f.data.length;
             return { start, end: totalSize - dataStart };
         });
         const out = new Uint8Array(totalSize);
         const view = new DataView(out.buffer);
-        // 3. Write SARC Header
         out.set([0x53, 0x41, 0x52, 0x43], 0);
         view.setUint16(4, headerSize, true);
         view.setUint16(6, this.le ? 0xFEFF : 0xFFFE, true);
         view.setUint32(8, totalSize, this.le);
         view.setUint32(0x0C, dataStart, this.le);
-        view.setUint32(0x10, 0x00000100, this.le); // Standard version
-        // 4. Write SFAT Header
+        view.setUint32(0x10, 0x00000100, this.le);
         let pos = headerSize;
         out.set([0x53, 0x46, 0x41, 0x54], pos);
         view.setUint16(pos + 4, 0x0C, this.le);
         view.setUint16(pos + 6, sortedFiles.length, this.le);
         view.setUint32(pos + 8, 0x00000065, this.le);
-        // 5. Write SFAT Nodes
         pos += 0x0C;
         for (let i = 0; i < sortedFiles.length; i++) {
             const f = sortedFiles[i];
@@ -140,16 +135,13 @@ class SarcArchive {
             view.setUint32(pos + 12, fileOffsets[i].end, this.le);
             pos += 16;
         }
-        // 6. Write SFNT Header
         out.set([0x53, 0x46, 0x4e, 0x54], pos);
         view.setUint16(pos + 4, 0x08, this.le);
         pos += 8;
-        // 7. Write String Table
         for (let i = 0; i < sortedFiles.length; i++) {
             const nameBytes = new TextEncoder().encode(sortedFiles[i].name);
             out.set(nameBytes, pos + nameOffsets[i]);
         }
-        // 8. Write File Data
         for (let i = 0; i < sortedFiles.length; i++) {
             out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
         }

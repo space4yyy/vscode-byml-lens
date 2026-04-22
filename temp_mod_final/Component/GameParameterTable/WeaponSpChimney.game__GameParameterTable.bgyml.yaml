@@ -1,0 +1,84 @@
+GameParameters:
+  MoveParam:
+    $type: spl__BulletSpChimneyGeneratorMoveParam
+    DamageValueForDamageTag: 4000
+    GuideHitCollisionType: InkStorm
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.6799999475479126
+      Low: 1.1200000047683716
+      Mid: 1.399999976158142
+  WallParam:
+    $type: spl__BulletSpChimneyWallParam
+    ClosingFrame: 60
+    DamageValue: 400
+    DebugBlockRotateDistance: 0.5
+    DebugBlockRotateSpeedMax: 1
+    DebugBlockRotateSpeedMin: 0.5
+    DebugCircleRadius: 1
+    DebugCircleSideOffset: 1.5
+    DebugCircleSlantOffset:
+      X: 0.75
+      "Y": 1
+    DebugWallAlpha: 0
+    MarkingFrame: 120
+    MoveSpeed:
+      High: 0.05999999865889549
+      Low: 0.03999999910593033
+      Mid: 0.05299999937415123
+    RunningFrame: 560
+    SaturationChangeOutFrame: 120
+    SaturationFrame: 360
+    SaturationTarget: 0.05000000074505806
+    SplashPaintRadius: 2.5
+    SplashSpawnAllFrame: 10
+    SplashSpawnPosition:
+      - X: -5
+        "Y": 4.5
+        Z: 0.8500000238418579
+      - X: 7
+        "Y": 5
+        Z: 0.25
+      - X: -3
+        "Y": 4
+        Z: 1.25
+      - X: 1
+        "Y": 4
+        Z: 1.5
+      - X: 11
+        "Y": 6.5
+        Z: -2
+      - X: 3
+        "Y": 4
+        Z: 1.25
+      - X: 9
+        "Y": 6.5
+        Z: -0.6000000238418579
+      - X: -9
+        "Y": 6.5
+        Z: -0.6000000238418579
+      - X: -1
+        "Y": 4
+        Z: 1.5
+      - X: -7
+        "Y": 5
+        Z: 0.25
+      - X: 5
+        "Y": 4.5
+        Z: 0.8500000238418579
+      - X: -11
+        "Y": 6.5
+        Z: -2
+    SplashSpawnSpan: 45
+    StartUpFrame: 60
+    TargetSpeedFrame: 300
+    WallDepth: 0.25
+    WallHeightDown: 4.5
+    WallHeightUp: 4.5
+    WallWidth: 15
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.1599999964237213
+    YPlusRate: 4

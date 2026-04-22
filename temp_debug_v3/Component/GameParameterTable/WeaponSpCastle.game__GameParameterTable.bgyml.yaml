@@ -1,0 +1,54 @@
+GameParameters:
+  BodyParam:
+    $type: spl__BulletSpCastleBodyParam
+    CollisionAttackFrontOffset: 0.5
+    CollisionDashFrontOffset: 2.75
+    CollisionDashRadiusForPlayer: 1.5
+    CollisionJumpRadiusForPlayer: 2.6500000953674316
+    CollisionPaintAttackFrontOffset: 0.5
+    CollisionPaintDashFrontOffset: 0.800000011920929
+    CollisionPaintOffFrontOffset: 0.30000001192092896
+    CollisionRadiusForField: 1.149999976158142
+    CollisionUpperOffset: 0
+    DamageJumpValue: 600
+    DefiladeUpperOffset: 0.10000000149011612
+    DefiladeYMinusLength: 0.20000000298023224
+    PaintCheckUpperOffset: 0.4000000059604645
+    PaintDepthScale: 1.2000000476837158
+    PaintSpanFrame: 4
+    PaintWidthHalf: 1.2000000476837158
+  WeaponParam:
+    $type: spl__WeaponSpCastleParam
+    ColBullet_OffsetY: 0.25
+    ColBullet_OffsetZ_Head: 0.5
+    ColBullet_OffsetZ_Tail: -0.5
+    ColBullet_Radius: 1
+    Dash_ChargeCancelableFrame: 34
+    Dash_ChargeFrame: 35
+    Dash_InvalidFrame: 10
+    Dash_MoveFrame: 35
+    Dash_MoveSpeedCoef_Charged: 0.10000000149011612
+    Dash_MoveSpeedCoef_Charging_Ed: 0.10000000149011612
+    Dash_MoveSpeedCoef_Charging_St: 0.20000000298023224
+    Dash_MoveSpeed_Floor_MaxCharge: 0.30000001192092896
+    Dash_MoveSpeed_Floor_MinCharge: 0.30000001192092896
+    Dash_MoveSpeed_Floor_NoPaint: 0.20999999344348907
+    Dash_MoveSpeed_Wall_MaxCharge: 0.2199999988079071
+    Dash_MoveSpeed_Wall_MinCharge: 0.2199999988079071
+    DokanWarpLmtFrm_FinishSpecial: 60
+    FinishAlertStartFrame: 120
+    KnockBackKf_Charge_Ed: 1
+    KnockBackKf_Charge_Ed_Frm: 30
+    KnockBackKf_Charge_St: 3
+    KnockBackKf_Dash: 0
+    KnockBackKf_Std: 3
+    MoveSpeed: 0.19200000166893005
+    NoShotBombFrm_FinishSpecial: 60
+    NoShotBombReqFrm_FinishSpecial: 40
+    SpecialTotalFrame:
+      High: 600
+      Low: 480
+      Mid: 540
+    StartDelayFrame_NetRecv: 30
+    StartDelayFrame_NetSend: 60
+    StickDownRt_OnVLift: 2

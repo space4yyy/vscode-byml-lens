@@ -41,8 +41,8 @@ const sarc_js_1 = require("./core/sarc.js");
 const program = new commander_1.Command();
 program
     .name('byml-lens')
-    .description('CLI tool for Nintendo BYML and SARC files')
-    .version('0.2.0');
+    .description('CLI tool for Nintendo BYML and SARC files (v0.2.2)')
+    .version('0.2.2');
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
     .argument('<input>', 'Input binary BYML file (.byml, .bgyml, .zs)')

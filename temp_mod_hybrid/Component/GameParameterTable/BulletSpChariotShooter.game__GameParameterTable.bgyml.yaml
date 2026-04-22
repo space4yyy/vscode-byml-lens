@@ -1,0 +1,3 @@
+$parent: >-
+  Work/Component/GameParameterTable/BulletShooterBase.game__GameParameterTable.gyml
+GameParameters: {}

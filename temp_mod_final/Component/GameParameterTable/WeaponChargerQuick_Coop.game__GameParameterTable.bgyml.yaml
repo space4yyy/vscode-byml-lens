@@ -1,0 +1,16 @@
+$parent: >-
+  Work/Component/GameParameterTable/WeaponChargerQuick.game__GameParameterTable.gyml
+GameParameters:
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    EndRadiusForPlayer: 0.10000000149011612
+    InitRadiusForPlayer: 0.10000000149011612
+  DamageParam:
+    $type: spl__BulletChargerDamageParam
+    ValueFullCharge: 3000
+    ValueMaxCharge: 1200
+    ValueMinCharge: 500
+  WeaponParam:
+    $type: spl__WeaponChargerParam
+    InkConsumeFullCharge: 0.08399999886751175
+    InkConsumeMinCharge: 0.014929999597370625

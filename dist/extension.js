@@ -4618,13 +4618,19 @@ var SarcArchive = class _SarcArchive {
   static hash(name) {
     let h = 0;
     for (let i = 0; i < name.length; i++) {
-      h = h * 101 + name.charCodeAt(i) >>> 0;
+      h = Math.imul(h, 101) + name.charCodeAt(i) >>> 0;
     }
     return h;
   }
   encode() {
-    Logger.info(`Encoding SARC with ${this.files.length} files...`);
-    const sortedFiles = [...this.files].sort((a, b) => _SarcArchive.hash(a.name) - _SarcArchive.hash(b.name));
+    Logger.info(`Encoding SARC (v0.2.3) with ${this.files.length} files...`);
+    const sortedFiles = [...this.files].sort((a, b) => {
+      const ha = _SarcArchive.hash(a.name);
+      const hb = _SarcArchive.hash(b.name);
+      if (ha < hb) return -1;
+      if (ha > hb) return 1;
+      return 0;
+    });
     let stringTableSize = 0;
     const nameOffsets = sortedFiles.map((f) => {
       const off = stringTableSize;
@@ -4642,8 +4648,10 @@ var SarcArchive = class _SarcArchive {
       while (totalSize % 256 !== 0) totalSize++;
       const start = totalSize - dataStart;
       totalSize += f.data.length;
-      return { start, end: totalSize - dataStart };
+      const end = totalSize - dataStart;
+      return { start, end };
     });
+    while (totalSize % 256 !== 0) totalSize++;
     const out = new Uint8Array(totalSize);
     const view = new DataView(out.buffer);
     out.set([83, 65, 82, 67], 0);
@@ -7389,7 +7397,7 @@ var Writer = class {
   view;
   offset = 0;
   le = true;
-  constructor(size = 1024 * 1024) {
+  constructor(size = 2 * 1024 * 1024) {
     this.buffer = new Uint8Array(size);
     this.view = new DataView(this.buffer.buffer);
   }
@@ -7507,10 +7515,11 @@ function yamlToByml(yamlStr, originalData) {
     return 255;
   }
   function writeNode2(node) {
-    if (nodeOffsets.has(node)) return nodeOffsets.get(node);
+    const nodeKey = JSON.stringify(node);
+    if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey);
     writer.align(4);
     const offset = writer.tell();
-    nodeOffsets.set(node, offset);
+    nodeOffsets.set(nodeKey, offset);
     if (Array.isArray(node)) {
       writer.writeUInt8(192);
       writer.writeUInt24(node.length);
@@ -7519,26 +7528,24 @@ function yamlToByml(yamlStr, originalData) {
       }
       writer.align(4);
       const valuePos = writer.tell();
-      for (const item of node) writer.writeUInt32(0);
+      for (let i = 0; i < node.length; i++) writer.writeUInt32(0);
       for (let i = 0; i < node.length; i++) {
         const item = node[i];
         const type2 = getNodeType(item);
-        let val = 0;
         if (type2 === 192 || type2 === 193) {
           pendingNodes.push({ parentPos: valuePos + i * 4, node: item });
         } else {
-          val = encodeValue(type2, item);
           const savedPos = writer.tell();
           writer.seek(valuePos + i * 4);
-          writer.writeUInt32(val);
+          writer.writeUInt32(encodeValue(type2, item));
           writer.seek(savedPos);
         }
       }
     } else {
       const entries = Object.entries(node).sort((a, b) => {
-        const idxA = sortedKeys.indexOf(a[0]);
-        const idxB = sortedKeys.indexOf(b[0]);
-        return idxA - idxB;
+        const ha = SarcArchive_hash(a[0]);
+        const hb = SarcArchive_hash(b[0]);
+        return ha - hb;
       });
       writer.writeUInt8(193);
       writer.writeUInt24(entries.length);
@@ -7551,20 +7558,25 @@ function yamlToByml(yamlStr, originalData) {
       for (let i = 0; i < entries.length; i++) {
         const [k, v] = entries[i];
         const type2 = getNodeType(v);
-        let val = 0;
         if (type2 === 192 || type2 === 193) {
           pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: v });
         } else {
-          val = encodeValue(type2, v);
           const savedPos = writer.tell();
           writer.seek(entryPos + i * 8 + 4);
-          writer.writeUInt32(val);
+          writer.writeUInt32(encodeValue(type2, v));
           writer.seek(savedPos);
         }
       }
     }
     writer.align(4);
     return offset;
+  }
+  function SarcArchive_hash(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) {
+      h = Math.imul(h, 101) + name.charCodeAt(i) >>> 0;
+    }
+    return h;
   }
   function encodeValue(type2, v) {
     switch (type2) {
@@ -7593,14 +7605,11 @@ function yamlToByml(yamlStr, originalData) {
     const offset = writeNode2(node);
     const savedPos = writer.tell();
     writer.seek(parentPos);
-    writer.writeUInt32(offset);
+    writer.writeUInt32(offset, le);
     writer.seek(savedPos);
   }
   const encoded = writer.getBytes();
-  if (originalData && isCompressed(originalData)) {
-    return compressData(encoded);
-  }
-  return encoded;
+  return originalData && isCompressed(originalData) ? compressData(encoded) : encoded;
 }
 function bymlToYaml(data) {
   const decompressed = isCompressed(data) ? decompressData(data) : data;

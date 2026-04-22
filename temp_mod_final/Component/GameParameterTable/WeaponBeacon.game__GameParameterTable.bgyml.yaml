@@ -1,0 +1,17 @@
+GameParameters:
+  MoveParam:
+    $type: spl__BulletBeaconMoveParam
+    GuideRadius: 0
+    SpawnSpeedZSpecUp:
+      High: 1.1200000047683716
+      Low: 1.1200000047683716
+      Mid: 1.1200000047683716
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+    SubInkSaveLv: 3
+  WeaponParam:
+    $type: spl__WeaponBeaconParam
+    InkConsume: 0.75
+    InkRecoverStop: 0
+    KnockBackParam:
+      ImpactValue: 0.05000000074505806

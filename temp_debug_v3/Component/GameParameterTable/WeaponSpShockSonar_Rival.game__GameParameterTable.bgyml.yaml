@@ -1,0 +1,78 @@
+GameParameters:
+  spl__BulletSpShockSonarParam:
+    $type: spl__BulletSpShockSonarParam
+    GeneratorParam:
+      DestroyWaitFrame: 15
+      GroundColRadius: 0.5
+      HeadColRadius: 0.75
+      HitDamage: 300
+      HitDamageInterval: 1
+      HitKnockback: 400
+      MaxHP: 4000
+      MoveParam:
+        FlyGravity: 0.008999999612569809
+        FlyPositionAirResist: 0.0010000000474974513
+        GuideHitCollisionType: EnemyOffFenceOnBlowerOffShieldOff
+        SpawnSpeedY: 0.07000000029802322
+        SpawnSpeedYWorldMin: -0.5
+        SpawnSpeedZSpecUp:
+          High: 0.30000001192092896
+          Low: 0.30000001192092896
+          Mid: 0.30000001192092896
+      PoleColHeight: 2.75
+      PoleColRadius: 0.10000000149011612
+      SphereAnimCurve:
+        Data:
+          - 0
+          - 0
+          - 0
+          - 0.1454544961452484
+          - 0
+          - 0
+          - 0.901515007019043
+          - 1
+          - -0.1383644938468933
+          - 1
+          - 0
+          - 0
+        MaxX: 1
+        Type: Hermit2DSmooth
+      SphereAnimRadius: 0.30000001192092896
+      WaveEmitFrameArray:
+        - 90
+        - 240
+        - 390
+      WaveSyncReserveFrame: 60
+    WaveParam:
+      Damage: 450
+      DamageWidth: 1.5
+      DamageYMax: 2.799999952316284
+      DamageYMin: -5
+      IsAttackerPriority: false
+      IsEnableMarking: true
+      MarkingFrame: 480
+      MaxFrame:
+        High: 216
+        Low: 160
+        Mid: 192
+      MaxRadius:
+        High: 27
+        Low: 20
+        Mid: 24
+      RadiusCurve:
+        Data:
+          - 0
+          - 1
+        MaxX: 1
+        Type: Linear
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0
+    YMax: 100
+    YMinusRate: 0
+    YPlusRate: 0
+    ZRate: 0
+  spl__WeaponSpShockSonarParam:
+    $type: spl__WeaponSpShockSonarParam
+    PlayerParam: {}
+    ShotParam: {}

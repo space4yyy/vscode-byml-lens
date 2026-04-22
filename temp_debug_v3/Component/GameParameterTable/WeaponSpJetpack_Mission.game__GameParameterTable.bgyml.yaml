@@ -1,0 +1,106 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    CollisionRadiusForPaint: 0
+    CrossPaintCheckLength: 0
+    CrossPaintRadius: 0
+    CrossPaintTexture: Bomb00
+    CrossPaintUseChageArea: false
+    DamageAttackerPriority: false
+    DamageLinear: false
+    DamageOffsetY: 0
+    DistanceDamage:
+      - Damage: 500
+        Distance: 2.0999999046325684
+      - Damage: 300
+        Distance: 5
+    KnockBackParam:
+      Accel: 470
+      Bias: 0.6000000238418579
+      DirectionZeroAccelRate: 0
+      Distance: 8
+    PaintHeight: 4
+    PaintOffsetY: 0
+    PaintRadius: 3.200000047683716
+    PaintTexture: Bomb00
+    PlaneDamage: []
+    ReactionVel: 100
+    SplashAroundParam:
+      Num: 10
+      OffsetY: 0.30000001192092896
+      PaintRadius: 0.6299999952316284
+      PitchMax: 30
+      PitchMin: 5
+      VelocityMax: 0.33000001311302185
+      VelocityMin: 0.49000000953674316
+    SubSpecialSpecUpList:
+      - SpecUpType: PaintRadius
+        Value:
+          High: 4
+          Low: 3.200000047683716
+          Mid: 3.5999999046325684
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.2999999523162842
+          Low: 1
+          Mid: 1.149999976158142
+      - SpecUpType: SplashAroundVelocityMin
+        Value:
+          High: 0.5199999809265137
+          Low: 0.49000000953674316
+          Mid: 0.5049999952316284
+      - SpecUpType: SplashAroundVelocityMax
+        Value:
+          High: 0.3499999940395355
+          Low: 0.33000001311302185
+          Mid: 0.3400000035762787
+      - SpecUpType: SplashAroundPaintRadius
+        Value:
+          High: 0.699999988079071
+          Low: 0.6299999952316284
+          Mid: 0.6650000214576721
+  JetParam:
+    $type: spl__BulletSpJetpackJetParam
+    CalcHeight: 1
+    DamagePaintHeight: 10
+    DamageSpanFrame: 0
+    DamageValue: 5
+    PaintRadius: 1.2000000476837158
+    PaintSpan: 1
+  LauncherCollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    ChangeFrameForField: 0
+    ChangeFrameForPlayer: 0
+    EndRadiusForField: 0.30000001192092896
+    EndRadiusForPlayer: 0.30000001192092896
+    FriendThroughFrameForPlayer: 1000
+    InitRadiusForField: 0.30000001192092896
+    InitRadiusForPlayer: 0.30000001192092896
+  MoveParam:
+    $type: spl__BulletSpJetpackLauncherParam
+    DamageToObject: 1200
+    DamageToPlayer: 1200
+    Distance: 30
+    SpawnSpeed: 0.75
+  WeaponParam:
+    $type: spl__WeaponSpJetpackParam
+    Boost_JumpVel: 0.20000000298023224
+    Boost_NoBoostFrm: 90
+    Boost_NoSquidFrm: 30
+    FirstShotDelayFrm: 50
+    FirstShotDelayFrm_Req: 10
+    MoveSpeed: 0.07199999690055847
+    PreDelayFrm_Squid: 25
+    RepeatFrame: 60
+    SpecialTotalFrame:
+      High: 510
+      Low: 450
+      Mid: 480
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    GuideYMinusZero: false
+    XRate: 0
+    YMax: 100
+    YMinusRate: 0
+    YPlusRate: 0
+    ZRate: 0

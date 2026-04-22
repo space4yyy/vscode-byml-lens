@@ -1,0 +1,62 @@
+GameParameters:
+  AreaParam:
+    $type: spl__BulletPointSensorAreaParam
+    AreaOffsetY: 0.44999998807907104
+    Distance:
+      High: 11
+      Low: 8
+      Mid: 9.5
+    Frame: 1
+    MarkingFrameSubSpec:
+      High: 600
+      Low: 300
+      Mid: 450
+  BlastParam:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 2.5
+    CrossPaintRadius: 2.5
+    DamageOffsetY: 0.44999998807907104
+    DistanceDamage:
+      - Damage: 450
+        Distance: 3.5999999046325684
+      - Damage: 350
+        Distance: 8
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 12
+    PaintOffsetY: 0.44999998807907104
+    PaintRadius: 5
+    PlaneDamage:
+      - Damage: 450
+        Distance: -0.5
+      - Damage: 350
+        Distance: -1.5
+    SubSpecialSpecUpList:
+      - SpecUpType: DistanceDamageDistanceRate
+        Value:
+          High: 1.375
+          Low: 1
+          Mid: 1.1875
+  MoveParam:
+    $type: spl__BulletTrapParam
+    GuideRadius: 0
+    MaxPlaceNum: 2
+    PlacePaintRadius: 1
+    SensorRadius:
+      High: 4
+      Low: 3
+      Mid: 3.5
+    SpawnSpeedZSpecUp:
+      High: 1.1200000047683716
+      Low: 1.1200000047683716
+      Mid: 1.1200000047683716
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+    SubInkSaveLv: 3
+  WeaponParam:
+    $type: spl__WeaponTrapParam
+    InkConsume: 0.6000000238418579
+    InkRecoverStop: 0
+    KnockBackParam:
+      ImpactValue: 0.014999999664723873

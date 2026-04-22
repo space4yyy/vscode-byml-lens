@@ -1,0 +1,125 @@
+GameParameters:
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+  spl__BulletShelterCanopyParam:
+    $type: spl__BulletShelterCanopyParam
+    CanopyGravity: 1.1019999980926514
+    CanopyInitSpeed: 7.920000076293945
+    CanopySpeedAirAddScaleXZ: 0.7200000286102295
+    CanopySpeedGroundAddScale: 0.47999998927116394
+    FootSplashShapeCastOffset: 0.4000000059604645
+  spl__BulletShelterShotgunParam:
+    $type: spl__BulletShelterShotgunParam
+    DamageEffectiveTotalMax: 800
+    GroupParams:
+      - DamageParam:
+          ValueMax: 150
+          ValueMin: 150
+        DrawRadius: 1.600000023841858
+        HorizontalDegree: 0
+        HorizontalOffset: 0
+        InitVelRandom: 0
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 2
+          SpawnSpeed: 4
+        PaintParam:
+          DistanceNear: 1
+          WidthHalfFar: 1.600000023841858
+          WidthHalfMiddle: 1.600000023841858
+          WidthHalfNear: 1.600000023841858
+        TotalNum: 1
+        VerticalDegree: 0
+        VerticalOffset: 0
+      - CollisionParam:
+          EndRadiusForField: 0.20000000298023224
+          EndRadiusForPlayer: 0.20000000298023224
+          InitRadiusForField: 0.20000000298023224
+          InitRadiusForPlayer: 0.20000000298023224
+        DamageParam:
+          ValueMax: 150
+          ValueMin: 150
+        DrawRadius: 1.600000023841858
+        HorizontalDegree: 5
+        HorizontalOffset: 0.05000000074505806
+        InitVelRandom: 1.2000000476837158
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 2
+          SpawnSpeed: 4
+        PaintParam:
+          WidthHalfFar: 1.5
+          WidthHalfMiddle: 1.5
+          WidthHalfNear: 1.5
+        TotalNum: 3
+        VerticalDegree: 5
+        VerticalOffset: 0.05000000074505806
+      - CollisionParam:
+          EndRadiusForField: 0.20000000298023224
+          EndRadiusForPlayer: 0.20000000298023224
+          InitRadiusForField: 0.20000000298023224
+          InitRadiusForPlayer: 0.20000000298023224
+        DamageParam:
+          ValueMax: 150
+          ValueMin: 150
+        DrawRadius: 1.600000023841858
+        HorizontalDegree: 11
+        HorizontalOffset: 0.10000000149011612
+        InitVelRandom: 1.2000000476837158
+        MoveParam:
+          GoStraightStateEndMaxSpeed: 2
+          GoStraightToBrakeStateFrame: 2
+          SpawnSpeed: 4
+        PaintParam:
+          WidthHalfFar: 1.5
+          WidthHalfMiddle: 1.5
+          WidthHalfNear: 1.5
+        TotalNum: 6
+        VerticalDegree: 10
+        VerticalOffset: 0.10000000149011612
+    ShotgunWallDropCollisionParam:
+      PaintRadiusShock: 1.649999976158142
+    ShotgunWallDropMoveParam:
+      FallPeriodFirstFrameMax: 40
+      FallPeriodFirstFrameMin: 20
+      FallPeriodFirstTargetSpeed: 0.05999999865889549
+      FallPeriodLastFrameMax: 35
+      FallPeriodLastFrameMin: 15
+    SplashParam:
+      CreateSplashLength: 4.5
+      CreateSplashNum: 3
+      SplashPaintDepthScaleFullActive: 2.309999942779541
+      SplashPaintDepthScaleOneActive: 6
+      SplashPaintWidthFullActive: 1.5
+      SplashPaintWidthOneActive: 0.699999988079071
+    SplashWallDropCollisionParam:
+      PaintRadiusFall: 0.6499999761581421
+      PaintRadiusGround: 0.6000000238418579
+      PaintRadiusShock: 1.649999976158142
+    SplashWallDropMoveParam:
+      FallPeriodFirstFrameMax: 15
+      FallPeriodFirstTargetSpeed: 0.029999999329447746
+      FallPeriodLastFrameMax: 25
+      FallPeriodLastFrameMin: 10
+      FallPeriodSecondFrame: 5
+      FallPeriodSecondTargetSpeed: 0.07999999821186066
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2
+  spl__WeaponShelterCanopyParam:
+    $type: spl__WeaponShelterCanopyParam
+    CanopyOpenEndOffset: 0
+    CanopyOpenStartOffset: -0.6000000238418579
+    InkConsumeUmbrella: 0.30000001192092896
+    IsAlwaysNaked: true
+  spl__WeaponShelterShotgunParam:
+    $type: spl__WeaponShelterShotgunParam
+    InkConsume: 0.019999999552965164
+    InkRecoverStop: 20
+    InkRecoverStopCharge: 20
+    JumpGndCharge: 0.10000000149011612
+    MoveSpeed: 0.09600000083446503
+    MoveSpeedCharge: 0.09600000083446503
+    RepeatFrame: 12

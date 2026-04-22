@@ -1,0 +1,53 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 3.5999999046325684
+      - Damage: 300
+        Distance: 7
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 12
+    PaintOffsetY: 0.10000000149011612
+    SplashAroundParam:
+      Num: 15
+      OffsetY: 0.30000001192092896
+      PitchMax: 45
+  MoveParam:
+    $type: spl__BulletBombSplashParam
+    BurstFrame: 60
+    CollisionSEVelDotGroundNrm: 0.05000000074505806
+    ContactDashPanel:
+      AddSpeedPerImpact: 0.15832999348640442
+      CrossSaveSpeedRate: 0.8999999761581421
+    ContactJumpPanel:
+      AddSpeedOneBoundRate: 0.699999988079071
+      AddSpeedPerImpact: 0.08332999795675278
+    FlyGravity: 0.01600000075995922
+    GroundCountUpHitLayerObject: true
+    GroundGravity: 0.01600000075995922
+    GroundPositionDeg50AirResist: 0.30000001192092896
+    GroundPositionHorizonAirResist: 0.30000001192092896
+    GroundRotateDeg50AirResist: 0.05000000074505806
+    GroundRotateHorizonAirResist: 0.05000000074505806
+    GuideRadius: 0.574999988079071
+    HitVerticalWallReboundMaxRate: 0.699999988079071
+    SpawnRotatePitch: 0.4000000059604645
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.1200000047683716
+      Low: 1.1200000047683716
+      Mid: 1.1200000047683716
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+  WeaponParam:
+    $type: spl__WeaponSubParam
+    InkRecoverStop: 60
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.3199999928474426
+    YPlusRate: 4

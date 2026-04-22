@@ -51,62 +51,74 @@ export class SarcArchive {
         }
     }
 
-    private static hash(name: string): number {
+    public static hash(name: string): number {
         let h = 0;
         for (let i = 0; i < name.length; i++) {
-            h = (h * 0x65 + name.charCodeAt(i)) >>> 0;
+            h = (Math.imul(h, 0x65) + name.charCodeAt(i)) >>> 0;
         }
         return h;
     }
 
     public encode(): Uint8Array {
-        Logger.info(`Encoding SARC with ${this.files.length} files...`);
+        Logger.info(`Encoding SARC (v0.2.3) with ${this.files.length} files...`);
         
-        // 1. Prepare String Table
-        const sortedFiles = [...this.files].sort((a, b) => SarcArchive.hash(a.name) - SarcArchive.hash(b.name));
+        // 1. Sort files by hash ASCENDING (Using robust comparison to avoid overflow)
+        const sortedFiles = [...this.files].sort((a, b) => {
+            const ha = SarcArchive.hash(a.name);
+            const hb = SarcArchive.hash(b.name);
+            if (ha < hb) return -1;
+            if (ha > hb) return 1;
+            return 0;
+        });
+
+        // 2. Prepare String Table
         let stringTableSize = 0;
         const nameOffsets = sortedFiles.map(f => {
             const off = stringTableSize;
             stringTableSize += f.name.length + 1;
-            while (stringTableSize % 4 !== 0) stringTableSize++;
+            while (stringTableSize % 4 !== 0) stringTableSize++; // Align names
             return off;
         });
 
-        // 2. Calculate offsets
+        // 3. Calculate offsets
         const sfatSize = 0x0C + sortedFiles.length * 16;
         const sfntSize = 0x08 + stringTableSize;
         const headerSize = 0x14;
+        
         let dataStart = headerSize + sfatSize + sfntSize;
-        // CRITICAL: Splatoon 3 SARC files often use 256-byte global alignment
+        // MUST be aligned to at least 16, ideally 256 for Switch
         while (dataStart % 256 !== 0) dataStart++; 
 
         let totalSize = dataStart;
         const fileOffsets = sortedFiles.map(f => {
-            while (totalSize % 256 !== 0) totalSize++; // Align every file to 256 bytes
+            while (totalSize % 256 !== 0) totalSize++; // STRICT 256-byte file alignment
             const start = totalSize - dataStart;
             totalSize += f.data.length;
-            return { start, end: totalSize - dataStart };
+            const end = totalSize - dataStart;
+            return { start, end };
         });
+        
+        // Final size alignment
+        while (totalSize % 256 !== 0) totalSize++;
 
         const out = new Uint8Array(totalSize);
         const view = new DataView(out.buffer);
 
-        // 3. Write SARC Header
+        // Header
         out.set([0x53, 0x41, 0x52, 0x43], 0);
         view.setUint16(4, headerSize, true);
         view.setUint16(6, this.le ? 0xFEFF : 0xFFFE, true);
         view.setUint32(8, totalSize, this.le);
         view.setUint32(0x0C, dataStart, this.le);
-        view.setUint32(0x10, 0x00000100, this.le); // Standard version
+        view.setUint32(0x10, 0x00000100, this.le);
 
-        // 4. Write SFAT Header
+        // SFAT
         let pos = headerSize;
         out.set([0x53, 0x46, 0x41, 0x54], pos);
         view.setUint16(pos + 4, 0x0C, this.le);
         view.setUint16(pos + 6, sortedFiles.length, this.le);
         view.setUint32(pos + 8, 0x00000065, this.le);
 
-        // 5. Write SFAT Nodes
         pos += 0x0C;
         for (let i = 0; i < sortedFiles.length; i++) {
             const f = sortedFiles[i];
@@ -117,18 +129,17 @@ export class SarcArchive {
             pos += 16;
         }
 
-        // 6. Write SFNT Header
+        // SFNT
         out.set([0x53, 0x46, 0x4e, 0x54], pos);
         view.setUint16(pos + 4, 0x08, this.le);
         pos += 8;
 
-        // 7. Write String Table
         for (let i = 0; i < sortedFiles.length; i++) {
             const nameBytes = new TextEncoder().encode(sortedFiles[i].name);
             out.set(nameBytes, pos + nameOffsets[i]);
         }
 
-        // 8. Write File Data
+        // Data
         for (let i = 0; i < sortedFiles.length; i++) {
             out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
         }

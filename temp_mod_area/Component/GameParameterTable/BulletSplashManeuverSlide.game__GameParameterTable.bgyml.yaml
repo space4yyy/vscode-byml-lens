@@ -1,0 +1,33 @@
+GameParameters:
+  CollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    EndRadiusForField: 0.30000001192092896
+    EndRadiusForPlayer: 0
+    InitRadiusForField: 0.30000001192092896
+    InitRadiusForPlayer: 0
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    BrakeAirResist: 0
+    BrakeGravity: 0
+    BrakeToFreeStateFrame: 1000
+    BrakeToFreeVelocityXZ: 0
+    BrakeToFreeVelocityY: 0
+    FreeAirResist: 0
+    FreeGravity: 0
+    GoStraightStateEndMaxSpeed: 0
+    GoStraightToBrakeStateFrame: 1000
+    SpawnSpeed: 0
+  WallDropCollisionPaintParam:
+    $type: spl__BulletWallDropCollisionPaintParam
+    PaintRadiusFall: 1
+    PaintRadiusGround: 1.2000000476837158
+    PaintRadiusShock: 1.7999999523162842
+  WallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMax: 10
+    FallPeriodFirstFrameMin: 10
+    FallPeriodFirstTargetSpeed: 0.10000000149011612
+    FallPeriodLastFrameMax: 20
+    FallPeriodLastFrameMin: 15
+    FallPeriodSecondFrame: 1
+    FallPeriodSecondTargetSpeed: 0.10000000149011612

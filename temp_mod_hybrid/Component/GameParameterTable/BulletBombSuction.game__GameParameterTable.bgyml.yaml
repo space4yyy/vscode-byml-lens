@@ -1,0 +1,9 @@
+GameParameters:
+  spl__ConstraintBindableHelperParam:
+    $type: spl__ConstraintBindableHelperParam
+    CreateNum: 2
+  spl__DamageParam:
+    $type: spl__DamageParam
+    DamageSenderArray:
+      - Name: Main
+        RefRigidBody: []

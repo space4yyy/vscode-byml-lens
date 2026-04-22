@@ -1,0 +1,299 @@
+GameParameters:
+  BulletSaberHorizontalParam:
+    $type: spl__BulletSaberParam
+    BurstParam:
+      BurstFrame: 6
+      SplashColRadius: 0.10000000149011612
+      SplashDrawRadius: 0.20000000298023224
+      SplashPaintRadius: 2.200000047683716
+    CollisionParam:
+      CoreIndex: 2
+      OffsetArray:
+        - X: -1.2000000476837158
+          "Y": 0
+          Z: -0.20000000298023224
+        - X: -0.6000000238418579
+          "Y": 0
+          Z: -0.10000000149011612
+        - X: 0
+          "Y": 0
+          Z: 0
+        - X: 0.6000000238418579
+          "Y": 0
+          Z: -0.10000000149011612
+        - X: 1.2000000476837158
+          "Y": 0
+          Z: -0.20000000298023224
+      ParamArray:
+        - ChangeFrameForField: 5
+          EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.25
+          InitRadiusForField: 0.25
+          InitRadiusForPlayer: 0.25
+        - ChangeFrameForField: 5
+          EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.2750000059604645
+          InitRadiusForField: 0.2750000059604645
+          InitRadiusForPlayer: 0.2750000059604645
+        - ChangeFrameForField: 0
+          EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.30000001192092896
+          InitRadiusForField: 0.30000001192092896
+          InitRadiusForPlayer: 0.30000001192092896
+        - ChangeFrameForField: 5
+          EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.2750000059604645
+          InitRadiusForField: 0.2750000059604645
+          InitRadiusForPlayer: 0.2750000059604645
+        - ChangeFrameForField: 5
+          EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.25
+          InitRadiusForField: 0.25
+          InitRadiusForPlayer: 0.25
+    DamageParam:
+      HasGuard: false
+      HitDamage: 350
+    MoveParam:
+      BrakeAirResist: 0
+      BrakeGravity: 0
+      BrakeToFreeStateFrame: 0
+      BrakeToFreeVelocityXZ: 0
+      BrakeToFreeVelocityY: 0
+      FreeAirResist: 0
+      FreeGravity: 0
+      GoStraightToBrakeStateFrame: 5
+      SpawnSpeed: 2.819999933242798
+    PaintParam:
+      DepthScaleMax: 1.399999976158142
+      DepthScaleMin: 0.4000000059604645
+      PaintDegreeMax: 60
+      WidthHalf: 2.299999952316284
+    SplashPaintParam:
+      WidthHalf: 1.7999999523162842
+    SplashSpawnParam:
+      DropInterval: 3
+      SplashNumMax: 8
+  BulletSaberSlashHorizontalParam:
+    $type: spl__BulletSaberSlashParam
+    DamageParam:
+      DamageValue: 200
+    MoveParam:
+      AliveFrame: 4
+    ShapeParam:
+      BoxCenter:
+        X: 0
+        "Y": 0
+        Z: 0.4000000059604645
+      BoxHalfExtents:
+        X: 1.600000023841858
+        "Y": 0.25
+        Z: 1.399999976158142
+      CylinderCenterA:
+        X: 1.5
+        "Y": 1.399999976158142
+        Z: 1.5
+      CylinderCenterB:
+        X: 1.5
+        "Y": 1.399999976158142
+        Z: 1.5
+      CylinderRadius: 1.5
+      HasCylinderShape: false
+  BulletSaberSlashVerticalParam:
+    $type: spl__BulletSaberSlashParam
+    DamageParam:
+      DamageValue: 1400
+    MoveParam:
+      AliveFrame: 4
+    ShapeParam:
+      BoxCenter:
+        X: 0
+        "Y": 0
+        Z: 0.699999988079071
+      BoxHalfExtents:
+        X: 0.5
+        "Y": 1.399999976158142
+        Z: 0.699999988079071
+      CylinderCenterA:
+        X: -0.5
+        "Y": 0
+        Z: 1.399999976158142
+      CylinderCenterB:
+        X: 0.5
+        "Y": 0
+        Z: 1.399999976158142
+      CylinderRadius: 1.399999976158142
+      HasCylinderShape: true
+  BulletSaberVerticalParam:
+    $type: spl__BulletSaberParam
+    BurstParam:
+      BurstFrame: 26
+      SplashColRadius: 0.10000000149011612
+      SplashDrawRadius: 0.20000000298023224
+      SplashPaintRadius: 3
+    CollisionParam:
+      CoreIndex: 3
+      OffsetArray:
+        - X: 0
+          "Y": 1.600000023841858
+          Z: 0.10000000149011612
+        - X: 0
+          "Y": 1.2000000476837158
+          Z: 0.20000000298023224
+        - X: 0
+          "Y": 0.6000000238418579
+          Z: 0.10000000149011612
+        - X: 0
+          "Y": 0
+          Z: 0
+        - X: 0
+          "Y": -0.6000000238418579
+          Z: 0.10000000149011612
+        - X: 0
+          "Y": -1.2000000476837158
+          Z: 0.20000000298023224
+        - X: 0
+          "Y": -1.600000023841858
+          Z: 0.10000000149011612
+      ParamArray:
+        - EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.30000001192092896
+          InitRadiusForField: 0.30000001192092896
+          InitRadiusForPlayer: 0.30000001192092896
+        - EndRadiusForField: 0.3499999940395355
+          EndRadiusForPlayer: 0.3499999940395355
+          InitRadiusForField: 0.3499999940395355
+          InitRadiusForPlayer: 0.3499999940395355
+        - EndRadiusForField: 0.44999998807907104
+          EndRadiusForPlayer: 0.44999998807907104
+          InitRadiusForField: 0.44999998807907104
+          InitRadiusForPlayer: 0.44999998807907104
+        - EndRadiusForField: 0.5
+          EndRadiusForPlayer: 0.5
+          InitRadiusForField: 0.5
+          InitRadiusForPlayer: 0.5
+        - EndRadiusForField: 0.44999998807907104
+          EndRadiusForPlayer: 0.44999998807907104
+          InitRadiusForField: 0.44999998807907104
+          InitRadiusForPlayer: 0.44999998807907104
+        - EndRadiusForField: 0.3499999940395355
+          EndRadiusForPlayer: 0.3499999940395355
+          InitRadiusForField: 0.3499999940395355
+          InitRadiusForPlayer: 0.3499999940395355
+        - EndRadiusForField: 0.30000001192092896
+          EndRadiusForPlayer: 0.30000001192092896
+          InitRadiusForField: 0.30000001192092896
+          InitRadiusForPlayer: 0.30000001192092896
+    DamageParam:
+      HasGuard: false
+      HitDamage: 700
+    MoveParam:
+      BrakeAirResist: 0
+      BrakeGravity: 0.0027000000700354576
+      BrakeToFreeStateFrame: 0
+      BrakeToFreeVelocityXZ: 0
+      BrakeToFreeVelocityY: 0
+      FreeAirResist: 0
+      FreeGravity: 0.019999999552965164
+      GoStraightStateEndMaxSpeed: 10
+      GoStraightToBrakeStateFrame: 22
+      SpawnSpeed: 0.800000011920929
+    SplashPaintParam:
+      WidthHalf: 2
+    SplashSpawnParam:
+      DropInterval: 2
+      SplashNumMax: 14
+  MainEffectiveRangeUpParam:
+    $type: spl__PlayerGearSkillParam_MainEffectiveRangeUp
+  MainWeaponSetting:
+    $type: spl__PlayerGearSkillParam_MainWeaponSetting
+  spl__WeaponSaberParam:
+    $type: spl__WeaponSaberParam
+    ChargeParam:
+      AirChargeRateByInkEmpty: 3
+      ChargeFrameFullCharge: 20
+      ChargeFrameMinCharge: 5
+      InkConsumeFullCharge: 0.09000000357627869
+      InkConsumeMinCharge: 0.03500000014901161
+      InkRecoverStop: 40
+      MoveSpeedFullCharge: 0.4000000059604645
+    FootSplashPaintParam:
+      DepthMaxDropHeight: 0
+      DepthMinDropHeight: 0
+      DepthScaleMax: 1
+      DepthScaleMin: 0
+      WidthHalf: 0
+      WidthHalfNearest: 2
+    ShotGuideParam:
+      HorizontalSightFrame: 6
+      HorizontalSphereIndex: 2
+      VerticalSightFrame: 26
+      VerticalSphereIndex: 4
+    SwingParam:
+      ChargeMoveVelLimit: 0.05999999865889549
+      ChargeSwingFrame: 22
+      ChargeSwingPostDelayFrame: 14
+      ChargeSwingShotBulletFrame: 6
+      ChargeSwingShotSlashFrame: 3
+      ChargeSwingStepShotBulletFrame: 18
+      ChargeSwingStepShotSlashFrame: 15
+      InkConsume: 0.03999999910593033
+      InkRecoverStop: 40
+      InkRecoverStop_ChargeSwing: 40
+      IsShotEnable: true
+      ReserveAcceptFrame: 11
+      ShotBulletOffset_L:
+        X: 0
+        "Y": 1
+        Z: 1.399999976158142
+      ShotBulletOffset_R:
+        X: 0
+        "Y": 1
+        Z: 1.399999976158142
+      ShotBulletOffset_Vertical:
+        X: 0
+        "Y": 2.200000047683716
+        Z: 0.800000011920929
+      ShotSlashOffset_L:
+        X: 0
+        "Y": 0.8999999761581421
+        Z: 0.30000001192092896
+      ShotSlashOffset_R:
+        X: 0
+        "Y": 0.8999999761581421
+        Z: 0.30000001192092896
+      ShotSlashOffset_Vertical:
+        X: 0
+        "Y": 1.2000000476837158
+        Z: 0.5
+      SideStepParam:
+        ChargeFrame: 3
+        InkConsume: 0
+        InkRecoverStop: 0
+        InputReqAcceptFrame: 0
+        MoveDist: 3
+        MoveFrame: 8
+        MoveStepKd: 0.75
+        RepeatCnt: 1
+        SlipMoveDistAir: 1
+        SlipMoveDistGnd: 0
+        SlipMoveFrame: 0
+        TimeScale: 1
+        TimeScaleFrm: 0
+        UnrelaxFrameMove: 6
+        UnrelaxFrameMove_Last: 14
+        UnrelaxFrameNoSideStep: 0
+        UnrelaxFrameNoSideStep_Last: 14
+        UnrelaxFrameNoSquid: 5
+        UnrelaxFrameNoSquid_Last: 14
+        UnrelaxFrameNoWeapon: 5
+        UnrelaxFrameNoWeapon_Last: 19
+        UnrelaxFrameOneMuzzle: 0
+        UnrelaxFrameOneMuzzle_Last: 0
+      StepStartStickHistoryFrame: 5
+      StepStartStickThresholdY: 0.8999999761581421
+      WeakSwingASFrame: 36
+      WeakSwingFrame: 26
+      WeakSwingMoveVelLimit: 0.05999999865889549
+      WeakSwingPostDelayFrame: 22
+      WeakSwingShotBulletFrame: 9
+      WeakSwingShotSlashFrame: 6

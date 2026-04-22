@@ -1,0 +1,65 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 1.75
+    CrossPaintRadius: 1.75
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 2.8499999046325684
+      - Damage: 300
+        Distance: 6.5
+    KnockBackParam:
+      Accel: 470
+      Bias: 0.800000011920929
+      Distance: 9
+    SplashAroundParam:
+      Num: 10
+      OffsetY: 0.30000001192092896
+      PaintRadius: 0.699999988079071
+      VelocityMax: 0.3499999940395355
+      VelocityMin: 0.5199999809265137
+  MoveParam:
+    $type: spl__BulletBombRobotParam
+    BeforeRotateFrame: 30
+    ChaseAirAddSpeedXZPerFrame: 0.012000000104308128
+    ChaseAirMaxSpeedXZ: 0.09000000357627869
+    ChaseAirMaxSpeedY: 0.18000000715255737
+    ChaseBurstWaitFrame: 60
+    ChaseFrame: 150
+    ChaseGroundAddSpeedPerFrame: 0.003000000026077032
+    ChaseGroundMaxSpeed: 0.09000000357627869
+    ChasePitchDegree: 3
+    ChaseRollDegree: 1.25
+    ChaseYawDegree: 2
+    DeathTargetApprouchDistance: 0.6499999761581421
+    FindApproachBurstWaitFrame: 60
+    FindRotateFrame: 10
+    FlyGravity: 0.01600000075995922
+    FlyPositionAirResist: 0.05866000056266785
+    FlyRotateAirResist: 0.019850000739097595
+    GuideRadius: 0.5
+    NoReceiveTargetBurstWaitFrame: 300
+    SpawnRotatePitch: 0.4000000059604645
+    SpawnRotateRoll: 0.11999999731779099
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.1200000047683716
+      Low: 1.1200000047683716
+      Mid: 1.1200000047683716
+    UnfindBurstWaitFrame: 60
+    WarningAnimRestFrame: 60
+    WarningSERestFrame: 60
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+    SubInkSaveLv: 1
+  WeaponParam:
+    $type: spl__WeaponSubParam
+    InkConsume: 0.550000011920929
+    InkRecoverStop: 85
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.3199999928474426
+    YPlusRate: 4
+    ZRate: 2

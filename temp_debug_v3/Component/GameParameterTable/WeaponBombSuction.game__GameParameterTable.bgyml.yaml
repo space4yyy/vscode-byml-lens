@@ -1,0 +1,49 @@
+GameParameters:
+  BlastParam:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 2.5
+    CrossPaintRadius: 2.5
+    DamageOffsetY: 0.6000000238418579
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 4.599999904632568
+      - Damage: 300
+        Distance: 8
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 12
+    PaintOffsetY: 0.44999998807907104
+    PaintRadius: 5
+    SplashAroundParam:
+      Num: 15
+      OffsetY: 0.5
+      PaintRadius: 1.1160000562667847
+      PitchMax: 45
+      PitchMin: 5
+      VelocityMax: 0.6399999856948853
+      VelocityMin: 0.47999998927116394
+  MoveParam:
+    $type: spl__BulletBombSuctionParam
+    GuideHitCollisionType: EnemyOffFenceOn
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.6799999475479126
+      Low: 1.1200000047683716
+      Mid: 1.399999976158142
+    WarningSERestFrame: 60
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+  WeaponParam:
+    $type: spl__WeaponSubParam
+    InkRecoverStop: 60
+  spl__BulletInformImpactControlForGeyserParam:
+    $type: spl__BulletInformImpactControlForGeyserParam
+    AddSpeedPerImpact: 0.15000000596046448
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.3199999928474426
+    YPlusRate: 4
+    ZRate: 2

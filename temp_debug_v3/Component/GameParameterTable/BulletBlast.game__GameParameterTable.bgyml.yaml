@@ -1,0 +1,18 @@
+GameParameters:
+  MoveParam:
+    $type: spl__BulletSimpleMoveParam
+    BrakeAirResist: 0
+    BrakeGravity: 0
+    BrakeToFreeStateFrame: 1000
+    BrakeToFreeVelocityXZ: 0
+    BrakeToFreeVelocityY: 0
+    FreeAirResist: 0
+    FreeGravity: 0
+    GoStraightStateEndMaxSpeed: 0
+    GoStraightToBrakeStateFrame: 1000
+    SpawnSpeed: 0
+  spl__DamageParam:
+    $type: spl__DamageParam
+    DamageSenderArray:
+      - Name: Main
+        RefRigidBody: []

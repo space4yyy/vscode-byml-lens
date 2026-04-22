@@ -1,0 +1,150 @@
+GameParameters:
+  AdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    ZRate: 2
+  BodyParam:
+    $type: spl__BulletSpChariotBodyParam
+    CollisionRadiusForField: 1.149999976158142
+    CollisionRadiusForPlayer: 1.4500000476837158
+    KnockBackChariotPlayer:
+      AccelMax: 720
+      AccelMin: 480
+      MyVelocityRate: 4800
+      OpponentVelocityRate: 300
+    KnockBackOpponent:
+      AccelMax: 720
+      AccelMin: 480
+      MyVelocityRate: 5400
+      OpponentVelocityRate: 300
+  CannonParam:
+    $type: spl__BulletSpChariotCannonParam
+    BlastParam:
+      CrossPaintCheckLength: 0
+      CrossPaintRadius: 0
+      DamageOffsetY: 0.20000000298023224
+      DistanceDamage:
+        - Damage: 300
+          Distance: 5.599999904632568
+      KnockBackParam:
+        Accel: 470
+        Bias: 0.800000011920929
+        Distance: 5
+      PaintOffsetY: 0.20000000298023224
+      PaintRadius: 4.5
+    CollisionParam:
+      ChangeFrameForField: 4
+      ChangeFrameForPlayer: 5
+      EndRadiusForField: 0.25
+      EndRadiusForPlayer: 0.4000000059604645
+      FriendThroughFrameForPlayer: 1000
+      InitRadiusForField: 0.10000000149011612
+      InitRadiusForPlayer: 0.03999999910593033
+    DirectDamage: 500
+    DrawSize: 0.699999988079071
+    MoveParam:
+      BrakeAirResist: 0.10000000149011612
+      BrakeGravity: 0.03999999910593033
+      BrakeToFreeStateFrame: 1
+      BrakeToFreeVelocityXZ: 20
+      BrakeToFreeVelocityY: 10
+      FreeAirResist: 0.11999999731779099
+      FreeGravity: 0.05000000074505806
+      GoStraightToBrakeStateFrame: 8
+    SplashParam:
+      DrawSizeCollisionPaintParam:
+        CollisionParam:
+          EndRadiusForField: 0.15000000596046448
+          EndRadiusForPlayer: 0
+          InitRadiusForField: 0.15000000596046448
+          InitRadiusForPlayer: 0
+        DrawRadius: 0.10000000149011612
+        PaintDepthScale: 2
+        PaintWidthHalf: 1.1200000047683716
+      SpawnParam:
+        SpawnBetweenLength: 3.0999999046325684
+        SpawnNum: 10
+  ShooterCollisionParam:
+    $type: spl__BulletSimpleCollisionParam
+    ChangeFrameForField: 0
+    EndRadiusForField: 0.20000000298023224
+    EndRadiusForPlayer: 0.20000000298023224
+    FriendThroughFrameForPlayer: 0
+    InitRadiusForField: 0.20000000298023224
+    InitRadiusForPlayer: 0.20000000298023224
+  ShooterDamageParam:
+    $type: spl__BulletShooterDamageParam
+    ReduceEndFrame: 25
+    ReduceStartFrame: 9
+    ValueMax: 320
+    ValueMin: 160
+  ShooterMoveParam:
+    $type: spl__BulletSimpleMoveParam
+    FreeGravity: 0.01600000075995922
+    GoStraightStateEndMaxSpeed: 2.2320001125335693
+    GoStraightToBrakeStateFrame: 7
+    SpawnSpeed: 3.359999895095825
+  ShooterPaintParam:
+    $type: spl__BulletShooterPaintParam
+    DistanceMiddle: 1.100000023841858
+    WidthHalfFar: 1.5
+    WidthHalfMiddle: 1.600000023841858
+    WidthHalfNear: 1.600000023841858
+  ShooterSplashPaintParam:
+    $type: spl__BulletSplashShooterPaintParam
+    DepthMaxDropHeight: 3
+    DepthMinDropHeight: 10
+    WidthHalf: 1
+    WidthHalfNearest: 2.0160000324249268
+  ShooterSplashSpawnParam:
+    $type: spl__BulletSplashShooterSpawnParam
+    ForceSpawnNearestAddNumArray: []
+    SpawnBetweenLength: 10
+    SpawnNearestLength: 1
+    SpawnNum: 2.5
+    SplitNum: 8
+  ShooterWallDropCollisionPaintParam:
+    $type: spl__BulletWallDropCollisionPaintParam
+    PaintRadiusFall: 0.6499999761581421
+    PaintRadiusGround: 0.6000000238418579
+    PaintRadiusShock: 1.2999999523162842
+  ShooterWallDropMoveParam:
+    $type: spl__BulletWallDropMoveParam
+    FallPeriodFirstFrameMax: 40
+    FallPeriodFirstFrameMin: 20
+    FallPeriodFirstTargetSpeed: 0.05999999865889549
+    FallPeriodLastFrameMax: 35
+    FallPeriodLastFrameMin: 15
+    FallPeriodSecondFrame: 10
+    FallPeriodSecondTargetSpeed: 0.05999999865889549
+    FreeGravityType: value_0_008
+  WeaponSpChariotParam:
+    $type: spl__WeaponSpChariotParam
+    ArmorHP: 5000
+    ArmorHP_BreakScissors: 2500
+    CannonNoShotFrame: 32
+    MoveSpeedCoef_Squid: 0.6000000238418579
+    MoveSpeedX: 0.07500000298023224
+    MoveSpeedX_SpongeEnemy: 0.024000000208616257
+    MoveSpeedZ: 0.014999999664723873
+    MoveSpeedZ_SpongeEnemy: 0.004800000227987766
+    NoShotBombReqFrm_FinishSpecial: 25
+    PreDelayFrm_Squid_ShotBomb: 20
+    RotDegLmt_ToHumanFrm: 20
+    ShooterRepeatFrame_Bias: 0.20000000298023224
+    ShooterRepeatFrame_First: 12
+    ShooterRepeatFrame_Term: 90
+    ShotGuideCannonFrame: 0
+    ShotPitVelLmt: 0.014999999664723873
+    SpecialTotalFrame:
+      High: 660
+      Low: 480
+      Mid: 570
+    StartDelayFrame_Cannon: 20
+    StartDelayFrame_Shooter: 20
+  spl__BulletShooterTailLengthParam:
+    $type: spl__BulletShooterTailLengthParam
+    DelayShotFrame: 4
+    EndMaxLength: 2
+  spl__PaintMonitorSetParam:
+    $type: spl__PaintMonitorSetParam
+    RelabilityMinTime: 0

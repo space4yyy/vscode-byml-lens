@@ -1,0 +1,103 @@
+GameParameters:
+  BlastParamMaxCharge:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 2.0999999046325684
+    CrossPaintRadius: 2.0999999046325684
+    DamageAttackerPriority: false
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 4.599999904632568
+      - Damage: 300
+        Distance: 8
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 9
+    PaintRadius: 5
+    SplashAroundParam:
+      Num: 12
+      PaintRadius: 0.699999988079071
+      PitchMax: 33
+      PitchMin: 19
+      VelocityMax: 0.47999998927116394
+      VelocityMin: 0.4000000059604645
+  BlastParamMinCharge:
+    $type: spl__BulletBlastParam
+    CrossPaintCheckLength: 1
+    CrossPaintRadius: 1
+    DamageAttackerPriority: false
+    DistanceDamage:
+      - Damage: 1800
+        Distance: 1.600000023841858
+      - Damage: 300
+        Distance: 5
+    KnockBackParam:
+      Accel: 700
+      Bias: 0.800000011920929
+      Distance: 9
+    PaintRadius: 2
+    SplashAroundParam:
+      Num: 12
+      PaintRadius: 0.699999988079071
+      PitchMax: 33
+      PitchMin: 19
+      VelocityMax: 0.30000001192092896
+      VelocityMin: 0.25
+  MoveParam:
+    $type: spl__BulletBombCurlingParam
+    BaseSpeedComeOverRate: 0.9200000166893005
+    BaseSpeedComeUnderRate: 0.9599999785423279
+    BaseSpeedMinCharge: 0.2199999988079071
+    BurstFrame: 210
+    BurstTimingSpeedStartRestFrame: 90
+    BurstTimingSpeedStopBias: 0.4000000059604645
+    ContactDashPanel:
+      AddSpeedPerImpact: 0.21667000651359558
+      ImpactDirectionSaveSpeedRate: 0
+    ContactJumpPanel:
+      AddSpeedOneBoundRate: 0.5
+      AddSpeedPerImpact: 0.051669999957084656
+      MaxBoundNum: 3
+    DamageDirectHit: 200
+    DamageDirectSpanSecond: 0.666700005531311
+    FlyGravity: 0.01600000075995922
+    FlyPositionAirResist: 0.05866000056266785
+    GroundGravity: 0.0015999999595806003
+    GroundPositionAirResist: 0
+    GuideHitCollisionType: EnemyOnFenceOn
+    KnockBackParam:
+      Accel: 350
+      Bias: 0
+      Degree: 60
+      Distance: 10
+    ModelRotateHitWall45Degree: 1
+    ModelRotateReduceDegree: 0.004999999888241291
+    PaintBurstRadiusBias: 0.6499999761581421
+    PaintCheckHeight: 2
+    PaintRadiusBias: 0.25
+    PaintRadiusMaxCharge: 1.2000000476837158
+    PaintRadiusMinCharge: 1
+    SpawnSpeedY: 0.11999999731779099
+    SpawnSpeedYMaxCharge: 0.11999999731779099
+    SpawnSpeedYWorldMin: -0.5
+    SpawnSpeedZMaxCharge: 0.20000000298023224
+    SpawnSpeedZSpecUp:
+      High: 0.4000000059604645
+      Low: 0.4000000059604645
+      Mid: 0.4000000059604645
+    WarningAnimRestFrame: 90
+  SubWeaponSetting:
+    $type: spl__PlayerGearSkillParam_SubWeaponSetting
+  WeaponParam:
+    $type: spl__WeaponBombCurlingParam
+    ChargeFrameBlastRate: 2
+    InkRecoverStop: 70
+    InkRecoverStopMaxCharge: 30
+    MaxChargeFrame: 60
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 0.800000011920929
+    YMax: 0.1599999964237213
+    YMinusRate: 0
+    YPlusRate: 2
+    ZRate: 1.2000000476837158

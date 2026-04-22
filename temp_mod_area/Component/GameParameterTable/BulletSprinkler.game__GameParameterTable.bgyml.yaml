@@ -1,0 +1,25 @@
+GameParameters:
+  spl__ConstraintBindableHelperParam:
+    $type: spl__ConstraintBindableHelperParam
+  spl__DamageParam:
+    $type: spl__DamageParam
+    DamageReceiverArray:
+      - DamageHistMaxSize: 64
+        DamageRateInfoCol: Wsb_Sprinkler
+        Flag: []
+        IsManualRefRigidBody: false
+        Name: Main
+        RefHitPointHolder: []
+        RefRigidBody:
+          - Body_Placed
+        ShotTargetLocatorName: ""
+    HitPointHolderArray:
+      - IsRefComplementPaintToModel: true
+        MaxHitPoint: 1200
+        Name: Main
+        PaintBias: 0.5
+        PaintMagnification: 1
+        RefComplementPaintMatName: ""
+        RefComplementPaintModelKey: ""
+        SkipFrmSlipCure: 60
+        SlipCure: 0

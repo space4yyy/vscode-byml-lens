@@ -1,0 +1,43 @@
+GameParameters:
+  CloudParam:
+    $type: spl__BulletSpInkStormCloudParam
+    DamageRadius: 10
+    NoPaintRainNum: 0
+    RainNum: 72
+    RainyFrame:
+      High: 600
+      Low: 480
+      Mid: 540
+    WithNoPaintRainNum: 120
+  MoveParam:
+    $type: spl__BulletSpInkStormGeneratorMoveParam
+    GuideHitCollisionType: InkStorm
+    SpawnSpeedY: 0.23999999463558197
+    SpawnSpeedYWorldMin: -0.4000000059604645
+    SpawnSpeedZSpecUp:
+      High: 1.6799999475479126
+      Low: 1.1200000047683716
+      Mid: 1.399999976158142
+  RainParam:
+    $type: spl__BulletSpInkStormRainParam
+    CollisionParam:
+      EndRadiusForField: 0.25
+      EndRadiusForPlayer: 0
+      InitRadiusForField: 0.25
+      InitRadiusForPlayer: 0
+    MoveParam:
+      BrakeAirResist: 0
+      BrakeGravity: 0
+      BrakeToFreeStateFrame: 0
+      BrakeToFreeVelocityXZ: 0
+      BrakeToFreeVelocityY: 0
+      FreeAirResist: 0.07000000029802322
+      FreeGravity: 0.019999999552965164
+      GoStraightStateEndMaxSpeed: 0
+      GoStraightToBrakeStateFrame: 0
+      SpawnSpeed: 0
+  spl__SpawnBulletAdditionMovePlayerParam:
+    $type: spl__SpawnBulletAdditionMovePlayerParam
+    XRate: 1.600000023841858
+    YMax: 0.1599999964237213
+    YPlusRate: 4
