@@ -58,16 +58,18 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
         function crawl(offset: number, path: string) {
             const type = decompressed[offset]; typeMap.set(path, type);
             if (type === 0xC1) {
-                const count = (decompressed[offset+1] << 16) | (decompressed[offset+2] << 8) | decompressed[offset+3];
-                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset+4);
+                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset + 1);
+                const count = cr.readUInt24();
+                cr.seek(offset + 4);
                 for(let i=0; i<count; i++) {
                     const kidx = cr.readUInt24(); const nt = cr.readUInt8(); const val = cr.readUInt32();
                     const k = oKeys[kidx]; typeMap.set(path + '/' + k, nt);
                     if (nt === 0xC0 || nt === 0xC1) crawl(val, path + '/' + k);
                 }
             } else if (type === 0xC0) {
-                const count = (decompressed[offset+1] << 16) | (decompressed[offset+2] << 8) | decompressed[offset+3];
-                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset+4);
+                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset + 1);
+                const count = cr.readUInt24();
+                cr.seek(offset + 4);
                 const types = []; for(let i=0; i<count; i++) types.push(cr.readUInt8());
                 cr.align(4);
                 for(let i=0; i<count; i++) {

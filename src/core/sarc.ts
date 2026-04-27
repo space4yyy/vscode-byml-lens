@@ -76,7 +76,8 @@ public encode(originalDataStart?: number): Uint8Array {
     let stringTableSize = 0;
     const nameOffsets = sortedFiles.map(f => {
         const off = stringTableSize;
-        stringTableSize += f.name.length + 1;
+        const bytes = new TextEncoder().encode(f.name);
+        stringTableSize += bytes.length + 1;
         while (stringTableSize % 4 !== 0) stringTableSize++;
         return off;
     });
@@ -92,8 +93,9 @@ public encode(originalDataStart?: number): Uint8Array {
 
     let totalSize = dataStart;
     const fileOffsets = sortedFiles.map((f, i) => {
-        // Standard alignment
-        while (totalSize % 8 !== 0) totalSize++; 
+        // Splatoon 3 and other modern games use 256-byte alignment for performance/mmap.
+        // We apply it to all files for maximum compatibility.
+        while (totalSize % 256 !== 0) totalSize++; 
         const start = totalSize - dataStart;
         totalSize += f.data.length;
         const end = totalSize - dataStart;
