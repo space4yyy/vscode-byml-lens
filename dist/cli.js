@@ -10614,9 +10614,10 @@ function yamlToByml(yamlStr, originalData) {
       const type2 = decompressed[offset];
       typeMap.set(path2, type2);
       if (type2 === 193) {
-        const count = decompressed[offset + 1] << 16 | decompressed[offset + 2] << 8 | decompressed[offset + 3];
         const cr = new Reader(decompressed);
         cr.le = le;
+        cr.seek(offset + 1);
+        const count = cr.readUInt24();
         cr.seek(offset + 4);
         for (let i = 0; i < count; i++) {
           const kidx = cr.readUInt24();
@@ -10627,9 +10628,10 @@ function yamlToByml(yamlStr, originalData) {
           if (nt === 192 || nt === 193) crawl2(val, path2 + "/" + k);
         }
       } else if (type2 === 192) {
-        const count = decompressed[offset + 1] << 16 | decompressed[offset + 2] << 8 | decompressed[offset + 3];
         const cr = new Reader(decompressed);
         cr.le = le;
+        cr.seek(offset + 1);
+        const count = cr.readUInt24();
         cr.seek(offset + 4);
         const types = [];
         for (let i = 0; i < count; i++) types.push(cr.readUInt8());
@@ -10645,7 +10647,8 @@ function yamlToByml(yamlStr, originalData) {
     var crawl = crawl2;
     const decompressed = isCompressed(originalData) ? decompressData(originalData) : originalData;
     if (decompressed[0] === 66 && decompressed[1] === 89) le = false;
-    version = decompressed[3] << 8 | decompressed[2];
+    if (le) version = decompressed[3] << 8 | decompressed[2];
+    else version = decompressed[2] << 8 | decompressed[3];
     const r = new Reader(decompressed);
     r.le = le;
     const oKeys = r.readStringTable(r.readUInt32At(4));
@@ -10717,7 +10720,8 @@ function yamlToByml(yamlStr, originalData) {
         if (v < -2147483648 || v > 2147483647) return 213;
         return 209;
       }
-      return 210;
+      if (Math.fround(v) === v) return 210;
+      return 211;
     }
     if (typeof v === "boolean") return 208;
     if (Array.isArray(v)) return 192;
@@ -10725,7 +10729,8 @@ function yamlToByml(yamlStr, originalData) {
     return 255;
   }
   function writeNode2(node, path2) {
-    const nodeKey = path2 + ":" + JSON.stringify(node);
+    const type2 = getNodeType(node, path2);
+    const nodeKey = type2.toString(16) + ":" + JSON.stringify(node);
     if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey);
     writer.align(4);
     const offset = writer.tell();
@@ -10738,12 +10743,12 @@ function yamlToByml(yamlStr, originalData) {
       const valPos = writer.tell();
       for (let i = 0; i < node.length; i++) writer.writeUInt32(0);
       for (let i = 0; i < node.length; i++) {
-        const p = path2 + "[" + i + "]", type2 = getNodeType(node[i], p);
-        if (type2 === 192 || type2 === 193) pendingNodes.push({ parentPos: valPos + i * 4, node: node[i], path: p });
+        const p = path2 + "[" + i + "]", nt = getNodeType(node[i], p);
+        if (nt === 192 || nt === 193) pendingNodes.push({ parentPos: valPos + i * 4, node: node[i], path: p });
         else {
           const saved = writer.tell();
           writer.seek(valPos + i * 4);
-          writer.writeUInt32(encodeValue(type2, node[i], valPos + i * 4));
+          writer.writeUInt32(encodeValue(nt, node[i], valPos + i * 4));
           writer.seek(saved);
         }
       }
@@ -10758,12 +10763,12 @@ function yamlToByml(yamlStr, originalData) {
         writer.writeUInt32(0);
       }
       for (let i = 0; i < entries.length; i++) {
-        const p = path2 + "/" + entries[i][0], type2 = getNodeType(entries[i][1], p);
-        if (type2 === 192 || type2 === 193) pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: entries[i][1], path: p });
+        const p = path2 + "/" + entries[i][0], nt = getNodeType(entries[i][1], p);
+        if (nt === 192 || nt === 193) pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: entries[i][1], path: p });
         else {
           const saved = writer.tell();
           writer.seek(entryPos + i * 8 + 4);
-          writer.writeUInt32(encodeValue(type2, entries[i][1], entryPos + i * 8 + 4));
+          writer.writeUInt32(encodeValue(nt, entries[i][1], entryPos + i * 8 + 4));
           writer.seek(saved);
         }
       }
@@ -11064,13 +11069,10 @@ var SarcArchive = class _SarcArchive {
         const nameOffset = (nameAttr & 16777215) * 4;
         const fileStart = view.getUint32(nodeOff + 8, this.le);
         const fileEnd = view.getUint32(nodeOff + 12, this.le);
-        let name = "";
-        let nPos = stringTablePos + nameOffset;
-        while (nPos < d.length && d[nPos] !== 0) {
-          name += String.fromCharCode(d[nPos]);
-          nPos++;
-        }
         const fileData = d.slice(dataStart + fileStart, dataStart + fileEnd);
+        let nEnd = stringTablePos + nameOffset;
+        while (nEnd < d.length && d[nEnd] !== 0) nEnd++;
+        const name = new TextDecoder().decode(d.slice(stringTablePos + nameOffset, nEnd));
         this.files.push({ name, data: fileData });
       }
     } catch (err) {
@@ -11090,12 +11092,14 @@ var SarcArchive = class _SarcArchive {
     const sortedFiles = [...this.files].sort((a, b) => {
       const ha = _SarcArchive.hash(a.name);
       const hb = _SarcArchive.hash(b.name);
-      return ha - hb;
+      if (ha !== hb) return ha - hb;
+      return a.name.localeCompare(b.name);
     });
     let stringTableSize = 0;
     const nameOffsets = sortedFiles.map((f) => {
       const off = stringTableSize;
-      stringTableSize += f.name.length + 1;
+      const bytes = new TextEncoder().encode(f.name);
+      stringTableSize += bytes.length + 1;
       while (stringTableSize % 4 !== 0) stringTableSize++;
       return off;
     });
@@ -11107,7 +11111,7 @@ var SarcArchive = class _SarcArchive {
     while (dataStart % 4 !== 0) dataStart++;
     let totalSize = dataStart;
     const fileOffsets = sortedFiles.map((f, i) => {
-      while (totalSize % 8 !== 0) totalSize++;
+      while (totalSize % 256 !== 0) totalSize++;
       const start = totalSize - dataStart;
       totalSize += f.data.length;
       const end = totalSize - dataStart;
@@ -11138,11 +11142,14 @@ var SarcArchive = class _SarcArchive {
     }
     out.set([83, 70, 78, 84], pos);
     view.setUint16(pos + 4, 8, this.le);
+    view.setUint32(pos + 8, stringTableSize + 8, this.le);
     pos += 8;
+    out.fill(0, pos, pos + stringTableSize);
     for (let i = 0; i < sortedFiles.length; i++) {
       const nameBytes = new TextEncoder().encode(sortedFiles[i].name);
       out.set(nameBytes, pos + nameOffsets[i]);
     }
+    pos += stringTableSize;
     for (let i = 0; i < sortedFiles.length; i++) {
       out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
     }
@@ -11153,7 +11160,7 @@ var SarcArchive = class _SarcArchive {
 
 // src/cli.ts
 var program2 = new Command();
-var COMMIT_ID = true ? "025abb9" : "dev";
+var COMMIT_ID = true ? "0d25739" : "dev";
 program2.name("byml-lens").description(`CLI tool for Nintendo BYML and SARC files (v0.2.4, commit: ${COMMIT_ID})`).version(`0.2.4 (${COMMIT_ID})`);
 program2.command("deyaml").description("Convert binary BYML to YAML").argument("<input>", "Input binary BYML file (.byml, .bgyml, .zs)").argument("[output]", "Output YAML file").action(async (input, output) => {
   try {
