@@ -40,15 +40,12 @@ export class SarcArchive {
                 const nameOffset = (nameAttr & 0x00FFFFFF) * 4;
                 const fileStart = view.getUint32(nodeOff + 8, this.le);
                 const fileEnd = view.getUint32(nodeOff + 12, this.le);
-
-                let name = '';
-                let nPos = stringTablePos + nameOffset;
-                while (nPos < d.length && d[nPos] !== 0) {
-                    name += String.fromCharCode(d[nPos]);
-                    nPos++;
-                }
-
                 const fileData = d.slice(dataStart + fileStart, dataStart + fileEnd);
+
+                let nEnd = stringTablePos + nameOffset;
+                while (nEnd < d.length && d[nEnd] !== 0) nEnd++;
+                const name = new TextDecoder().decode(d.slice(stringTablePos + nameOffset, nEnd));
+
                 this.files.push({ name, data: fileData });
             }
         } catch (err: any) {
@@ -70,7 +67,8 @@ public encode(originalDataStart?: number): Uint8Array {
     const sortedFiles = [...this.files].sort((a, b) => {
         const ha = SarcArchive.hash(a.name);
         const hb = SarcArchive.hash(b.name);
-        return ha - hb;
+        if (ha !== hb) return ha - hb;
+        return a.name.localeCompare(b.name);
     });
 
     let stringTableSize = 0;
@@ -132,12 +130,17 @@ public encode(originalDataStart?: number): Uint8Array {
 
         out.set([0x53, 0x46, 0x4e, 0x54], pos);
         view.setUint16(pos + 4, 0x08, this.le);
+        view.setUint32(pos + 8, stringTableSize + 8, this.le); // SFNT size including header
         pos += 8;
+
+        // Ensure the string table area is initialized with zeros
+        out.fill(0, pos, pos + stringTableSize);
 
         for (let i = 0; i < sortedFiles.length; i++) {
             const nameBytes = new TextEncoder().encode(sortedFiles[i].name);
             out.set(nameBytes, pos + nameOffsets[i]);
         }
+        pos += stringTableSize;
 
         for (let i = 0; i < sortedFiles.length; i++) {
             out.set(sortedFiles[i].data, dataStart + fileOffsets[i].start);
