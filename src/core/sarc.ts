@@ -128,9 +128,10 @@ public encode(originalDataStart?: number): Uint8Array {
             pos += 16;
         }
 
+        // SFNT Header (8 bytes)
         out.set([0x53, 0x46, 0x4e, 0x54], pos);
         view.setUint16(pos + 4, 0x08, this.le);
-        view.setUint32(pos + 8, stringTableSize + 8, this.le); // SFNT size including header
+        view.setUint16(pos + 6, 0, this.le); // Reserved
         pos += 8;
 
         // Ensure the string table area is initialized with zeros
