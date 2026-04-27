@@ -1,41 +1,23 @@
----
-name: byml-lens
-description: Expert tool for Nintendo asset orchestration. Handles BYML v7, SARC archives, and Zstd compression. Use when you need to read, modify, or repackage Nintendo game files (.byml, .bgyml, .pack, .zs).
----
+# BYML Lens Agent Skill
 
-# BYML Lens (Nintendo Asset Orchestration)
-
-This skill enables AI agents to read, modify, and repackage Nintendo game assets (.byml, .bgyml, .pack, .zs).
+This skill enables AI agents to read, modify, and repackage Nintendo game assets (.byml, .bgyml, .pack, .zs) with production-grade stability and hardware compatibility.
 
 ## Capabilities
-- **Decompile/Recompile**: Automated bidirectional conversion between binary and YAML via `--yaml`.
-- **Archive Management**: Unpack and Pack SARC archives with Zstd support.
-- **Smart Cleanup**: Mandatory instructions for managing intermediate workspace directories.
+- **Perfect Decompile/Recompile**: Automated bidirectional conversion between binary and YAML. Supports Version 7 with high-precision 64-bit alignment.
+- **Archive Management**: Unpack and Pack SARC archives with 256-byte file alignment and UTF-8 path support.
+- **Smart Asset Surgery**: Injecting specific sub-files (bcett, RenderingDay, Ocean) into existing packs while maintaining binary integrity.
 
-## Command Reference
+## Technical Standards (Anti-Crash)
+1. **8-Byte Alignment**: When encoding BYML Version 7, all 64-bit values (Double, Long, ULong) MUST be aligned to an 8-byte boundary relative to the file start. Failing this causes crashes on real hardware and Ryujinx.
+2. **256-Byte SARC Alignment**: Inside `.pack` files, data blocks for each file should be aligned to 256 bytes (0x100) for optimal memory mapping.
+3. **UTF-8 Byte Hashing**: SARC filename hashes (SFAT) must be calculated from UTF-8 bytes, not UTF-16 character codes.
+4. **Surgical Modding SOP**:
+   - **Maps**: Replace `bcett.byml` for layout.
+   - **Ocean**: Inject ocean parameters with their *original* names to satisfy `OceanRef` pointers in rendering configs.
+   - **Sky/Atmosphere**: Swap `RenderingDay.bgyml` (excluding Boss/Cloudy variants) to sync lighting/skybox.
+   - **Graffiti**: To remove graffiti cleanly, use `deyaml` -> set `GraffitiObjInfo` to `[]` -> `yaml2byml` with reference.
 
-### 1. Archive Operations
-- **Unpack**: `byml-lens unpack <archive.pack.zs> <output_dir> --yaml`
-- **Pack**: `byml-lens pack <input_dir> <new_archive.pack.zs> --zstd --yaml`
-
-### 2. File Operations
-- **Binary to YAML**: `byml-lens deyaml <input.byml.zs> [output.yaml]`
-- **YAML to Binary**: `byml-lens yaml2byml <input.yaml> <output.byml.zs> --reference <original.byml.zs>`
-
-## Workflows & Safety
-
-### Scenario: Editing an Archive
-1. **Setup**: Create a unique temporary directory, e.g., `./temp_edit_area`.
-2. **Unpack**: `byml-lens unpack data.pack.zs ./temp_edit_area --yaml`
-3. **Action**: Read and modify the `.yaml` files inside.
-4. **Repack**: `byml-lens pack ./temp_edit_area data.pack.zs --zstd --yaml`
-5. **Cleanup (Mandatory)**: Delete the temporary directory immediately after successful repacking.
-   `run_shell_command("rm -rf ./temp_edit_area")`
-
-### Safety Rules
-1. **Temporary Scoping**: Always unpack into a dedicated subdirectory, never the workspace root.
-2. **Atomic Cleanup**: If the `pack` command fails, do NOT delete the directory so the user can inspect the error. Only delete after a successful `pack`.
-3. **Filename Integrity**: Keep `.byml.yaml` extensions so the tool can identify binary targets.
-
----
-Produced by **space4** with 🩵
+## CLI Usage Guidelines
+- Always use `--reference` with `yaml2byml` to inherit correct versions and endianness.
+- Use `-z` for Zstd compression and `-r` for SARC metadata inheritance to ensure game engine compatibility.
+- Prefer binary surgery over full re-encoding for sensitive metadata-heavy files.
