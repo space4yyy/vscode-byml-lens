@@ -140,10 +140,19 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
 
     function writeNode(node: any, path: string): number {
-        // Global deduplication based on content and original inferred type
+        // Normalize node for deduplication (sort keys for objects)
         const type = getNodeType(node, path);
-        const nodeKey = type.toString(16) + ":" + JSON.stringify(node);
+        let normalized = node;
+        if (node && typeof node === 'object' && !Array.isArray(node)) {
+            const sortedObj: any = {};
+            Object.keys(node).sort().forEach(k => {
+                sortedObj[k] = node[k];
+            });
+            normalized = sortedObj;
+        }
+        const nodeKey = type.toString(16) + ":" + JSON.stringify(normalized);
         if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey)!;
+        
         writer.align(4); const offset = writer.tell(); nodeOffsets.set(nodeKey, offset);
         
         if (Array.isArray(node)) {
