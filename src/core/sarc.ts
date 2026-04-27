@@ -56,8 +56,9 @@ export class SarcArchive {
 
     public static hash(name: string): number {
         let h = 0;
-        for (let i = 0; i < name.length; i++) {
-            h = (Math.imul(h, 0x65) + name.charCodeAt(i)) >>> 0;
+        const bytes = new TextEncoder().encode(name);
+        for (let i = 0; i < bytes.length; i++) {
+            h = (Math.imul(h, 0x65) + bytes[i]) >>> 0;
         }
         return h;
     }
