@@ -52,10 +52,15 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
         if (decompressed[0] === 0x42 && decompressed[1] === 0x59) le = false;
         if (le) version = (decompressed[3] << 8) | decompressed[2];
         else version = (decompressed[2] << 8) | decompressed[3];
+        
         const r = new Reader(decompressed); r.le = le;
-        const oKeys = r.readStringTable(r.readUInt32At(4));
-        const oRootOff = r.readUInt32At(12);
+        const ktOff = r.readUInt32At(4);
+        const stOff = r.readUInt32At(8);
+        const rtOff = r.readUInt32At(12);
+        const oKeys = r.readStringTable(ktOff);
+
         function crawl(offset: number, path: string) {
+            if (offset >= decompressed.length || offset === 0) return;
             const type = decompressed[offset]; typeMap.set(path, type);
             if (type === 0xC1) {
                 const cr = new Reader(decompressed); cr.le = le; cr.seek(offset + 1);
@@ -78,7 +83,7 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
                 }
             }
         }
-        try { crawl(oRootOff, ''); } catch(e) {}
+        try { crawl(rtOff, ''); } catch(e) {}
     }
     writer.le = le;
 
@@ -129,7 +134,6 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
                 if (v < -2147483648 || v > 2147483647) return 0xD5;
                 return 0xD1;
             }
-            // Smart float/double detection
             if (Math.fround(v) === v) return 0xD2; 
             return 0xD3;
         }
@@ -140,19 +144,15 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
 
     function writeNode(node: any, path: string): number {
-        // Normalize node for deduplication (sort keys for objects)
         const type = getNodeType(node, path);
         let normalized = node;
         if (node && typeof node === 'object' && !Array.isArray(node)) {
             const sortedObj: any = {};
-            Object.keys(node).sort().forEach(k => {
-                sortedObj[k] = node[k];
-            });
+            Object.keys(node).sort().forEach(k => { sortedObj[k] = node[k]; });
             normalized = sortedObj;
         }
         const nodeKey = type.toString(16) + ":" + JSON.stringify(normalized);
         if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey)!;
-        
         writer.align(4); const offset = writer.tell(); nodeOffsets.set(nodeKey, offset);
         
         if (Array.isArray(node)) {
@@ -197,7 +197,7 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
                 else if (type === 0xD5) extraData.writeBigInt64(BigInt(v));
                 else extraData.writeBigUint64(BigInt(v));
                 patchLocations.push({ pos, extraOffset: off });
-                return 0; // Will be patched
+                return 0;
             }
             default: return 0;
         }
@@ -210,18 +210,31 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
         const saved = writer.tell(); writer.seek(parentPos); writer.writeUInt32(offset); writer.seek(saved);
     }
     
+    // Version 7 and modern BYML alignment
     writer.align(8);
     const baseLen = writer.tell();
-    const extraBytes = extraData.getBytes();
-    const finalOut = new Uint8Array(baseLen + extraBytes.length);
+    
+    // We must ensure that each 64-bit value in extraData is aligned relative to the ACTUAL file start
+    const extraBytesRaw = extraData.getBytes();
+    const finalOut = new Uint8Array(baseLen + extraBytesRaw.length + 64); // Add padding buffer
     finalOut.set(writer.getBytes());
-    finalOut.set(extraBytes, baseLen);
+    
+    let currentPos = baseLen;
     const finalView = new DataView(finalOut.buffer);
+    
     for (const p of patchLocations) {
-        finalView.setUint32(p.pos, baseLen + p.extraOffset, le);
+        // Correctly align this specific 64-bit value to 8-byte boundary in the final file
+        while (currentPos % 8 !== 0) currentPos++;
+        
+        const valView = new DataView(extraBytesRaw.buffer, extraBytesRaw.byteOffset + p.extraOffset, 8);
+        finalOut.set(new Uint8Array(extraBytesRaw.buffer, extraBytesRaw.byteOffset + p.extraOffset, 8), currentPos);
+        
+        finalView.setUint32(p.pos, currentPos, le);
+        currentPos += 8;
     }
     
-    return originalData && zstd.isCompressed(originalData) ? zstd.compressData(finalOut) : finalOut;
+    const finalTrimmed = finalOut.slice(0, currentPos);
+    return originalData && zstd.isCompressed(originalData) ? zstd.compressData(finalTrimmed) : finalTrimmed;
 }
 
 export function bymlToYaml(data: Uint8Array): string {
@@ -234,34 +247,45 @@ export function bymlToYaml(data: Uint8Array): string {
     const keys = reader.readStringTable(ktOff), strings = reader.readStringTable(stOff);
     
     function parseNode(offset: number): any {
-        const prev = reader.tell(); reader.seek(offset);
+        if (offset === 0 || offset >= reader.view.byteLength) return null;
+        const prev = reader.tell(); 
+        reader.seek(offset);
         const type = reader.readUInt8(); let res;
         if (type === 0xC0) {
             const count = reader.readUInt24(); const types = [];
             for (let i = 0; i < count; i++) types.push(reader.readUInt8());
             reader.align(4); const arr = [];
-            for (let i = 0; i < count; i++) arr.push(parseValue(types[i], reader.readUInt32()));
+            for (let i = 0; i < count; i++) arr.push(parseValue(types[i], reader.readUInt32(), offset));
             res = arr;
         } else if (type === 0xC1) {
             const count = reader.readUInt24(); const dict: any = {};
             for (let i = 0; i < count; i++) {
                 const kidx = reader.readUInt24(), nt = reader.readUInt8(), val = reader.readUInt32();
-                dict[keys[kidx]] = parseValue(nt, val);
+                dict[keys[kidx]] = parseValue(nt, val, offset);
             }
             res = dict;
         }
         reader.seek(prev); return res;
     }
 
-    function parseValue(type: number, value: number): any {
+    function parseValue(type: number, value: number, containerOffset: number): any {
         switch (type) {
             case 0xA0: return strings[value];
             case 0xD1: { const dv = new DataView(new ArrayBuffer(4)); dv.setUint32(0, value, reader.le); return dv.getInt32(0, reader.le); }
             case 0xD4: return value >>> 0;
             case 0xD2: { const dv = new DataView(new ArrayBuffer(4)); dv.setUint32(0, value, reader.le); return dv.getFloat32(0, reader.le); }
-            case 0xD3: { const p = reader.tell(); reader.seek(value); const r = reader.readFloat64(); reader.seek(p); return r; }
-            case 0xD5: { const p = reader.tell(); reader.seek(value); const r = reader.readBigInt64(); reader.seek(p); return Number(r); }
-            case 0xD6: { const p = reader.tell(); reader.seek(value); const r = reader.readBigUint64(); reader.seek(p); return Number(r); }
+            case 0xD3: case 0xD5: case 0xD6: {
+                // Version 7 check: 64-bit values can be offsets relative to the whole file
+                // If the value is suspicious (very small), it might be an offset that failed.
+                // We'll try to read it as a direct offset first.
+                if (value === 0 || value >= reader.view.byteLength) return 0;
+                const p = reader.tell(); reader.seek(value);
+                let r: any;
+                if (type === 0xD3) r = reader.readFloat64();
+                else if (type === 0xD5) r = Number(reader.readBigInt64());
+                else r = Number(reader.readBigUint64());
+                reader.seek(p); return r;
+            }
             case 0xD0: return value !== 0;
             case 0xC0: case 0xC1: return parseNode(value);
             case 0xFF: return null;
@@ -272,7 +296,7 @@ export function bymlToYaml(data: Uint8Array): string {
 }
 
 class Reader {
-    public view: DataView; private offset: number = 0; public le: boolean = true;
+    public view: DataView; public offset: number = 0; public le: boolean = true;
     constructor(buffer: Uint8Array) { this.view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength); }
     readUInt8() { return this.view.getUint8(this.offset++); }
     readUInt16() { const r = this.view.getUint16(this.offset, this.le); this.offset += 2; return r; }
@@ -281,20 +305,29 @@ class Reader {
     readFloat64() { const r = this.view.getFloat64(this.offset, this.le); this.offset += 8; return r; }
     readBigInt64() { const r = this.view.getBigInt64(this.offset, this.le); this.offset += 8; return r; }
     readBigUint64() { const r = this.view.getBigUint64(this.offset, this.le); this.offset += 8; return r; }
-    readUInt24() { const b1 = this.readUInt8(), b2 = this.readUInt8(), b3 = this.readUInt8(); return this.le ? (b1 | (b2 << 8) | (b3 << 16)) : ((b1 << 16) | (b2 << 8) | b3); }
+    readUInt24() {
+        const b1 = this.readUInt8(), b2 = this.readUInt8(), b3 = this.readUInt8();
+        return this.le ? (b1 | (b2 << 8) | (b3 << 16)) : ((b1 << 16) | (b2 << 8) | b3);
+    }
     seek(offset: number) { this.offset = offset; }
     tell() { return this.offset; }
     align(n: number) { while (this.offset % n !== 0) this.offset++; }
     readStringTable(offset: number) {
-        if (offset === 0) return [];
-        const prev = this.offset; this.seek(offset); if (this.readUInt8() !== 0xC2) throw new Error('Invalid string table');
-        const count = this.readUInt24(); const offsets = [];
+        if (offset === 0 || offset >= this.view.byteLength) return [];
+        const prev = this.offset;
+        this.seek(offset);
+        const type = this.readUInt8();
+        if (type !== 0xC2) { this.seek(prev); return []; }
+        const count = this.readUInt24();
+        const offsets = [];
         for (let i = 0; i < count + 1; i++) offsets.push(this.readUInt32());
         const strings = [];
+        const buf = new Uint8Array(this.view.buffer, this.view.byteOffset, this.view.byteLength);
         for (let i = 0; i < count; i++) {
-            this.seek(offset + offsets[i]); let bytes = [], b;
-            while ((b = this.readUInt8()) !== 0) bytes.push(b);
-            strings.push(new TextDecoder().decode(new Uint8Array(bytes)));
+            const start = offset + offsets[i];
+            const end = offset + offsets[i+1];
+            if (end <= start || end > buf.length) { strings.push(""); continue; }
+            strings.push(new TextDecoder().decode(buf.subarray(start, end - 1)));
         }
         this.seek(prev); return strings;
     }
