@@ -50,7 +50,8 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     if (originalData) {
         const decompressed = zstd.isCompressed(originalData) ? zstd.decompressData(originalData) : originalData;
         if (decompressed[0] === 0x42 && decompressed[1] === 0x59) le = false;
-        version = (decompressed[3] << 8) | decompressed[2];
+        if (le) version = (decompressed[3] << 8) | decompressed[2];
+        else version = (decompressed[2] << 8) | decompressed[3];
         const r = new Reader(decompressed); r.le = le;
         const oKeys = r.readStringTable(r.readUInt32At(4));
         const oRootOff = r.readUInt32At(12);
@@ -126,7 +127,9 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
                 if (v < -2147483648 || v > 2147483647) return 0xD5;
                 return 0xD1;
             }
-            return 0xD2;
+            // Smart float/double detection
+            if (Math.fround(v) === v) return 0xD2; 
+            return 0xD3;
         }
         if (typeof v === 'boolean') return 0xD0;
         if (Array.isArray(v)) return 0xC0;
@@ -135,7 +138,9 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
 
     function writeNode(node: any, path: string): number {
-        const nodeKey = path + ":" + JSON.stringify(node);
+        // Global deduplication based on content and original inferred type
+        const type = getNodeType(node, path);
+        const nodeKey = type.toString(16) + ":" + JSON.stringify(node);
         if (nodeOffsets.has(nodeKey)) return nodeOffsets.get(nodeKey)!;
         writer.align(4); const offset = writer.tell(); nodeOffsets.set(nodeKey, offset);
         
@@ -144,11 +149,11 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
             for (let i=0; i<node.length; i++) writer.writeUInt8(getNodeType(node[i], path + '[' + i + ']'));
             writer.align(4); const valPos = writer.tell(); for (let i = 0; i < node.length; i++) writer.writeUInt32(0);
             for (let i = 0; i < node.length; i++) {
-                const p = path + '[' + i + ']', type = getNodeType(node[i], p);
-                if (type === 0xC0 || type === 0xC1) pendingNodes.push({ parentPos: valPos + i * 4, node: node[i], path: p });
+                const p = path + '[' + i + ']', nt = getNodeType(node[i], p);
+                if (nt === 0xC0 || nt === 0xC1) pendingNodes.push({ parentPos: valPos + i * 4, node: node[i], path: p });
                 else {
                     const saved = writer.tell(); writer.seek(valPos + i * 4);
-                    writer.writeUInt32(encodeValue(type, node[i], valPos + i * 4)); writer.seek(saved);
+                    writer.writeUInt32(encodeValue(nt, node[i], valPos + i * 4)); writer.seek(saved);
                 }
             }
         } else {
@@ -157,11 +162,11 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
             const entryPos = writer.tell();
             for (const [k, v] of entries) { writer.writeUInt24(sortedKeys.indexOf(k)); writer.writeUInt8(getNodeType(v, path + '/' + k)); writer.writeUInt32(0); }
             for (let i = 0; i < entries.length; i++) {
-                const p = path + '/' + entries[i][0], type = getNodeType(entries[i][1], p);
-                if (type === 0xC0 || type === 0xC1) pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: entries[i][1], path: p });
+                const p = path + '/' + entries[i][0], nt = getNodeType(entries[i][1], p);
+                if (nt === 0xC0 || nt === 0xC1) pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: entries[i][1], path: p });
                 else {
                     const saved = writer.tell(); writer.seek(entryPos + i * 8 + 4);
-                    writer.writeUInt32(encodeValue(type, entries[i][1], entryPos + i * 8 + 4)); writer.seek(saved);
+                    writer.writeUInt32(encodeValue(nt, entries[i][1], entryPos + i * 8 + 4)); writer.seek(saved);
                 }
             }
         }
