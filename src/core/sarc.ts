@@ -18,14 +18,20 @@ export class SarcArchive {
             const magic = String.fromCharCode(d[0], d[1], d[2], d[3]);
             if (magic !== 'SARC') throw new Error(`Invalid magic: ${magic}`);
 
-            const headerSize = view.getUint16(4, true);
-            this.bom = view.getUint16(6, true);
-            this.le = (this.bom === 0xFEFF);
+            // Detect Endianness from BOM at offset 6
+            const bom = view.getUint16(6, false); // Read as big-endian first
+            if (bom === 0xFEFF) this.le = false;
+            else if (bom === 0xFFFE) this.le = true;
+            else this.le = true; // Default to LE
 
+            const headerSize = view.getUint16(4, this.le);
             const dataStart = view.getUint32(0x0C, this.le);
-            let pos = headerSize;
-            const sfatCount = view.getUint16(pos + 6, this.le);
-            const sfatNodesPos = pos + 0x0C;
+            
+            const sfatMagic = String.fromCharCode(d[headerSize], d[headerSize+1], d[headerSize+2], d[headerSize+3]);
+            if (sfatMagic !== 'SFAT') throw new Error(`Invalid SFAT magic: ${sfatMagic}`);
+
+            const sfatCount = view.getUint16(headerSize + 6, this.le);
+            const sfatNodesPos = headerSize + 0x0C;
             const stringTablePos = sfatNodesPos + sfatCount * 16 + 8;
 
             for (let i = 0; i < sfatCount; i++) {
@@ -58,57 +64,50 @@ export class SarcArchive {
         }
         return h;
     }
+public encode(originalDataStart?: number): Uint8Array {
+    Logger.info(`Encoding SARC with ${this.files.length} files...`);
 
-    public encode(): Uint8Array {
-        Logger.info(`Encoding SARC with ${this.files.length} files...`);
-        
-        const sortedFiles = [...this.files].sort((a, b) => {
-            const ha = SarcArchive.hash(a.name);
-            const hb = SarcArchive.hash(b.name);
-            if (ha < hb) return -1;
-            if (ha > hb) return 1;
-            return 0;
-        });
+    const sortedFiles = [...this.files].sort((a, b) => {
+        const ha = SarcArchive.hash(a.name);
+        const hb = SarcArchive.hash(b.name);
+        return ha - hb;
+    });
 
-        let stringTableSize = 0;
-        const nameOffsets = sortedFiles.map(f => {
-            const off = stringTableSize;
-            stringTableSize += f.name.length + 1;
-            while (stringTableSize % 4 !== 0) stringTableSize++;
-            return off;
-        });
+    let stringTableSize = 0;
+    const nameOffsets = sortedFiles.map(f => {
+        const off = stringTableSize;
+        stringTableSize += f.name.length + 1;
+        while (stringTableSize % 4 !== 0) stringTableSize++;
+        return off;
+    });
 
-        const sfatSize = 0x0C + sortedFiles.length * 16;
-        const sfntSize = 0x08 + stringTableSize;
-        const headerSize = 0x14;
-        
-        // Match original Vss_Hiagari04 dataStart (0x678)
-        let dataStart = headerSize + sfatSize + sfntSize;
-        // Special Case: If the original was 0x678, we should not force it to 256.
-        // We'll align to 8 first as a baseline.
-        while (dataStart % 8 !== 0) dataStart++; 
+    const sfatSize = 0x0C + sortedFiles.length * 16;
+    const sfntSize = 0x08 + stringTableSize;
+    const headerSize = 0x14;
 
-        let totalSize = dataStart;
-        const fileOffsets = sortedFiles.map((f, i) => {
-            // CRITICAL: First file often starts immediately at dataStart.
-            // Subsequent files are often aligned to 256 bytes *absolute* (totalSize).
-            if (i > 0) {
-                while (totalSize % 256 !== 0) totalSize++; 
-            }
-            const start = totalSize - dataStart;
-            totalSize += f.data.length;
-            const end = totalSize - dataStart;
-            return { start, end };
-        });
-        
-        while (totalSize % 8 !== 0) totalSize++;
+    let dataStart = originalDataStart || (headerSize + sfatSize + sfntSize);
+    // Ensure dataStart is at least big enough
+    if (dataStart < headerSize + sfatSize + sfntSize) dataStart = headerSize + sfatSize + sfntSize;
+    while (dataStart % 4 !== 0) dataStart++; 
+
+    let totalSize = dataStart;
+    const fileOffsets = sortedFiles.map((f, i) => {
+        // Standard alignment
+        while (totalSize % 8 !== 0) totalSize++; 
+        const start = totalSize - dataStart;
+        totalSize += f.data.length;
+        const end = totalSize - dataStart;
+        return { start, end };
+    });
+
+        while (totalSize % 0x2000 !== 0) totalSize++;
 
         const out = new Uint8Array(totalSize);
         const view = new DataView(out.buffer);
 
         out.set([0x53, 0x41, 0x52, 0x43], 0);
-        view.setUint16(4, headerSize, true);
-        view.setUint16(6, this.le ? 0xFEFF : 0xFFFE, true);
+        view.setUint16(4, headerSize, this.le);
+        view.setUint16(6, this.le ? 0xFFFE : 0xFEFF, false); // BOM is always written as a magic constant
         view.setUint32(8, totalSize, this.le);
         view.setUint32(0x0C, dataStart, this.le);
         view.setUint32(0x10, 0x00000100, this.le);

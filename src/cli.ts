@@ -4,13 +4,18 @@ import * as path from 'path';
 import * as byml from './core/byml.js';
 import { SarcArchive } from './core/sarc.js';
 import { Logger } from './core/logger.js';
+import * as zstd from './core/zstd.js';
 
 const program = new Command();
 
+// Build-time constants injected via esbuild
+declare const __COMMIT_ID__: string;
+const COMMIT_ID = typeof __COMMIT_ID__ !== 'undefined' ? __COMMIT_ID__ : 'dev';
+
 program
     .name('byml-lens')
-    .description('CLI tool for Nintendo BYML and SARC files (v0.2.4)')
-    .version('0.2.4');
+    .description(`CLI tool for Nintendo BYML and SARC files (v0.2.4, commit: ${COMMIT_ID})`)
+    .version(`0.2.4 (${COMMIT_ID})`);
 
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
@@ -70,7 +75,6 @@ program.command('unpack')
                 const parentDir = path.dirname(outPath);
                 if (!fs.existsSync(parentDir)) fs.mkdirSync(parentDir, { recursive: true });
 
-                // Write the original binary (Standard for modding)
                 fs.writeFileSync(outPath, file.data);
                 console.log(`Extracted: ${file.name}`);
 
@@ -98,6 +102,7 @@ program.command('pack')
     .option('-z, --zstd', 'Compress the output with Zstandard', false)
     .option('-B, --big-endian', 'Use Big Endian byte order', false)
     .option('-y, --yaml', 'Force re-compilation of all .yaml files even if binary exists', false)
+    .option('-r, --reference <file>', 'Reference SARC file to match dataStart offset')
     .action(async (inDir, output, options) => {
         try {
             if (!fs.existsSync(inDir) || !fs.statSync(inDir).isDirectory()) {
@@ -108,7 +113,6 @@ program.command('pack')
             archive.isCompressed = options.zstd;
             archive.le = !options.bigEndian;
 
-            // 1. Map out the folder content
             const filesInFolder: string[] = [];
             const walk = (dir: string) => {
                 const list = fs.readdirSync(dir);
@@ -120,7 +124,6 @@ program.command('pack')
             };
             walk(inDir);
 
-            // 2. Decide which files to include (Binary first, then YAML)
             const fileMap = new Map<string, { binary?: string, yaml?: string }>();
             for (const f of filesInFolder) {
                 const rel = path.relative(inDir, f);
@@ -136,26 +139,39 @@ program.command('pack')
                 }
             }
 
-            // 3. Process the unique entries
             for (const [name, paths] of fileMap.entries()) {
-                // If YAML exists AND (Binary is missing OR --yaml is forced), Recompile
                 if (paths.yaml && (options.yaml || !paths.binary)) {
                     console.log(`Packing (Re-compiled): ${name}`);
                     const yamlStr = fs.readFileSync(paths.yaml, 'utf-8');
-                    const encoded = byml.yamlToByml(yamlStr);
+                    let refData: Uint8Array | undefined;
+                    if (paths.binary && fs.existsSync(paths.binary)) {
+                        refData = new Uint8Array(fs.readFileSync(paths.binary));
+                    }
+                    const encoded = byml.yamlToByml(yamlStr, refData);
                     archive.files.push({ name, data: new Uint8Array(encoded) });
-                } 
-                // Otherwise, use Raw Binary (Safe path)
-                else if (paths.binary) {
+                } else if (paths.binary) {
                     console.log(`Packing (Raw Binary): ${name}`);
                     const data = fs.readFileSync(paths.binary);
                     archive.files.push({ name, data: new Uint8Array(data) });
                 }
             }
 
-            const encoded = archive.encode();
+            let originalDataStart: number | undefined;
+            if (options.reference && fs.existsSync(options.reference)) {
+                try {
+                    const refBytes = fs.readFileSync(options.reference);
+                    const d = zstd.isCompressed(new Uint8Array(refBytes)) ? zstd.decompressData(new Uint8Array(refBytes)) : new Uint8Array(refBytes);
+                    const view = new DataView(d.buffer, d.byteOffset, d.byteLength);
+                    originalDataStart = view.getUint32(0x0C, d[6] === 0xFF);
+                    console.log(`Inheriting original dataStart: ${originalDataStart} (0x${originalDataStart.toString(16)})`);
+                } catch (e) {
+                    console.warn('Warning: Could not read dataStart from reference');
+                }
+            }
+
+            const encoded = archive.encode(originalDataStart);
             fs.writeFileSync(output, encoded);
-            console.log(`Successfully packed ${archive.files.length} files to ${output} (No duplicates).`);
+            console.log(`Successfully packed ${archive.files.length} files to ${output}.`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);

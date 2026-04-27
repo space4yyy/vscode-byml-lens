@@ -1,6 +1,0 @@
-GameParameters:
-  spl__DamageParam:
-    $type: spl__DamageParam
-    DamageSenderArray:
-      - Name: BulletRollerInk
-        RefRigidBody: []

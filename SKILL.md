@@ -4,34 +4,35 @@ This skill enables AI agents to read, modify, and repackage Nintendo game assets
 
 ## Capabilities
 - **Decompile/Recompile**: Automated bidirectional conversion between binary and YAML via `--yaml`.
-- **Archive Management**: Unpack and Pack SARC archives with Zstd support.
-- **Smart Management**: Guidelines for temporary workspace management that respect security policies.
+- **Smart Hybrid Packing**: Efficiently repacks SARC by preserving raw binaries for unedited files.
+- **256-Byte Alignment**: Ensures hardware-level memory alignment for Splatoon 3 and other modern games.
 
 ## Command Reference
 
 ### 1. Archive Operations
 - **Unpack**: `byml-lens unpack <archive.pack.zs> <output_dir> --yaml`
-- **Pack**: `byml-lens pack <input_dir> <new_archive.pack.zs> --zstd --yaml`
+  *Generates both .byml (Original) and .byml.yaml (Editable).*
+- **Pack**: `byml-lens pack <input_dir> <new_archive.pack.zs> --zstd`
+  *Priority: Binary > YAML. Use Smart Hybrid rules.*
 
-### 2. File Operations
-- **Binary to YAML**: `byml-lens deyaml <input.byml.zs> [output.yaml]`
-- **YAML to Binary**: `byml-lens yaml2byml <input.yaml> <output.byml.zs> --reference <original.byml.zs>`
+## Operational Rules (CRITICAL)
 
-## Workflows & Security Policies
+### 1. How to Trigger Re-compilation
+In v0.2.4+, the `pack` command uses **Smart Hybrid Mode**.
+- **Rule**: If a folder contains both `file.byml` and `file.byml.yaml`, the **Binary (.byml) is preferred** for safety.
+- **Action for Agent**: After editing a YAML file, you **MUST delete the corresponding binary file** (e.g., `rm path/to/file.bgyml`) before running the `pack` command. Failure to do this will result in your changes being ignored.
 
-### Scenario: Editing an Archive
-1. **Setup**: Create a unique temporary directory, e.g., `./temp_edit_area`.
-2. **Unpack**: `byml-lens unpack data.pack.zs ./temp_edit_area --yaml`
-3. **Action**: Read and modify the `.yaml` files inside.
-4. **Repack**: `byml-lens pack ./temp_edit_area data.pack.zs --zstd --yaml`
-5. **Cleanup (Policy-Friendly)**: 
-   - Attempt to delete the temporary directory using a programmatic method (e.g., Node.js script) if `rm` is blocked.
-   - **If blocked by policy**: Inform the user that the task is complete but the temporary directory `./temp_edit_area` must be deleted manually.
+### 2. Ensuring Tool Integrity
+Always ensure the CLI tool is built from the current source:
+- **Action**: Run `npm run bundle && npm install -g .` if any core logic in `src/` has changed.
 
-### Safety Rules
-1. **Never use `rm -rf /`**: Always target a specific, relative subdirectory.
-2. **Handle Denied Commands**: If a cleanup command is denied by policy, do not halt the entire task; simply notify the user and conclude.
-3. **Atomic Cleanup**: Only attempt deletion after a successful `pack` command.
+### 3. SARC Alignment
+- The tool automatically enforces 256-byte alignment per file. Do not manually pad files.
+
+### 4. Cleanup & Safety
+- **Setup**: Use a dedicated subdirectory (e.g., `./temp_edit`).
+- **Cleanup**: Programmatically delete the temp directory ONLY after a successful `pack` command.
+- **Atomic Failure**: If `pack` fails, preserve the directory for user inspection.
 
 ---
 Produced by **space4** with 🩵

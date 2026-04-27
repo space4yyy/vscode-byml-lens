@@ -1,9 +1,0 @@
-GameParameters:
-  spl__ConstraintBindableHelperParam:
-    $type: spl__ConstraintBindableHelperParam
-    DefaultIsNoHitBetweenBodies: false
-  spl__DamageParam:
-    $type: spl__DamageParam
-    DamageSenderArray:
-      - Name: Main
-        RefRigidBody: []
