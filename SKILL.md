@@ -18,6 +18,7 @@ This skill enables AI agents to read, modify, and repackage Nintendo game assets
    - **Graffiti**: To remove graffiti cleanly, use `deyaml` -> set `GraffitiObjInfo` to `[]` -> `yaml2byml` with reference.
 
 ## CLI Usage Guidelines
-- Always use `--reference` with `yaml2byml` to inherit correct versions and endianness.
-- Use `-z` for Zstd compression and `-r` for SARC metadata inheritance to ensure game engine compatibility.
-- Prefer binary surgery over full re-encoding for sensitive metadata-heavy files.
+- **Automatic Metadata**: BYML-Lens now injects `_byml_metadata` into YAML headers. Always keep this block to ensure binary consistency (alignment, version, types).
+- **Reference-Free**: With embedded metadata, `--reference` is now optional for `yaml2byml`.
+- **Zstd Support**: Use `-z` for Zstd compression to ensure game engine compatibility.
+- **Binary Integrity**: Prefer the editor's direct save or `yaml2byml` without reference if the YAML contains a metadata header.

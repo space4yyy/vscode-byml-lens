@@ -18,3 +18,7 @@ node_modules
 out
 src/test
 esbuild.js
+temp
+temp/**
+make_mod.sh
+make_mod.sh.stable

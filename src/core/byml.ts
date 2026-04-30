@@ -300,8 +300,6 @@ export function bymlToYaml(data: Uint8Array): string {
         const prev = reader.tell(); 
         reader.seek(offset);
         const type = reader.readUInt8(); let res;
-        const lookupPath = path === '' ? '/' : path;
-        typeMap[lookupPath] = type;
 
         if (type === 0xC0) {
             const count = reader.readUInt24(); const types = [];
@@ -318,7 +316,6 @@ export function bymlToYaml(data: Uint8Array): string {
                 const kidx = reader.readUInt24(), nt = reader.readUInt8(), val = reader.readUInt32();
                 const key = keys[kidx];
                 const subPath = path === '' ? '/' + key : path + '/' + key;
-                typeMap[subPath] = nt;
                 dict[key] = parseValue(nt, val, offset, subPath);
             }
             res = dict;
@@ -327,7 +324,12 @@ export function bymlToYaml(data: Uint8Array): string {
     }
 
     function parseValue(type: number, value: number, containerOffset: number, path: string): any {
-        typeMap[path] = type;
+        // Optimization: Only record numeric types that are ambiguous in YAML (D1-D6)
+        // Skip obvious types: 0xA0 (string), 0xD0 (bool), 0xC0 (array), 0xC1 (dict), 0xFF (null)
+        if (type >= 0xD1 && type <= 0xD6) {
+            typeMap[path] = type;
+        }
+
         switch (type) {
             case 0xA0: return strings[value];
             case 0xD1: { const dv = new DataView(new ArrayBuffer(4)); dv.setUint32(0, value, reader.le); return dv.getInt32(0, reader.le); }
@@ -350,14 +352,15 @@ export function bymlToYaml(data: Uint8Array): string {
     }
 
     const root = parseNode(rtOff, '');
-    const metaYaml = yaml.dump({
-        _byml_metadata: {
-            version,
-            endian: le ? 'le' : 'be',
-            type_map: typeMap
-        }
-    }, { indent: 2 });
-    
+    const meta: any = {
+        version,
+        endian: le ? 'le' : 'be'
+    };
+    if (Object.keys(typeMap).length > 0) {
+        meta.type_map = typeMap;
+    }
+
+    const metaYaml = yaml.dump({ _byml_metadata: meta }, { indent: 2 });
     const contentYaml = yaml.dump(root, { indent: 2, noRefs: true, quotingType: '"' });
     
     return `${metaYaml}---\n${contentYaml}`;

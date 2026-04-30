@@ -7,6 +7,7 @@ BYML Lens is an Antigravity/VS Code extension specifically designed for high-fre
 ## Core Features
 
 - **🚀 Click-to-Edit**: Automatically intercepts `.byml`, `.bgyml`, and `.pack.zs` binary files, instantly converting them into highlighted YAML text.
+- **🧬 Auto-Embedded Metadata**: YAML output now includes version, endianness, and precise type maps in a header document, enabling **reference-free** recompilation.
 - **📦 SARC Virtualization**: Double-click any `.pack` archive to mount it as a virtual directory. Add, modify, or delete internal files as if they were in a normal folder.
 - **⚡️ Transparent Zstd Support**: All read and write operations automatically detect and handle Zstandard compression. No manual decompression or re-compression required.
 - **🎨 Visual Alias System**: Use a `byml-aliases.yml` in your workspace root to dynamically replace cryptic codenames (e.g., `Vss_AutoWalk00`) with friendly names (e.g., `Lemuria Hub`). Aliases are automatically reverted upon saving to maintain data integrity.
@@ -20,11 +21,12 @@ For AI Agents and batch processing, you can use the `byml-lens` command:
 # Install globally
 npm install -g .
 
-# Decompile BYML to YAML
+# Decompile BYML to YAML (Multi-document format with metadata)
 byml-lens deyaml Versus.byml.zs result.yaml
 
 # Recompile YAML to binary
-byml-lens yaml2byml result.yaml new_Versus.byml.zs --reference Versus.byml.zs
+# Automatically detects version/types from the YAML header - no --reference needed!
+byml-lens yaml2byml result.yaml new_Versus.byml.zs
 
 # Unpack SARC archive (Extract raw binary)
 byml-lens unpack Versus.pack.zs ./out_folder
@@ -37,14 +39,15 @@ byml-lens pack ./editable_folder new_archive.pack.zs --zstd --yaml
 ```
 
 ### 2. Editing BYML/BGYML in VS Code
-- **Edit**: The file opens as a native YAML document with full syntax highlighting.
-- **Save**: Press `Cmd+S` (Mac) or `Ctrl+S` (Win). The extension automatically handles binary encoding and Zstd compression before writing back to disk.
+- **Edit**: The file opens as a native YAML document with full syntax highlighting. The header contains `_byml_metadata` which preserves the binary technical standards.
+- **Save**: Press `Cmd+S` (Mac) or `Ctrl+S` (Win). The extension automatically handles binary encoding and Zstd compression while maintaining hardware compatibility.
 
-### 2. Mounting SARC (.pack)
+### 3. Mounting SARC (.pack)
 - **Mount**: Double-click a `.pack` or `.pack.zs` file. A virtual directory named `Archive: [filename]` will appear in your workspace.
+- **Edit/Delete**: You can modify files or delete entire folders (e.g. `Banc`) directly from the sidebar.
 - **Unmount**: Double-click the same file again, or right-click the virtual folder and select "Unmount .pack Archive".
 
-### 3. Custom Aliases
+### 4. Custom Aliases
 - Create `byml-aliases.yml` in your project root:
   ```yaml
   Vss_AutoWalk00: Lemuria Hub
