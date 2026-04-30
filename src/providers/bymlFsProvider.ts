@@ -108,8 +108,7 @@ export class BymlYamlProvider implements vscode.FileSystemProvider {
         yamlStr = await AliasManager.revertToInternal(yamlStr);
         
         try {
-            const originalBinary = await vscode.workspace.fs.readFile(sourceUri);
-            const encoded = byml.yamlToByml(yamlStr, new Uint8Array(originalBinary));
+            const encoded = byml.yamlToByml(yamlStr);
             await vscode.workspace.fs.writeFile(sourceUri, encoded);
             vscode.window.setStatusBarMessage('$(check) BYML Saved', 2000);
         } catch (err: any) {

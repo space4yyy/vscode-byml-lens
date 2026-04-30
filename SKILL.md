@@ -3,22 +3,44 @@
 This skill enables AI agents to read, modify, and repackage Nintendo game assets (.byml, .bgyml, .pack, .zs) with production-grade stability and hardware compatibility.
 
 ## Capabilities
-- **Perfect Decompile/Recompile**: Automated bidirectional conversion between binary and YAML. Supports Version 7 with high-precision 64-bit alignment.
-- **Archive Management**: Unpack and Pack SARC archives with 256-byte file alignment and UTF-8 path support.
-- **Smart Asset Surgery**: Injecting specific sub-files (bcett, RenderingDay, Ocean) into existing packs while maintaining binary integrity.
 
-## Technical Standards (Anti-Crash)
-1. **8-Byte Alignment**: When encoding BYML Version 7, all 64-bit values (Double, Long, ULong) MUST be aligned to an 8-byte boundary relative to the file start. Failing this causes crashes on real hardware and Ryujinx.
-2. **256-Byte SARC Alignment**: Inside `.pack` files, data blocks for each file should be aligned to 256 bytes (0x100) for optimal memory mapping.
-3. **UTF-8 Byte Hashing**: SARC filename hashes (SFAT) must be calculated from UTF-8 bytes, not UTF-16 character codes.
-4. **Surgical Modding SOP**:
-   - **Maps**: Replace `bcett.byml` for layout.
-   - **Ocean**: Inject ocean parameters with their *original* names to satisfy `OceanRef` pointers in rendering configs.
-   - **Sky/Atmosphere**: Swap `RenderingDay.bgyml` (excluding Boss/Cloudy variants) to sync lighting/skybox.
-   - **Graffiti**: To remove graffiti cleanly, use `deyaml` -> set `GraffitiObjInfo` to `[]` -> `yaml2byml` with reference.
+- **Intelligent Decompilation**: Convert binary BYML/BGYML to multi-document YAML. The first document (`_byml_metadata`) automatically preserves version, endianness, and precise numeric types.
+- **Reference-Free Recompilation**: Encode YAML back into binary BYML using the embedded metadata header. No manual reference files are required to maintain technical standards (e.g., Splatoon 3's 8-byte alignment).
+- **Archive Management**: Mount/Unmount SARC archives. Supports file-level modification and physical deletion of files/folders directly from the editor sidebar.
+- **Optimized Workflow**: Automatic Zstd handling and metadata inheritance ensure assets remain compatible with real hardware and Ryujinx.
+
+## Workflow SOP: Stage Modding
+
+### 1. Project Initialization
+- Open the workspace containing your `romfs` structure.
+- Use `make install-ext` to ensure the latest version is active in Antigravity/VS Code.
+
+### 2. SARC Surgery
+- **Mounting**: Double-click `.pack.zs` files to mount them as virtual directories.
+- **Conflict Resolution**: Directly delete conflicting folders (like `Banc` in `Params.pack.zs`) using the context menu.
+- **Asset Injection**: 
+  - **Layout**: Copy YAML content from source `bcett.byml` to target.
+  - **Ocean**: Inject ocean parameters with their *original* names to satisfy `OceanRef` pointers in rendering configs.
+  - **Sky/Atmosphere**: Swap `RenderingDay.bgyml` to sync lighting/skybox.
+  - **Reference Fix**: If you rename an asset (e.g., `Ocean`), globally update all string references in the parent RD/SceneParam files.
+
+### 3. Graffiti Removal
+- **Preferred Method**: Locate the scene's `SceneParam.bgyml`.
+- **Action**: Delete the `SceneGraffitiPlacementData` entry from the `Components` dictionary. This cleanly strips the graffiti subsystem from the stage.
 
 ## CLI Usage Guidelines
-- **Automatic Metadata**: BYML-Lens now injects `_byml_metadata` into YAML headers. Always keep this block to ensure binary consistency (alignment, version, types).
-- **Reference-Free**: With embedded metadata, `--reference` is now optional for `yaml2byml`.
+
+- **Automatic Metadata**: BYML-Lens now injects `_byml_metadata` into YAML headers by default. **Always preserve this block** to ensure binary consistency.
+- **Simplified Commands**:
+  - Decompile: `byml-lens deyaml <file.zs>`
+  - Recompile: `byml-lens yaml2byml <file.yaml> <output.byml>` (Auto-detects all parameters).
 - **Zstd Support**: Use `-z` for Zstd compression to ensure game engine compatibility.
-- **Binary Integrity**: Prefer the editor's direct save or `yaml2byml` without reference if the YAML contains a metadata header.
+- **Binary Integrity**: The compiler uses the `type_map` in metadata to ensure numeric precision (Float32 vs Float64, etc.), preventing "type loss" crashes.
+
+## Developer Quick-Start (Makefile)
+
+- `make bundle`: Build the CLI and extension.
+- `make package`: Generate the VSIX installer.
+- `make install-ext`: Build, package, and force-install to Antigravity.
+- `make test-unit`: Run rapid core logic tests.
+- `make clean`: Wipe `out`, `dist`, and `temp` directories.

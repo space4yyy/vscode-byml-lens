@@ -62,7 +62,7 @@ export class SarcArchive {
         }
         return h;
     }
-public encode(originalDataStart?: number): Uint8Array {
+public encode(): Uint8Array {
     Logger.info(`Encoding SARC with ${this.files.length} files...`);
 
     const sortedFiles = [...this.files].sort((a, b) => {
@@ -85,12 +85,11 @@ public encode(originalDataStart?: number): Uint8Array {
     const sfntSize = 0x08 + stringTableSize;
     const headerSize = 0x14;
 
-    let dataStart = originalDataStart || (headerSize + sfatSize + sfntSize);
-    // Ensure dataStart is at least big enough
-    if (dataStart < headerSize + sfatSize + sfntSize) dataStart = headerSize + sfatSize + sfntSize;
+    let dataStart = headerSize + sfatSize + sfntSize;
     while (dataStart % 4 !== 0) dataStart++; 
 
     let totalSize = dataStart;
+
     const fileOffsets = sortedFiles.map((f, i) => {
         // Splatoon 3 and other modern games use 256-byte alignment for performance/mmap.
         // We apply it to all files for maximum compatibility.

@@ -40,7 +40,7 @@ class Writer {
     getBytes() { return this.buffer.slice(0, this.offset); }
 }
 
-export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Array {
+export function yamlToByml(yamlStr: string): Uint8Array {
     const docs = yaml.loadAll(yamlStr) as any[];
     let meta: any = {};
     let obj: any;
@@ -78,57 +78,6 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
         }
     }
 
-    // Priority 2: Use external reference data (only if metadata was missing or incomplete)
-    if (originalData) {
-        const decompressed = zstd.isCompressed(originalData) ? zstd.decompressData(originalData) : originalData;
-        
-        let refLe = true;
-        if (decompressed[0] === 0x42 && decompressed[1] === 0x59) refLe = false;
-        
-        let refVersion = 3;
-        if (refLe) refVersion = (decompressed[3] << 8) | decompressed[2];
-        else refVersion = (decompressed[2] << 8) | decompressed[3];
-
-        if (!meta.version) version = refVersion;
-        if (!meta.endian) le = refLe;
-        
-        const r = new Reader(decompressed); r.le = refLe;
-        const ktOff = r.readUInt32At(4);
-        const stOff = r.readUInt32At(8);
-        const rtOff = r.readUInt32At(12);
-        const oKeys = r.readStringTable(ktOff);
-
-        function crawl(offset: number, path: string) {
-            if (offset >= decompressed.length || offset === 0) return;
-            const type = decompressed[offset]; 
-            if (!typeMap.has(path)) typeMap.set(path, type);
-            if (type === 0xC1) {
-                const cr = new Reader(decompressed); cr.le = refLe; cr.seek(offset + 1);
-                const count = cr.readUInt24();
-                cr.seek(offset + 4);
-                for(let i=0; i<count; i++) {
-                    const kidx = cr.readUInt24(); const nt = cr.readUInt8(); const val = cr.readUInt32();
-                    const k = oKeys[kidx]; 
-                    const subPath = path === '' ? '/' + k : path + '/' + k;
-                    if (!typeMap.has(subPath)) typeMap.set(subPath, nt);
-                    if (nt === 0xC0 || nt === 0xC1) crawl(val, subPath);
-                }
-            } else if (type === 0xC0) {
-                const cr = new Reader(decompressed); cr.le = refLe; cr.seek(offset + 1);
-                const count = cr.readUInt24();
-                cr.seek(offset + 4);
-                const types = []; for(let i=0; i<count; i++) types.push(cr.readUInt8());
-                cr.align(4);
-                for(let i=0; i<count; i++) {
-                    const nt = types[i]; const val = cr.readUInt32(); 
-                    const subPath = path + '[' + i + ']';
-                    if (!typeMap.has(subPath)) typeMap.set(subPath, nt);
-                    if (nt === 0xC0 || nt === 0xC1) crawl(val, subPath);
-                }
-            }
-        }
-        try { crawl(rtOff, ''); } catch(e) {}
-    }
     writer.le = le;
 
     const keys = new Set<string>();
@@ -279,7 +228,7 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
     
     const finalTrimmed = finalOut.slice(0, currentPos);
-    return originalData && zstd.isCompressed(originalData) ? zstd.compressData(finalTrimmed) : finalTrimmed;
+    return finalTrimmed;
 }
 
 export function bymlToYaml(data: Uint8Array): string {
