@@ -84,6 +84,14 @@ export class PackFileSystemProvider implements vscode.FileSystemProvider {
         return Array.from(entries.entries());
     }
 
+    public unmount(uri: vscode.Uri) {
+        const key = uri.toString();
+        if (this.archives.has(key)) {
+            this.archives.delete(key);
+            Logger.info(`Unmounted and cleared cache for: ${uri.fsPath}`);
+        }
+    }
+
     createDirectory(_uri: vscode.Uri): void { }
 
     async readFile(uri: vscode.Uri): Promise<Uint8Array> {

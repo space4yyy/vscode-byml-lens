@@ -41,6 +41,7 @@ program.command('yaml2byml')
     .description('Convert YAML to binary BYML')
     .argument('<input>', 'Input YAML file')
     .argument('<output>', 'Output binary BYML file')
+    .option('-z, --zstd', 'Compress the output with Zstandard', false)
     .option('-r, --reference <file>', 'Reference binary file to match version/endianness')
     .action(async (input, output, options) => {
         try {
@@ -50,7 +51,8 @@ program.command('yaml2byml')
                 refData = new Uint8Array(fs.readFileSync(options.reference));
             }
             const encoded = byml.yamlToByml(yamlStr, refData);
-            fs.writeFileSync(output, Buffer.from(encoded));
+            const finalData = (options.zstd && !zstd.isCompressed(encoded)) ? zstd.compressData(encoded) : encoded;
+            fs.writeFileSync(output, Buffer.from(finalData));
             console.log(`Successfully converted ${input} to ${output}`);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);

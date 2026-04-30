@@ -103,7 +103,8 @@
     "bundle:cli": "esbuild ./src/cli.ts --bundle --outfile=dist/cli.js --external:vscode --format=cjs --platform=node --banner:js=\"#!/usr/bin/env node\" --define:__COMMIT_ID__=\"\\\"$(git rev-parse --short HEAD || echo unknown)\\\"\"",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "mocha out/test/unit/*.test.js"
   },
   "devDependencies": {
     "@pretendonetwork/nintendo-files": "^1.1.0",

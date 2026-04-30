@@ -41,19 +41,58 @@ class Writer {
 }
 
 export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Array {
-    const obj = yaml.load(yamlStr);
+    const docs = yaml.loadAll(yamlStr) as any[];
+    let meta: any = {};
+    let obj: any;
+
+    if (docs.length >= 2 && docs[0] && docs[0]._byml_metadata) {
+        meta = docs[0]._byml_metadata;
+        obj = docs[1];
+    } else {
+        obj = docs[0];
+        if (obj && obj._byml_metadata) {
+            meta = obj._byml_metadata;
+            // Handle case where it's a single doc with metadata key
+            if (Array.isArray(obj)) {
+                // Should not happen with our new format, but for safety
+            } else {
+                obj = { ...obj };
+                delete obj._byml_metadata;
+            }
+        }
+    }
+
     const writer = new Writer();
     let le = true;
     let version = 3;
     const typeMap = new Map<string, number>();
 
+    // Priority 1: Use embedded metadata from YAML
+    if (meta) {
+        if (meta.endian === 'be' || meta.be === true) le = false;
+        if (meta.version !== undefined) version = meta.version;
+        if (meta.type_map) {
+            for (const [path, type] of Object.entries(meta.type_map)) {
+                typeMap.set(path, type as number);
+            }
+        }
+    }
+
+    // Priority 2: Use external reference data (only if metadata was missing or incomplete)
     if (originalData) {
         const decompressed = zstd.isCompressed(originalData) ? zstd.decompressData(originalData) : originalData;
-        if (decompressed[0] === 0x42 && decompressed[1] === 0x59) le = false;
-        if (le) version = (decompressed[3] << 8) | decompressed[2];
-        else version = (decompressed[2] << 8) | decompressed[3];
         
-        const r = new Reader(decompressed); r.le = le;
+        let refLe = true;
+        if (decompressed[0] === 0x42 && decompressed[1] === 0x59) refLe = false;
+        
+        let refVersion = 3;
+        if (refLe) refVersion = (decompressed[3] << 8) | decompressed[2];
+        else refVersion = (decompressed[2] << 8) | decompressed[3];
+
+        if (!meta.version) version = refVersion;
+        if (!meta.endian) le = refLe;
+        
+        const r = new Reader(decompressed); r.le = refLe;
         const ktOff = r.readUInt32At(4);
         const stOff = r.readUInt32At(8);
         const rtOff = r.readUInt32At(12);
@@ -61,25 +100,30 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
 
         function crawl(offset: number, path: string) {
             if (offset >= decompressed.length || offset === 0) return;
-            const type = decompressed[offset]; typeMap.set(path, type);
+            const type = decompressed[offset]; 
+            if (!typeMap.has(path)) typeMap.set(path, type);
             if (type === 0xC1) {
-                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset + 1);
+                const cr = new Reader(decompressed); cr.le = refLe; cr.seek(offset + 1);
                 const count = cr.readUInt24();
                 cr.seek(offset + 4);
                 for(let i=0; i<count; i++) {
                     const kidx = cr.readUInt24(); const nt = cr.readUInt8(); const val = cr.readUInt32();
-                    const k = oKeys[kidx]; typeMap.set(path + '/' + k, nt);
-                    if (nt === 0xC0 || nt === 0xC1) crawl(val, path + '/' + k);
+                    const k = oKeys[kidx]; 
+                    const subPath = path === '' ? '/' + k : path + '/' + k;
+                    if (!typeMap.has(subPath)) typeMap.set(subPath, nt);
+                    if (nt === 0xC0 || nt === 0xC1) crawl(val, subPath);
                 }
             } else if (type === 0xC0) {
-                const cr = new Reader(decompressed); cr.le = le; cr.seek(offset + 1);
+                const cr = new Reader(decompressed); cr.le = refLe; cr.seek(offset + 1);
                 const count = cr.readUInt24();
                 cr.seek(offset + 4);
                 const types = []; for(let i=0; i<count; i++) types.push(cr.readUInt8());
                 cr.align(4);
                 for(let i=0; i<count; i++) {
-                    const nt = types[i]; const val = cr.readUInt32(); typeMap.set(path + '[' + i + ']', nt);
-                    if (nt === 0xC0 || nt === 0xC1) crawl(val, path + '[' + i + ']');
+                    const nt = types[i]; const val = cr.readUInt32(); 
+                    const subPath = path + '[' + i + ']';
+                    if (!typeMap.has(subPath)) typeMap.set(subPath, nt);
+                    if (nt === 0xC0 || nt === 0xC1) crawl(val, subPath);
                 }
             }
         }
@@ -127,7 +171,8 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
     }
 
     function getNodeType(v: any, path: string): number {
-        if (typeMap.has(path)) return typeMap.get(path)!;
+        const lookupPath = path === '' ? '/' : path;
+        if (typeMap.has(lookupPath)) return typeMap.get(lookupPath)!;
         if (typeof v === 'string') return 0xA0;
         if (typeof v === 'number') {
             if (Number.isInteger(v)) {
@@ -171,9 +216,9 @@ export function yamlToByml(yamlStr: string, originalData?: Uint8Array): Uint8Arr
             const entries = Object.entries(node).sort((a, b) => sortedKeys.indexOf(a[0]) - sortedKeys.indexOf(b[0]));
             writer.writeUInt8(0xC1); writer.writeUInt24(entries.length);
             const entryPos = writer.tell();
-            for (const [k, v] of entries) { writer.writeUInt24(sortedKeys.indexOf(k)); writer.writeUInt8(getNodeType(v, path + '/' + k)); writer.writeUInt32(0); }
+            for (const [k, v] of entries) { writer.writeUInt24(sortedKeys.indexOf(k)); writer.writeUInt8(getNodeType(v, path === '' ? '/' + k : path + '/' + k)); writer.writeUInt32(0); }
             for (let i = 0; i < entries.length; i++) {
-                const p = path + '/' + entries[i][0], nt = getNodeType(entries[i][1], p);
+                const p = path === '' ? '/' + entries[i][0] : path + '/' + entries[i][0], nt = getNodeType(entries[i][1], p);
                 if (nt === 0xC0 || nt === 0xC1) pendingNodes.push({ parentPos: entryPos + i * 8 + 4, node: entries[i][1], path: p });
                 else {
                     const saved = writer.tell(); writer.seek(entryPos + i * 8 + 4);
@@ -241,43 +286,54 @@ export function bymlToYaml(data: Uint8Array): string {
     const decompressed = zstd.isCompressed(data) ? zstd.decompressData(data) : data;
     const reader = new Reader(decompressed);
     const magic = String.fromCharCode(reader.readUInt8(), reader.readUInt8());
-    if (magic === 'BY') reader.le = false; else reader.le = true;
+    let le = true;
+    if (magic === 'BY') le = false; else le = true;
+    reader.le = le;
     const version = reader.readUInt16();
     const ktOff = reader.readUInt32(), stOff = reader.readUInt32(), rtOff = reader.readUInt32();
     const keys = reader.readStringTable(ktOff), strings = reader.readStringTable(stOff);
     
-    function parseNode(offset: number): any {
+    const typeMap: Record<string, number> = {};
+
+    function parseNode(offset: number, path: string): any {
         if (offset === 0 || offset >= reader.view.byteLength) return null;
         const prev = reader.tell(); 
         reader.seek(offset);
         const type = reader.readUInt8(); let res;
+        const lookupPath = path === '' ? '/' : path;
+        typeMap[lookupPath] = type;
+
         if (type === 0xC0) {
             const count = reader.readUInt24(); const types = [];
             for (let i = 0; i < count; i++) types.push(reader.readUInt8());
             reader.align(4); const arr = [];
-            for (let i = 0; i < count; i++) arr.push(parseValue(types[i], reader.readUInt32(), offset));
+            for (let i = 0; i < count; i++) {
+                const subPath = path + '[' + i + ']';
+                arr.push(parseValue(types[i], reader.readUInt32(), offset, subPath));
+            }
             res = arr;
         } else if (type === 0xC1) {
             const count = reader.readUInt24(); const dict: any = {};
             for (let i = 0; i < count; i++) {
                 const kidx = reader.readUInt24(), nt = reader.readUInt8(), val = reader.readUInt32();
-                dict[keys[kidx]] = parseValue(nt, val, offset);
+                const key = keys[kidx];
+                const subPath = path === '' ? '/' + key : path + '/' + key;
+                typeMap[subPath] = nt;
+                dict[key] = parseValue(nt, val, offset, subPath);
             }
             res = dict;
         }
         reader.seek(prev); return res;
     }
 
-    function parseValue(type: number, value: number, containerOffset: number): any {
+    function parseValue(type: number, value: number, containerOffset: number, path: string): any {
+        typeMap[path] = type;
         switch (type) {
             case 0xA0: return strings[value];
             case 0xD1: { const dv = new DataView(new ArrayBuffer(4)); dv.setUint32(0, value, reader.le); return dv.getInt32(0, reader.le); }
             case 0xD4: return value >>> 0;
             case 0xD2: { const dv = new DataView(new ArrayBuffer(4)); dv.setUint32(0, value, reader.le); return dv.getFloat32(0, reader.le); }
             case 0xD3: case 0xD5: case 0xD6: {
-                // Version 7 check: 64-bit values can be offsets relative to the whole file
-                // If the value is suspicious (very small), it might be an offset that failed.
-                // We'll try to read it as a direct offset first.
                 if (value === 0 || value >= reader.view.byteLength) return 0;
                 const p = reader.tell(); reader.seek(value);
                 let r: any;
@@ -287,12 +343,24 @@ export function bymlToYaml(data: Uint8Array): string {
                 reader.seek(p); return r;
             }
             case 0xD0: return value !== 0;
-            case 0xC0: case 0xC1: return parseNode(value);
+            case 0xC0: case 0xC1: return parseNode(value, path);
             case 0xFF: return null;
             default: return value; 
         }
     }
-    return yaml.dump(parseNode(rtOff), { indent: 2, noRefs: true, quotingType: '"' });
+
+    const root = parseNode(rtOff, '');
+    const metaYaml = yaml.dump({
+        _byml_metadata: {
+            version,
+            endian: le ? 'le' : 'be',
+            type_map: typeMap
+        }
+    }, { indent: 2 });
+    
+    const contentYaml = yaml.dump(root, { indent: 2, noRefs: true, quotingType: '"' });
+    
+    return `${metaYaml}---\n${contentYaml}`;
 }
 
 class Reader {

@@ -24,6 +24,8 @@ class BymlRedirectProvider implements vscode.CustomEditorProvider {
 }
 
 class SarcRedirectProvider implements vscode.CustomEditorProvider {
+    constructor(private packFs: PackFileSystemProvider) { }
+
     async openCustomDocument(uri: vscode.Uri) { return { uri, dispose: () => { } }; }
     async resolveCustomEditor(document: vscode.CustomDocument, webviewPanel: vscode.WebviewPanel) {
         const checkAndToggle = () => {
@@ -56,6 +58,7 @@ class SarcRedirectProvider implements vscode.CustomEditorProvider {
         const folders = vscode.workspace.workspaceFolders || [];
         const existingFolder = folders.find(f => f.uri.toString() === sarcUri.toString());
         if (existingFolder) {
+            this.packFs.unmount(sarcUri);
             vscode.workspace.updateWorkspaceFolders(existingFolder.index, 1);
         } else {
             vscode.workspace.updateWorkspaceFolders(folders.length, 0, {
@@ -77,10 +80,16 @@ export function activate(context: vscode.ExtensionContext) {
     Logger.setChannel(vscode.window.createOutputChannel("BYML Lens"));
 
     try {
-        context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', new PackFileSystemProvider(), { isCaseSensitive: true }));
-        context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', new BymlYamlProvider(), { isCaseSensitive: true }));
+        const packFs = new PackFileSystemProvider();
+        const bymlFs = new BymlYamlProvider();
+
+        context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', packFs, { isCaseSensitive: true }));
+        context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', bymlFs, { isCaseSensitive: true }));
         context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.redirector', new BymlRedirectProvider()));
-        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.sarc-redirector', new SarcRedirectProvider()));
+        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.sarc-redirector', new SarcRedirectProvider(packFs)));
+        
+        // Push providers to subscriptions to ensure dispose() is called
+        context.subscriptions.push(bymlFs);
         
         // ADDED: Compare with Original Binary
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.compareWithOriginal', async (uri: vscode.Uri) => {
@@ -108,7 +117,10 @@ export function activate(context: vscode.ExtensionContext) {
 
         context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {
             const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
-            if (folder) vscode.workspace.updateWorkspaceFolders(folder.index, 1);
+            if (folder) {
+                packFs.unmount(uri);
+                vscode.workspace.updateWorkspaceFolders(folder.index, 1);
+            }
         }));
 
         Logger.info("BYML Lens Activated.");
