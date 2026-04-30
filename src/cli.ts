@@ -14,8 +14,8 @@ const COMMIT_ID = typeof __COMMIT_ID__ !== 'undefined' ? __COMMIT_ID__ : 'dev';
 
 program
     .name('byml-lens')
-    .description(`CLI tool for Nintendo BYML and SARC files (v0.2.5, commit: ${COMMIT_ID})`)
-    .version(`0.2.5 (${COMMIT_ID})`);
+    .description(`CLI tool for Nintendo BYML and SARC files (v0.2.6, commit: ${COMMIT_ID})`)
+    .version(`0.2.6 (${COMMIT_ID})`);
 
 program.command('deyaml')
     .description('Convert binary BYML to YAML')
