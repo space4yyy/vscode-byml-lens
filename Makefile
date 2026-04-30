@@ -1,6 +1,6 @@
-.PHONY: all compile bundle watch lint test package clean install
+.PHONY: all compile bundle watch lint test test-unit package clean install install-cli
 
-all: compile
+all: bundle
 
 install:
 	npm install
@@ -10,6 +10,14 @@ compile:
 
 bundle:
 	npm run bundle
+
+# Run full VS Code integration tests
+test:
+	npm run test
+
+# Run fast core logic unit tests
+test-unit:
+	npm run test:unit
 
 # Install CLI tool globally
 install-cli: bundle
@@ -21,11 +29,8 @@ watch:
 lint:
 	npm run lint
 
-test:
-	npm run test
-
-package:
+package: bundle
 	npx @vscode/vsce package
 
 clean:
-	rm -rf out dist *.vsix
+	rm -rf out dist *.vsix temp

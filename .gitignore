@@ -5,6 +5,5 @@ dist/
 .vscode-test/
 temp/
 .DS_Store
-/make_mod.sh
 /temp/
-/make_mod.sh.stable
+
