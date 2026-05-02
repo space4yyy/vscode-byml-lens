@@ -9,24 +9,36 @@ This skill enables AI agents to read, modify, and repackage Nintendo game assets
 - **Archive Management**: Mount/Unmount SARC archives. Supports file-level modification and physical deletion of files/folders directly from the editor sidebar.
 - **Optimized Workflow**: Automatic Zstd handling and metadata inheritance ensure assets remain compatible with real hardware and Ryujinx.
 
-## Workflow SOP: Stage Modding
+## Workflow SOP: Salmon Run Stage Modding (Advanced)
 
-### 1. Project Initialization
-- Open the workspace containing your `romfs` structure.
-- Use `make install-ext` to ensure the latest version is active in Antigravity/VS Code.
+This refined process ensures maximum stability and eliminates residue when using "鬼头刀度假区" (Vss_Hiagari04) as a base.
 
-### 2. SARC Surgery
-- **Mounting**: Double-click `.pack.zs` files to mount them as virtual directories.
-- **Conflict Resolution**: Directly delete conflicting folders (like `Banc` in `Params.pack.zs`) using the context menu.
-- **Asset Injection**: 
-  - **Layout**: Copy YAML content from source `bcett.byml` to target.
-  - **Ocean**: Inject ocean parameters with their *original* names to satisfy `OceanRef` pointers in rendering configs.
-  - **Sky/Atmosphere**: Swap `RenderingDay.bgyml` to sync lighting/skybox.
-  - **Reference Fix**: If you rename an asset (e.g., `Ocean`), globally update all string references in the parent RD/SceneParam files.
+### 1. Asset Groundwork
+- **Asset Base**: Always use `Vss_Hiagari04.pack.zs` as the foundation.
+- **Layout Injection**: Replace `Banc/Vss_Hiagari04.bcett.byml` with the target Salmon map's layout.
+- **Ocean Refactor**: 
+    - Copy the Salmon map's ocean file (e.g., `Cop_Default`) to `Gyml/Vss_Hiagari03Water.game__gfx__parameter__Ocean.bgyml`.
+    - Note: Keeping the *internal filename* expected by the base map minimizes rendering crashes.
 
-### 3. Graffiti Removal
-- **Preferred Method**: Locate the scene's `SceneParam.bgyml`.
-- **Action**: Delete the `SceneGraffitiPlacementData` entry from the `Components` dictionary. This cleanly strips the graffiti subsystem from the stage.
+### 2. Rendering & Environment
+- **RenderingDay Injection**: Swap the base map's `RenderingDay.bgyml` with the Salmon map's version.
+- **Ocean Reference Patch**: Use `deyaml` on the new `RenderingDay`, replace all occurrences of the original ocean name (e.g., `Cop_Default`) with `Vss_Hiagari03Water`, then recompile.
+
+### 3. Graffiti: The "Zero-Residue" Strategy
+To prevent base map stickers from remaining and to avoid path-related crashes:
+- **Auxiliary Purge**: Replace all base auxiliary graffiti files (`Pnt`, `Tcl`, `Var`, `Vcl`, `Vgl`, `Vlf`) with empty 8-byte aligned BYMLs.
+- **Decision Branch**:
+    - **Case A: Stage has original graffiti**:
+        1. Copy the Salmon map's `_Cmn.byml` to `Vss_Hiagari04_Cmn.byml`.
+        2. **Path Redirection**: `deyaml` the `GraffitiPlacementData.bgyml`. Replace the source path string (e.g., `Cop_Shakehighway_Cmn`) with `Vss_Hiagari04_Cmn`. This is critical for preventing "Asset Not Found" crashes.
+    - **Case B: Stage has NO original graffiti**:
+        1. Inject an empty `_Cmn.byml`.
+        2. **SceneParam Surgery**: `deyaml` the `Vss_Hiagari04.engine__scene__SceneParam.bgyml`. Completely delete the `SceneGraffitiPlacementData` entry from the `Components` dictionary.
+
+### 4. Technical Hard-Line
+- **Alignment**: Every BYML file (Version 7) must have a final file size that is a multiple of 8 bytes.
+- **Zstd**: SARC archives must be Zstd-compressed (`-z`) for hardware compatibility.
+- **Params**: Always clear the `Banc` folder in `Params.pack.zs`.
 
 ## CLI Usage Guidelines
 

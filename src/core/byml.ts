@@ -227,6 +227,9 @@ export function yamlToByml(yamlStr: string): Uint8Array {
         currentPos += 8;
     }
     
+    // Final file size must be 8-byte aligned for Splatoon 3 Version 7 BYMLs
+    while (currentPos % 8 !== 0) currentPos++;
+
     const finalTrimmed = finalOut.slice(0, currentPos);
     return finalTrimmed;
 }
