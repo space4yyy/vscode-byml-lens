@@ -45,6 +45,11 @@
         "title": "Compare with Original Binary",
         "category": "BYML",
         "icon": "$(diff)"
+      },
+      {
+        "command": "byml-inspector.extractBfres",
+        "title": "Extract BFRES Resources",
+        "category": "BFRES"
       }
     ],
     "menus": {
@@ -57,6 +62,11 @@
         {
           "command": "byml-inspector.compareWithOriginal",
           "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
+          "group": "navigation"
+        },
+        {
+          "command": "byml-inspector.extractBfres",
+          "when": "resourceFilename =~ /\\.bfres(\\.zs)?$/",
           "group": "navigation"
         }
       ]
@@ -88,6 +98,16 @@
         "selector": [
           {
             "filenamePattern": "*.{pack,sarc,pack.zs,sarc.zs}"
+          }
+        ],
+        "priority": "default"
+      },
+      {
+        "viewType": "byml-inspector.bfres-redirector",
+        "displayName": "BFRES Resource Inspector",
+        "selector": [
+          {
+            "filenamePattern": "*.{bfres,bfres.zs}"
           }
         ],
         "priority": "default"

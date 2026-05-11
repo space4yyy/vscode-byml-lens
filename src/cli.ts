@@ -5,6 +5,7 @@ import * as byml from './core/byml.js';
 import { SarcArchive } from './core/sarc.js';
 import { Logger } from './core/logger.js';
 import * as zstd from './core/zstd.js';
+import { BfresParser } from './core/bfres.js';
 
 const program = new Command();
 
@@ -150,6 +151,74 @@ program.command('pack')
             const encoded = archive.encode();
             fs.writeFileSync(output, encoded);
             console.log(`Successfully packed ${archive.files.length} files to ${output}.`);
+        } catch (err: any) {
+            console.error(`Error: ${err.message}`);
+            process.exit(1);
+        }
+    });
+
+program.command('bfres-info')
+    .description('Show information about a BFRES file')
+    .argument('<input>', 'Input BFRES file (.bfres, .bfres.zs)')
+    .action(async (input) => {
+        try {
+            let data = fs.readFileSync(input);
+            if (zstd.isCompressed(data)) {
+                data = Buffer.from(zstd.decompressData(data));
+            }
+            
+            // Temporary file for parser
+            const tmpPath = `temp_bfres_info_${Date.now()}.bfres`;
+            fs.writeFileSync(tmpPath, data);
+            
+            const parser = new BfresParser(tmpPath);
+            const header = parser.parseHeader();
+            console.log(`BFRES Info: ${input}`);
+            console.log(`  Version: 0x${header.version.toString(16).toUpperCase()}`);
+            console.log(`  Endian: ${header.endian === 0xFFFE ? 'Little Endian' : 'Big Endian'}`);
+            console.log(`  Size: ${data.length} bytes`);
+            
+            const resources = parser.listResources();
+            console.log(`  Resources found: ${resources.length}`);
+            resources.forEach(r => {
+                console.log(`    [0x${r.offset.toString(16).toUpperCase()}] Tag: ${r.tag}`);
+            });
+            
+            fs.unlinkSync(tmpPath);
+        } catch (err: any) {
+            console.error(`Error: ${err.message}`);
+            process.exit(1);
+        }
+    });
+
+program.command('bfres-extract')
+    .description('Extract resources from a BFRES file')
+    .argument('<input>', 'Input BFRES file (.bfres, .bfres.zs)')
+    .argument('<outDir>', 'Output directory')
+    .action(async (input, outDir) => {
+        try {
+            let data = fs.readFileSync(input);
+            if (zstd.isCompressed(data)) {
+                data = Buffer.from(zstd.decompressData(data));
+            }
+            
+            const tmpPath = `temp_bfres_extract_${Date.now()}.bfres`;
+            fs.writeFileSync(tmpPath, data);
+            
+            const parser = new BfresParser(tmpPath);
+            const resources = parser.listResources();
+            
+            if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+            
+            resources.forEach((r, index) => {
+                const ext = r.tag === 'BNTX' ? '.bntx' : '.bin';
+                const outPath = path.join(outDir, `${index.toString().padStart(3, '0')}_${r.tag}${ext}`);
+                parser.extractResource(r.tag, r.offset, outPath);
+                console.log(`Extracted: ${outPath}`);
+            });
+            
+            console.log(`Successfully extracted ${resources.length} resources to ${outDir}`);
+            fs.unlinkSync(tmpPath);
         } catch (err: any) {
             console.error(`Error: ${err.message}`);
             process.exit(1);
