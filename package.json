@@ -1,5 +1,5 @@
 {
-  "name": "vscode-byml-inspector",
+  "name": "vscode-byml-lens",
   "displayName": "BYML Lens",
   "description": "High-performance editor for .byml, .bgyml, .pack and .zs files. Features native YAML views and SARC mounting.",
   "version": "0.2.7",
@@ -26,8 +26,8 @@
   "activationEvents": [
     "onFileSystem:sarc",
     "onFileSystem:byml-edit",
-    "onCustomEditor:byml-inspector.redirector",
-    "onCustomEditor:byml-inspector.sarc-redirector"
+    "onCustomEditor:byml-lens.redirector",
+    "onCustomEditor:byml-lens.sarc-redirector"
   ],
   "main": "./dist/extension.js",
   "bin": {
@@ -36,18 +36,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "byml-inspector.unmountPack",
+        "command": "byml-lens.unmountPack",
         "title": "Unmount .pack Archive",
         "category": "BYML"
       },
       {
-        "command": "byml-inspector.compareWithOriginal",
+        "command": "byml-lens.compareWithOriginal",
         "title": "Compare with Original Binary",
         "category": "BYML",
         "icon": "$(diff)"
       },
       {
-        "command": "byml-inspector.extractBfres",
+        "command": "byml-lens.extractBfres",
         "title": "Extract BFRES Resources",
         "category": "BFRES"
       }
@@ -55,17 +55,17 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "byml-inspector.unmountPack",
+          "command": "byml-lens.unmountPack",
           "when": "resourceScheme == sarc",
           "group": "navigation"
         },
         {
-          "command": "byml-inspector.compareWithOriginal",
+          "command": "byml-lens.compareWithOriginal",
           "when": "resourceFilename =~ /\\.(byml|bgyml|byaml)(\\.zs)?$/",
           "group": "navigation"
         },
         {
-          "command": "byml-inspector.extractBfres",
+          "command": "byml-lens.extractBfres",
           "when": "resourceFilename =~ /\\.bfres(\\.zs)?$/",
           "group": "navigation"
         }
@@ -83,7 +83,7 @@
     },
     "customEditors": [
       {
-        "viewType": "byml-inspector.redirector",
+        "viewType": "byml-lens.redirector",
         "displayName": "BYML YAML Viewer",
         "selector": [
           {
@@ -93,7 +93,7 @@
         "priority": "default"
       },
       {
-        "viewType": "byml-inspector.sarc-redirector",
+        "viewType": "byml-lens.sarc-redirector",
         "displayName": "SARC Auto-Mounter",
         "selector": [
           {
@@ -103,8 +103,8 @@
         "priority": "default"
       },
       {
-        "viewType": "byml-inspector.bfres-redirector",
-        "displayName": "BFRES Resource Inspector",
+        "viewType": "byml-lens.bfres-redirector",
+        "displayName": "BFRES Resource Lens",
         "selector": [
           {
             "filenamePattern": "*.{bfres,bfres.zs}"

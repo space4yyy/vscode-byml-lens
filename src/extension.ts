@@ -54,7 +54,7 @@ class BfresRedirectProvider implements vscode.CustomEditorProvider {
             webviewPanel.webview.html = `
                 <html>
                 <body style="font-family: sans-serif; padding: 20px; color: #ccc; background-color: #1e1e1e;">
-                    <h2>BFRES Resource Inspector</h2>
+                    <h2>BFRES Resource Lens</h2>
                     <div style="background: #252526; padding: 10px; border-radius: 4px; margin-bottom: 20px; border: 1px solid #333;">
                         <div style="margin-bottom:4px;"><b>Path:</b> ${document.uri.fsPath}</div>
                         <div style="margin-bottom:4px;"><b>Version:</b> 0x${header.version.toString(16).toUpperCase()}</div>
@@ -161,15 +161,15 @@ export function activate(context: vscode.ExtensionContext) {
 
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('sarc', packFs, { isCaseSensitive: true }));
         context.subscriptions.push(vscode.workspace.registerFileSystemProvider('byml-edit', bymlFs, { isCaseSensitive: true }));
-        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.redirector', new BymlRedirectProvider()));
-        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.sarc-redirector', new SarcRedirectProvider(packFs)));
-        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-inspector.bfres-redirector', new BfresRedirectProvider()));
+        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-lens.redirector', new BymlRedirectProvider()));
+        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-lens.sarc-redirector', new SarcRedirectProvider(packFs)));
+        context.subscriptions.push(vscode.window.registerCustomEditorProvider('byml-lens.bfres-redirector', new BfresRedirectProvider()));
         
         // Push providers to subscriptions to ensure dispose() is called
         context.subscriptions.push(bymlFs);
 
         // ADDED: Extract BFRES Resources (Context Menu)
-        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.extractBfres', async (uri: vscode.Uri) => {
+        context.subscriptions.push(vscode.commands.registerCommand('byml-lens.extractBfres', async (uri: vscode.Uri) => {
             if (!uri) return;
             const folderUri = await vscode.window.showOpenDialog({
                 canSelectFiles: false,
@@ -203,7 +203,7 @@ export function activate(context: vscode.ExtensionContext) {
         }));
         
         // ADDED: Compare with Original Binary
-        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.compareWithOriginal', async (uri: vscode.Uri) => {
+        context.subscriptions.push(vscode.commands.registerCommand('byml-lens.compareWithOriginal', async (uri: vscode.Uri) => {
             if (!uri) uri = vscode.window.activeTextEditor?.document.uri as vscode.Uri;
             if (!uri) return;
 
@@ -226,7 +226,7 @@ export function activate(context: vscode.ExtensionContext) {
             await vscode.commands.executeCommand('vscode.diff', baseUri, virtualUri, `${path.basename(uri.fsPath)} (Original ↔ Modified)`);
         }));
 
-        context.subscriptions.push(vscode.commands.registerCommand('byml-inspector.unmountPack', async (uri: vscode.Uri) => {
+        context.subscriptions.push(vscode.commands.registerCommand('byml-lens.unmountPack', async (uri: vscode.Uri) => {
             const folder = vscode.workspace.workspaceFolders?.find(f => f.uri.toString() === uri.toString());
             if (folder) {
                 packFs.unmount(uri);
