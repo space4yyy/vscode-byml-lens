@@ -1,3 +1,8 @@
+---
+name: byml-lens
+description: Read, modify, and repackage Nintendo game assets (.byml, .bgyml, .pack, .zs). Supports intelligent decompilation, SARC management, and Zstd handling.
+---
+
 # BYML Lens Agent Skill
 
 This skill enables AI agents to read, modify, and repackage Nintendo game assets (.byml, .bgyml, .pack, .zs) with production-grade stability and hardware compatibility.
