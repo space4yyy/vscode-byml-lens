@@ -4,10 +4,13 @@ This skill enables AI agents to read, modify, and repackage Nintendo game assets
 
 ## 🛠 Prerequisites & Auto-Setup
 
-Upon activation, the agent **MUST** ensure the `byml-lens` environment is ready:
+Upon activation, the agent **MUST** ensure the `byml-lens` environment is ready. **No repository cloning is required.**
 
 1.  **Detect CLI**: Run `byml-lens --version` to check if the tool is installed.
-2.  **Auto-Install**: If the command is missing, run `npm run bundle && npm install -g .` from the project root to install the CLI globally.
+2.  **Auto-Install**: If the command is missing, run:
+    ```bash
+    npm install -g byml-lens
+    ```
 3.  **Verify**: Confirm installation by running `byml-lens --help`.
 
 ## 🧠 Agent Usage Guidelines
@@ -15,7 +18,7 @@ Upon activation, the agent **MUST** ensure the `byml-lens` environment is ready:
 As an AI agent, you should prioritize these patterns to maintain data integrity:
 
 - **Metadata is Sacred**: When using `byml-lens deyaml`, the resulting YAML contains a `_byml_metadata` block. **NEVER** remove or modify this block unless explicitly instructed. It ensures the binary remains valid (alignment, endianness, version).
-- **Atomic Operations**: Prefer using the CLI for batch processing and the VS Code Extension for interactive edits.
+- **Atomic Operations**: Use the CLI for batch processing. Ensure paths are absolute or correctly relative to the workspace.
 - **Cleanup**: Always delete temporary files created during `deyaml` or `unpack` operations after the task is verified.
 
 ## 🚀 Capabilities
@@ -55,10 +58,3 @@ This process ensures maximum stability for Salmon map mods using "鬼头刀度�
 | **Recompile** | `byml-lens yaml2byml <input.yaml> <output.byml.zs>` |
 | **Unpack SARC** | `byml-lens unpack <input.pack.zs> <out_dir> [--yaml]` |
 | **Pack SARC** | `byml-lens pack <src_dir> <output.pack.zs> [-z] [--yaml]` |
-
-## 🛠 Developer Quick-Start (Makefile)
-
-- `make bundle`: Build CLI and Extension.
-- `make package`: Generate VSIX.
-- `make install-cli`: Bundle and install CLI globally.
-- `make test-unit`: Run logic tests.
