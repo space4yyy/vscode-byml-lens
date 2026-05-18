@@ -1,5 +1,5 @@
 {
-  "name": "vscode-byml-lens",
+  "name": "byml-lens",
   "displayName": "BYML Lens",
   "description": "High-performance editor for .byml, .bgyml, .pack and .zs files. Features native YAML views and SARC mounting.",
   "version": "0.2.7",
