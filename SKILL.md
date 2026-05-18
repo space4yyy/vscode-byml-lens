@@ -28,28 +28,6 @@ As an AI agent, you should prioritize these patterns to maintain data integrity:
 - **Archive Management**: Mount/Unmount SARC archives. Supports file-level modification and physical deletion.
 - **Optimized Workflow**: Automatic Zstd handling (`.zs`) and metadata inheritance.
 
-## 🌊 Workflow SOP: Salmon Run Stage Modding
-
-This process ensures maximum stability for Salmon map mods using "鬼头刀度假区" (Vss_Hiagari04) as a base.
-
-### 1. Asset Groundwork
-- **Asset Base**: Use `Vss_Hiagari04.pack.zs`.
-- **Layout**: Replace `Banc/Vss_Hiagari04.bcett.byml` with target layout.
-- **Ocean**: Copy target ocean to `Gyml/Vss_Hiagari03Water.game__gfx__parameter__Ocean.bgyml`.
-
-### 2. Environment Sync
-- **Rendering**: Swap `RenderingDay.bgyml` with target version.
-- **Patching**: `deyaml` the new `RenderingDay`, replace original ocean strings with `Vss_Hiagari03Water`, then recompile.
-
-### 3. Graffiti "Zero-Residue" Strategy
-- **Auxiliary Purge**: Replace all base graffiti files (`Pnt`, `Tcl`, etc.) with empty 8-byte aligned BYMLs.
-- **Path Redirection**: `deyaml` the `GraffitiPlacementData.bgyml`. Redirect source paths to local renamed versions (e.g., `Vss_Hiagari04_Cmn`) to prevent crashes.
-
-### 4. Technical Hard-Line
-- **8-Byte Alignment**: Mandatory for BYML Version 7.
-- **Zstd Compression**: Use `-z` flag during `pack` for hardware compatibility.
-- **Clean Params**: Always empty the `Banc` directory in `Params.pack.zs`.
-
 ## 💻 CLI Cheat Sheet
 
 | Task | Command |
