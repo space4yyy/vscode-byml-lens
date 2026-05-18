@@ -4,14 +4,15 @@ This skill enables AI agents to read, modify, and repackage Nintendo game assets
 
 ## 🛠 Prerequisites & Auto-Setup
 
-Upon activation, the agent **MUST** ensure the `byml-lens` environment is ready. **No repository cloning is required.**
+Upon activation, the agent **MUST** verify the environment:
 
-1.  **Detect CLI**: Run `byml-lens --version` to check if the tool is installed.
-2.  **Auto-Install**: If the command is missing, run:
+1.  **Detect CLI**: Run `byml-lens --version`.
+2.  **Handle Missing Tool**: If the command is missing, the agent **MUST** inform the user and ask for permission to run the following command:
     ```bash
     npm install -g byml-lens
     ```
-3.  **Verify**: Confirm installation by running `byml-lens --help`.
+    *Note: If permissions fail, the agent should suggest the user run it manually with `sudo`.*
+3.  **Verify**: Once installed, confirm by running `byml-lens --help`.
 
 ## 🧠 Agent Usage Guidelines
 
